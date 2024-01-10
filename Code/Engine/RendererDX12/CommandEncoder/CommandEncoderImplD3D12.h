@@ -3,3 +3,6 @@
  *   All rights reserved.
  *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
  */
+
+#pragma once
+
