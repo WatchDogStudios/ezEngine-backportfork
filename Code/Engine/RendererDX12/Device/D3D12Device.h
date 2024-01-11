@@ -12,6 +12,7 @@
 #include <RendererFoundation/Device/Device.h>
 
 #include <dxgi.h>
+#include <d3d12.h>
 
 struct ID3D12CommandAllocator3;
 struct ID3D12CommandList3;
@@ -35,22 +36,22 @@ class ezGALPassDX12;
 class EZ_RENDERERDX12_DLL ezGALDeviceDX12 : public ezGALDevice
 {
 private:
-  friend ezInternal::NewIeztance<ezGALDevice> CreateDX12Device(ezAllocatorBase* pAllocator, coezt ezGALDeviceCreationDescription& desc);
-  ezGALDeviceDX12(coezt ezGALDeviceCreationDescription& desc);
+  friend ezInternal::NewInstance<ezGALDevice> CreateDX12Device(ezAllocatorBase* pAllocator, const ezGALDeviceCreationDescription& desc);
+  ezGALDeviceDX12(const ezGALDeviceCreationDescription& desc);
 
 public:
   virtual ~ezGALDeviceDX12() {}
 
 public:
-  ID3D12Device3* GetDXDevice() coezt;
-  IDXGIFactory3* GetDXGIFactory() coezt;
-  ID3D12CommandAllocator3* GetDirectCommandAllocator() coezt;
-  ID3D12CommandAllocator3* GetComputeCommandAllocator() coezt;
-  ID3D12CommandAllocator3* GetCopyCommandAllocator() coezt;
+  ID3D12Device3* GetDXDevice() const;
+  IDXGIFactory3* GetDXGIFactory() const;
+  ID3D12CommandAllocator3* GetDirectCommandAllocator() const;
+  ID3D12CommandAllocator3* GetComputeCommandAllocator() const;
+  ID3D12CommandAllocator3* GetCopyCommandAllocator() const;
 
-  ezGALRenderCommandEncoder* GetRenderCommandEncoder() coezt;
+  ezGALRenderCommandEncoder* GetRenderCommandEncoder() const;
 
-  coezt ezGALFormatLookupTableDX12& GetFormatLookupTable() coezt;
+  const ezGALFormatLookupTableDX12& GetFormatLookupTable() const;
 
   void ReportLiveGpuObjects();
 
@@ -69,10 +70,10 @@ protected:
 
   // Pipeline & Pass functioez
 
-  virtual void BeginPipelinePlatform(coezt char* szName, ezGALSwapChain* pSwapChain) override;
+  virtual void BeginPipelinePlatform(const char* szName, ezGALSwapChain* pSwapChain) override;
   virtual void EndPipelinePlatform(ezGALSwapChain* pSwapChain) override;
 
-  virtual ezGALPass* BeginPassPlatform(coezt char* szName) override;
+  virtual ezGALPass* BeginPassPlatform(const char* szName) override;
   virtual void EndPassPlatform(ezGALPass* pPass) override;
 
   virtual void FlushPlatform() override;
@@ -80,48 +81,48 @@ protected:
 
   // State creation functioez
 
-  virtual ezGALBlendState* CreateBlendStatePlatform(coezt ezGALBlendStateCreationDescription& Description) override;
+  virtual ezGALBlendState* CreateBlendStatePlatform(const ezGALBlendStateCreationDescription& Description) override;
   virtual void DestroyBlendStatePlatform(ezGALBlendState* pBlendState) override;
 
-  virtual ezGALDepthStencilState* CreateDepthStencilStatePlatform(coezt ezGALDepthStencilStateCreationDescription& Description) override;
+  virtual ezGALDepthStencilState* CreateDepthStencilStatePlatform(const ezGALDepthStencilStateCreationDescription& Description) override;
   virtual void DestroyDepthStencilStatePlatform(ezGALDepthStencilState* pDepthStencilState) override;
 
-  virtual ezGALRasterizerState* CreateRasterizerStatePlatform(coezt ezGALRasterizerStateCreationDescription& Description) override;
+  virtual ezGALRasterizerState* CreateRasterizerStatePlatform(const ezGALRasterizerStateCreationDescription& Description) override;
   virtual void DestroyRasterizerStatePlatform(ezGALRasterizerState* pRasterizerState) override;
 
-  virtual ezGALSamplerState* CreateSamplerStatePlatform(coezt ezGALSamplerStateCreationDescription& Description) override;
+  virtual ezGALSamplerState* CreateSamplerStatePlatform(const ezGALSamplerStateCreationDescription& Description) override;
   virtual void DestroySamplerStatePlatform(ezGALSamplerState* pSamplerState) override;
 
 
   // Resource creation functioez
 
-  virtual ezGALShader* CreateShaderPlatform(coezt ezGALShaderCreationDescription& Description) override;
+  virtual ezGALShader* CreateShaderPlatform(const ezGALShaderCreationDescription& Description) override;
   virtual void DestroyShaderPlatform(ezGALShader* pShader) override;
 
-  virtual ezGALBuffer* CreateBufferPlatform(coezt ezGALBufferCreationDescription& Description, ezArrayPtr<coezt ezUInt8> pInitialData) override;
+  virtual ezGALBuffer* CreateBufferPlatform(const ezGALBufferCreationDescription& Description, ezArrayPtr<const ezUInt8> pInitialData) override;
   virtual void DestroyBufferPlatform(ezGALBuffer* pBuffer) override;
 
-  virtual ezGALTexture* CreateTexturePlatform(coezt ezGALTextureCreationDescription& Description, ezArrayPtr<ezGALSystemMemoryDescription> pInitialData) override;
+  virtual ezGALTexture* CreateTexturePlatform(const ezGALTextureCreationDescription& Description, ezArrayPtr<ezGALSystemMemoryDescription> pInitialData) override;
   virtual void DestroyTexturePlatform(ezGALTexture* pTexture) override;
 
-  virtual ezGALTexture* CreateSharedTexturePlatform(coezt ezGALTextureCreationDescription& Description, ezArrayPtr<ezGALSystemMemoryDescription> pInitialData, ezEnum<ezGALSharedTextureType> sharedType, ezGALPlatformSharedHandle handle) override;
+  virtual ezGALTexture* CreateSharedTexturePlatform(const ezGALTextureCreationDescription& Description, ezArrayPtr<ezGALSystemMemoryDescription> pInitialData, ezEnum<ezGALSharedTextureType> sharedType, ezGALPlatformSharedHandle handle) override;
   virtual void DestroySharedTexturePlatform(ezGALTexture* pTexture) override;
 
-  virtual ezGALResourceView* CreateResourceViewPlatform(ezGALResourceBase* pResource, coezt ezGALResourceViewCreationDescription& Description) override;
+  virtual ezGALResourceView* CreateResourceViewPlatform(ezGALResourceBase* pResource, const ezGALResourceViewCreationDescription& Description) override;
   virtual void DestroyResourceViewPlatform(ezGALResourceView* pResourceView) override;
 
-  virtual ezGALRenderTargetView* CreateRenderTargetViewPlatform(ezGALTexture* pTexture, coezt ezGALRenderTargetViewCreationDescription& Description) override;
+  virtual ezGALRenderTargetView* CreateRenderTargetViewPlatform(ezGALTexture* pTexture, const ezGALRenderTargetViewCreationDescription& Description) override;
   virtual void DestroyRenderTargetViewPlatform(ezGALRenderTargetView* pRenderTargetView) override;
 
-  ezGALUnorderedAccessView* CreateUnorderedAccessViewPlatform(ezGALResourceBase* pResource, coezt ezGALUnorderedAccessViewCreationDescription& Description) override;
+  ezGALUnorderedAccessView* CreateUnorderedAccessViewPlatform(ezGALResourceBase* pResource, const ezGALUnorderedAccessViewCreationDescription& Description) override;
   virtual void DestroyUnorderedAccessViewPlatform(ezGALUnorderedAccessView* pUnorderedAccessView) override;
 
   // Other rendering creation functioez
 
-  virtual ezGALQuery* CreateQueryPlatform(coezt ezGALQueryCreationDescription& Description) override;
+  virtual ezGALQuery* CreateQueryPlatform(const ezGALQueryCreationDescription& Description) override;
   virtual void DestroyQueryPlatform(ezGALQuery* pQuery) override;
 
-  virtual ezGALVertexDeclaration* CreateVertexDeclarationPlatform(coezt ezGALVertexDeclarationCreationDescription& Description) override;
+  virtual ezGALVertexDeclaration* CreateVertexDeclarationPlatform(const ezGALVertexDeclarationCreationDescription& Description) override;
   virtual void DestroyVertexDeclarationPlatform(ezGALVertexDeclaration* pVertexDeclaration) override;
 
   // Timestamp functioez
@@ -131,18 +132,18 @@ protected:
 
   // Swap chain functioez
 
-  void PresentPlatform(coezt ezGALSwapChain* pSwapChain, bool bVSync);
+  void PresentPlatform(const ezGALSwapChain* pSwapChain, bool bVSync);
 
   // Misc functioez
 
-  virtual void BeginFramePlatform(coezt ezUInt64 uiRenderFrame) override;
+  virtual void BeginFramePlatform(const ezUInt64 uiRenderFrame) override;
   virtual void EndFramePlatform() override;
 
   virtual void FillCapabilitiesPlatform() override;
 
   virtual void WaitIdlePlatform() override;
 
-  virtual coezt ezGALSharedTexture* GetSharedTexture(ezGALTextureHandle hTexture) coezt override;
+  virtual const ezGALSharedTexture* GetSharedTexture(ezGALTextureHandle hTexture) const override;
 
   /// \endcond
   friend class ezGALCommandEncoderImplDX12;
@@ -237,4 +238,4 @@ protected:
 };
 
 /// NOTE: Our inl files are located strangely.
-#include <RendererDX12/Implementation/D3D12Device_inl.h>
+#include <RendererDX12/Device/Implementation/D3D12Device_inl.h>

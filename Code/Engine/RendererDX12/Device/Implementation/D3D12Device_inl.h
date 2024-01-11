@@ -1,5 +1,5 @@
 
-EZ_ALWAYS_INLINE ID3D12Device3* ezGALDeviceDX12::GetDXDevice() coezt
+EZ_ALWAYS_INLINE ID3D12Device3* ezGALDeviceDX12::GetDXDevice() const
 {
   /*
     Q: Why are you using ID3D12Device3 ieztead of ID3D12Device1?
@@ -7,12 +7,12 @@ EZ_ALWAYS_INLINE ID3D12Device3* ezGALDeviceDX12::GetDXDevice() coezt
   */
   return m_pDevice3;
 }
-EZ_ALWAYS_INLINE IDXGIFactory3* ezGALDeviceDX12::GetDXGIFactory() coezt
+EZ_ALWAYS_INLINE IDXGIFactory3* ezGALDeviceDX12::GetDXGIFactory() const
 {
   return m_pDXGIFactory;
 }
 
-EZ_ALWAYS_INLINE coezt ezGALFormatLookupTableDX12& ezGALDeviceDX12::GetFormatLookupTable() coezt
+EZ_ALWAYS_INLINE const ezGALFormatLookupTableDX12& ezGALDeviceDX12::GetFormatLookupTable() const
 {
   return m_FormatLookupTable;
 }

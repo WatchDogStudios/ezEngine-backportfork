@@ -28,7 +28,7 @@ ezGALPassDX12::~ezGALPassDX12()
 {
 }
 
-ezGALRenderCommandEncoder* ezGALPassDX12::BeginRenderingPlatform(coezt ezGALRenderingSetup& renderingSetup, coezt char* szName)
+ezGALRenderCommandEncoder* ezGALPassDX12::BeginRenderingPlatform(const ezGALRenderingSetup& renderingSetup, const char* szName)
 {
   m_pCommandEncoderImpl->BeginRendering(renderingSetup);
 
@@ -40,7 +40,7 @@ void ezGALPassDX12::EndRenderingPlatform(ezGALRenderCommandEncoder* pCommandEnco
   EZ_ASSERT_DEV(m_pRenderCommandEncoder.Borrow() == pCommandEncoder, "Invalid command encoder");
 }
 
-ezGALComputeCommandEncoder* ezGALPassDX12::BeginComputePlatform(coezt char* szName)
+ezGALComputeCommandEncoder* ezGALPassDX12::BeginComputePlatform(const char* szName)
 {
   m_pCommandEncoderImpl->BeginCompute();
   return m_pComputeCommandEncoder.Borrow();
@@ -51,7 +51,7 @@ void ezGALPassDX12::EndComputePlatform(ezGALComputeCommandEncoder* pCommandEncod
   EZ_ASSERT_DEV(m_pComputeCommandEncoder.Borrow() == pCommandEncoder, "Invalid command encoder");
 }
 
-void ezGALPassDX12::BeginPass(coezt char* szName)
+void ezGALPassDX12::BeginPass(const char* szName)
 {
 
 }

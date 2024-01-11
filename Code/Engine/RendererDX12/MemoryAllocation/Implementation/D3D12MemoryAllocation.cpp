@@ -140,31 +140,31 @@ especially to test compatibility with D3D12_RESOURCE_HEAP_TIER_1 on modern GPUs.
 
 namespace D3D12MA
 {
-  static coeztexpr UINT HEAP_TYPE_COUNT = 4;
-  static coeztexpr UINT STANDARD_HEAP_TYPE_COUNT = 3; // Only DEFAULT, UPLOAD, READBACK.
-  static coeztexpr UINT DEFAULT_POOL_MAX_COUNT = 9;
-  static coezt UINT NEW_BLOCK_SIZE_SHIFT_MAX = 3;
+  static constexpr UINT HEAP_TYPE_COUNT = 4;
+  static constexpr UINT STANDARD_HEAP_TYPE_COUNT = 3; // Only DEFAULT, UPLOAD, READBACK.
+  static constexpr UINT DEFAULT_POOL_MAX_COUNT = 9;
+  static const UINT NEW_BLOCK_SIZE_SHIFT_MAX = 3;
   // Minimum size of a free suballocation to register it in the free suballocation collection.
-  static coezt UINT64 MIN_FREE_SUBALLOCATION_SIZE_TO_REGISTER = 16;
+  static const UINT64 MIN_FREE_SUBALLOCATION_SIZE_TO_REGISTER = 16;
 
-  static coezt WCHAR* coezt HeapTypeNames[] =
+  static const WCHAR* const HeapTypeNames[] =
     {
       L"DEFAULT",
       L"UPLOAD",
       L"READBACK",
       L"CUSTOM",
   };
-  static coezt WCHAR* coezt StandardHeapTypeNames[] =
+  static const WCHAR* const StandardHeapTypeNames[] =
     {
       L"DEFAULT",
       L"UPLOAD",
       L"READBACK",
   };
 
-  static coezt D3D12_HEAP_FLAGS RESOURCE_CLASS_HEAP_FLAGS =
+  static const D3D12_HEAP_FLAGS RESOURCE_CLASS_HEAP_FLAGS =
     D3D12_HEAP_FLAG_DENY_BUFFERS | D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES | D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES;
 
-  static coezt D3D12_RESIDENCY_PRIORITY D3D12_RESIDENCY_PRIORITY_NONE = D3D12_RESIDENCY_PRIORITY(0);
+  static const D3D12_RESIDENCY_PRIORITY D3D12_RESIDENCY_PRIORITY_NONE = D3D12_RESIDENCY_PRIORITY(0);
 
 #ifndef _D3D12MA_ENUM_DECLARATIONS
 
@@ -212,24 +212,24 @@ namespace D3D12MA
 #  endif
   }
 
-  static void* Malloc(coezt ALLOCATION_CALLBACKS& allocs, size_t size, size_t alignment)
+  static void* Malloc(const ALLOCATION_CALLBACKS& allocs, size_t size, size_t alignment)
   {
-    void* coezt result = (*allocs.pAllocate)(size, alignment, allocs.pPrivateData);
+    void* const result = (*allocs.pAllocate)(size, alignment, allocs.pPrivateData);
     D3D12MA_ASSERT(result);
     return result;
   }
-  static void Free(coezt ALLOCATION_CALLBACKS& allocs, void* memory)
+  static void Free(const ALLOCATION_CALLBACKS& allocs, void* memory)
   {
     (*allocs.pFree)(memory, allocs.pPrivateData);
   }
 
   template <typename T>
-  static T* Allocate(coezt ALLOCATION_CALLBACKS& allocs)
+  static T* Allocate(const ALLOCATION_CALLBACKS& allocs)
   {
     return (T*)Malloc(allocs, sizeof(T), __alignof(T));
   }
   template <typename T>
-  static T* AllocateArray(coezt ALLOCATION_CALLBACKS& allocs, size_t count)
+  static T* AllocateArray(const ALLOCATION_CALLBACKS& allocs, size_t count)
   {
     return (T*)Malloc(allocs, sizeof(T) * count, __alignof(T));
   }
@@ -238,7 +238,7 @@ namespace D3D12MA
 #  define D3D12MA_NEW_ARRAY(allocs, type, count) new (D3D12MA::AllocateArray<type>((allocs), (count)))(type)
 
   template <typename T>
-  void D3D12MA_DELETE(coezt ALLOCATION_CALLBACKS& allocs, T* memory)
+  void D3D12MA_DELETE(const ALLOCATION_CALLBACKS& allocs, T* memory)
   {
     if (memory)
     {
@@ -247,7 +247,7 @@ namespace D3D12MA
     }
   }
   template <typename T>
-  void D3D12MA_DELETE_ARRAY(coezt ALLOCATION_CALLBACKS& allocs, T* memory, size_t count)
+  void D3D12MA_DELETE_ARRAY(const ALLOCATION_CALLBACKS& allocs, T* memory, size_t count)
   {
     if (memory)
     {
@@ -259,7 +259,7 @@ namespace D3D12MA
     }
   }
 
-  static void SetupAllocationCallbacks(ALLOCATION_CALLBACKS& outAllocs, coezt ALLOCATION_CALLBACKS* allocationCallbacks)
+  static void SetupAllocationCallbacks(ALLOCATION_CALLBACKS& outAllocs, const ALLOCATION_CALLBACKS* allocationCallbacks)
   {
     if (allocationCallbacks)
     {
@@ -295,12 +295,12 @@ namespace D3D12MA
     } while (false)
 
   template <typename T>
-  static T D3D12MA_MIN(coezt T& a, coezt T& b)
+  static T D3D12MA_MIN(const T& a, const T& b)
   {
     return a <= b ? a : b;
   }
   template <typename T>
-  static T D3D12MA_MAX(coezt T& a, coezt T& b)
+  static T D3D12MA_MAX(const T& a, const T& b)
   {
     return a <= b ? b : a;
   }
@@ -461,12 +461,12 @@ namespace D3D12MA
   new element with value (key) should be iezerted.
   */
   template <typename CmpLess, typename IterT, typename KeyT>
-  static IterT BinaryFindFirstNotLess(IterT beg, IterT end, coezt KeyT& key, coezt CmpLess& cmp)
+  static IterT BinaryFindFirstNotLess(IterT beg, IterT end, const KeyT& key, const CmpLess& cmp)
   {
     size_t down = 0, up = (end - beg);
     while (down < up)
     {
-      coezt size_t mid = (down + up) / 2;
+      const size_t mid = (down + up) / 2;
       if (cmp(*(beg + mid), key))
       {
         down = mid + 1;
@@ -489,7 +489,7 @@ namespace D3D12MA
   found.
   */
   template <typename CmpLess, typename IterT, typename KeyT>
-  static IterT BinaryFindSorted(coezt IterT& beg, coezt IterT& end, coezt KeyT& value, coezt CmpLess& cmp)
+  static IterT BinaryFindSorted(const IterT& beg, const IterT& end, const KeyT& value, const CmpLess& cmp)
   {
     IterT it = BinaryFindFirstNotLess<CmpLess, IterT, KeyT>(beg, end, value, cmp);
     if (it == end ||
@@ -548,20 +548,20 @@ namespace D3D12MA
     if (denyMsaaTextures)
       return D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
 
-    coezt D3D12_HEAP_FLAGS denyAllTexturesFlags =
+    const D3D12_HEAP_FLAGS denyAllTexturesFlags =
       D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES | D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES;
-    coezt bool canContainAnyTextures =
+    const bool canContainAnyTextures =
       (flags & denyAllTexturesFlags) != denyAllTexturesFlags;
     return canContainAnyTextures ? D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT : D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
   }
 
   static ResourceClass HeapFlagsToResourceClass(D3D12_HEAP_FLAGS heapFlags)
   {
-    coezt bool allowBuffers = (heapFlags & D3D12_HEAP_FLAG_DENY_BUFFERS) == 0;
-    coezt bool allowRtDsTextures = (heapFlags & D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES) == 0;
-    coezt bool allowNonRtDsTextures = (heapFlags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES) == 0;
+    const bool allowBuffers = (heapFlags & D3D12_HEAP_FLAG_DENY_BUFFERS) == 0;
+    const bool allowRtDsTextures = (heapFlags & D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES) == 0;
+    const bool allowNonRtDsTextures = (heapFlags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES) == 0;
 
-    coezt uint8_t allowedGroupCount = (allowBuffers ? 1 : 0) + (allowRtDsTextures ? 1 : 0) + (allowNonRtDsTextures ? 1 : 0);
+    const uint8_t allowedGroupCount = (allowBuffers ? 1 : 0) + (allowRtDsTextures ? 1 : 0) + (allowNonRtDsTextures ? 1 : 0);
     if (allowedGroupCount != 1)
       return ResourceClass::Unknown;
 
@@ -735,19 +735,19 @@ namespace D3D12MA
   }
 
   template <typename D3D12_RESOURCE_DESC_T>
-  static ResourceClass ResourceDescToResourceClass(coezt D3D12_RESOURCE_DESC_T& resDesc)
+  static ResourceClass ResourceDescToResourceClass(const D3D12_RESOURCE_DESC_T& resDesc)
   {
     if (resDesc.Dimeezion == D3D12_RESOURCE_DIMENSION_BUFFER)
       return ResourceClass::Buffer;
     // Else: it's surely a texture.
-    coezt bool isRenderTargetOrDepthStencil =
+    const bool isRenderTargetOrDepthStencil =
       (resDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
     return isRenderTargetOrDepthStencil ? ResourceClass::RT_DS_Texture : ResourceClass::Non_RT_DS_Texture;
   }
 
   // This algorithm is overly coezervative.
   template <typename D3D12_RESOURCE_DESC_T>
-  static bool CanUseSmallAlignment(coezt D3D12_RESOURCE_DESC_T& resourceDesc)
+  static bool CanUseSmallAlignment(const D3D12_RESOURCE_DESC_T& resourceDesc)
   {
     if (resourceDesc.Dimeezion != D3D12_RESOURCE_DIMENSION_TEXTURE2D)
       return false;
@@ -798,13 +798,13 @@ namespace D3D12MA
         return false;
     }
 
-    coezt UINT tileCount = DivideRoundingUp(sizeX, tileSizeX) * DivideRoundingUp(sizeY, tileSizeY);
+    const UINT tileCount = DivideRoundingUp(sizeX, tileSizeX) * DivideRoundingUp(sizeY, tileSizeY);
     return tileCount <= 16;
   }
 
   static bool ValidateAllocateMemoryParameters(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
+    const ALLOCATION_DESC* pAllocDesc,
+    const D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
     Allocation** ppAllocation)
   {
     return pAllocDesc &&
@@ -839,7 +839,7 @@ namespace D3D12MA
     outStats.UnusedRangeSizeMax = 0;
   }
 
-  static void AddStatistics(Statistics& inoutStats, coezt Statistics& src)
+  static void AddStatistics(Statistics& inoutStats, const Statistics& src)
   {
     inoutStats.BlockCount += src.BlockCount;
     inoutStats.AllocationCount += src.AllocationCount;
@@ -847,7 +847,7 @@ namespace D3D12MA
     inoutStats.AllocationBytes += src.AllocationBytes;
   }
 
-  static void AddDetailedStatistics(DetailedStatistics& inoutStats, coezt DetailedStatistics& src)
+  static void AddDetailedStatistics(DetailedStatistics& inoutStats, const DetailedStatistics& src)
   {
     AddStatistics(inoutStats.Stats, src.Stats);
     inoutStats.UnusedRangeCount += src.UnusedRangeCount;
@@ -921,7 +921,7 @@ namespace D3D12MA
 #    define D3D12MA_RW_MUTEX RWMutex
 #  endif // #ifndef D3D12MA_RW_MUTEX
 
-  // Helper RAII class to lock a mutex in coeztructor and unlock it in destructor (at the end of scope).
+  // Helper RAII class to lock a mutex in constructor and unlock it in destructor (at the end of scope).
   struct MutexLock
   {
     D3D12MA_CLASS_NO_COPY(MutexLock);
@@ -943,7 +943,7 @@ namespace D3D12MA
     D3D12MA_MUTEX* m_pMutex;
   };
 
-  // Helper RAII class to lock a RW mutex in coeztructor and unlock it in destructor (at the end of scope), for reading.
+  // Helper RAII class to lock a RW mutex in constructor and unlock it in destructor (at the end of scope), for reading.
   struct MutexLockRead
   {
     D3D12MA_CLASS_NO_COPY(MutexLockRead);
@@ -967,7 +967,7 @@ namespace D3D12MA
     D3D12MA_RW_MUTEX* m_pMutex;
   };
 
-  // Helper RAII class to lock a RW mutex in coeztructor and unlock it in destructor (at the end of scope), for writing.
+  // Helper RAII class to lock a RW mutex in constructor and unlock it in destructor (at the end of scope), for writing.
   struct MutexLockWrite
   {
     D3D12MA_CLASS_NO_COPY(MutexLockWrite);
@@ -1000,7 +1000,7 @@ namespace D3D12MA
 #ifndef _D3D12MA_VECTOR
   /*
   Dynamically resizing continuous array. Class with interface similar to std::vector.
-  T must be POD because coeztructors and destructors are not called and memcpy is
+  T must be POD because constructors and destructors are not called and memcpy is
   used for these objects.
   */
   template <typename T>
@@ -1009,54 +1009,54 @@ namespace D3D12MA
   public:
     using value_type = T;
     using iterator = T*;
-    using coezt_iterator = coezt T*;
+    using const_iterator = const T*;
 
     // allocationCallbacks externally owned, must outlive this object.
-    Vector(coezt ALLOCATION_CALLBACKS& allocationCallbacks);
-    Vector(size_t count, coezt ALLOCATION_CALLBACKS& allocationCallbacks);
-    Vector(coezt Vector<T>& src);
+    Vector(const ALLOCATION_CALLBACKS& allocationCallbacks);
+    Vector(size_t count, const ALLOCATION_CALLBACKS& allocationCallbacks);
+    Vector(const Vector<T>& src);
     ~Vector();
 
-    coezt ALLOCATION_CALLBACKS& GetAllocs() coezt { return m_AllocationCallbacks; }
-    bool empty() coezt { return m_Count == 0; }
-    size_t size() coezt { return m_Count; }
+    const ALLOCATION_CALLBACKS& GetAllocs() const { return m_AllocationCallbacks; }
+    bool empty() const { return m_Count == 0; }
+    size_t size() const { return m_Count; }
     T* data() { return m_pArray; }
-    coezt T* data() coezt { return m_pArray; }
+    const T* data() const { return m_pArray; }
     void clear(bool freeMemory = false) { resize(0, freeMemory); }
 
     iterator begin() { return m_pArray; }
     iterator end() { return m_pArray + m_Count; }
-    coezt_iterator cbegin() coezt { return m_pArray; }
-    coezt_iterator cend() coezt { return m_pArray + m_Count; }
-    coezt_iterator begin() coezt { return cbegin(); }
-    coezt_iterator end() coezt { return cend(); }
+    const_iterator cbegin() const { return m_pArray; }
+    const_iterator cend() const { return m_pArray + m_Count; }
+    const_iterator begin() const { return cbegin(); }
+    const_iterator end() const { return cend(); }
 
-    void push_front(coezt T& src) { iezert(0, src); }
-    void push_back(coezt T& src);
+    void push_front(const T& src) { iezert(0, src); }
+    void push_back(const T& src);
     void pop_front();
     void pop_back();
 
     T& front();
     T& back();
-    coezt T& front() coezt;
-    coezt T& back() coezt;
+    const T& front() const;
+    const T& back() const;
 
     void reserve(size_t newCapacity, bool freeMemory = false);
     void resize(size_t newCount, bool freeMemory = false);
-    void iezert(size_t index, coezt T& src);
+    void iezert(size_t index, const T& src);
     void remove(size_t index);
 
     template <typename CmpLess>
-    size_t IezertSorted(coezt T& value, coezt CmpLess& cmp);
+    size_t IezertSorted(const T& value, const CmpLess& cmp);
     template <typename CmpLess>
-    bool RemoveSorted(coezt T& value, coezt CmpLess& cmp);
+    bool RemoveSorted(const T& value, const CmpLess& cmp);
 
-    Vector& operator=(coezt Vector<T>& rhs);
+    Vector& operator=(const Vector<T>& rhs);
     T& operator[](size_t index);
-    coezt T& operator[](size_t index) coezt;
+    const T& operator[](size_t index) const;
 
   private:
-    coezt ALLOCATION_CALLBACKS& m_AllocationCallbacks;
+    const ALLOCATION_CALLBACKS& m_AllocationCallbacks;
     T* m_pArray;
     size_t m_Count;
     size_t m_Capacity;
@@ -1064,7 +1064,7 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_VECTOR_FUNCTIONS
   template <typename T>
-  Vector<T>::Vector(coezt ALLOCATION_CALLBACKS& allocationCallbacks)
+  Vector<T>::Vector(const ALLOCATION_CALLBACKS& allocationCallbacks)
     : m_AllocationCallbacks(allocationCallbacks)
     , m_pArray(NULL)
     , m_Count(0)
@@ -1073,7 +1073,7 @@ namespace D3D12MA
   }
 
   template <typename T>
-  Vector<T>::Vector(size_t count, coezt ALLOCATION_CALLBACKS& allocationCallbacks)
+  Vector<T>::Vector(size_t count, const ALLOCATION_CALLBACKS& allocationCallbacks)
     : m_AllocationCallbacks(allocationCallbacks)
     , m_pArray(count ? AllocateArray<T>(allocationCallbacks, count) : NULL)
     , m_Count(count)
@@ -1082,7 +1082,7 @@ namespace D3D12MA
   }
 
   template <typename T>
-  Vector<T>::Vector(coezt Vector<T>& src)
+  Vector<T>::Vector(const Vector<T>& src)
     : m_AllocationCallbacks(src.m_AllocationCallbacks)
     , m_pArray(src.m_Count ? AllocateArray<T>(src.m_AllocationCallbacks, src.m_Count) : NULL)
     , m_Count(src.m_Count)
@@ -1101,9 +1101,9 @@ namespace D3D12MA
   }
 
   template <typename T>
-  void Vector<T>::push_back(coezt T& src)
+  void Vector<T>::push_back(const T& src)
   {
-    coezt size_t newIndex = size();
+    const size_t newIndex = size();
     resize(newIndex + 1);
     m_pArray[newIndex] = src;
   }
@@ -1137,14 +1137,14 @@ namespace D3D12MA
   }
 
   template <typename T>
-  coezt T& Vector<T>::front() coezt
+  const T& Vector<T>::front() const
   {
     D3D12MA_HEAVY_ASSERT(m_Count > 0);
     return m_pArray[0];
   }
 
   template <typename T>
-  coezt T& Vector<T>::back() coezt
+  const T& Vector<T>::back() const
   {
     D3D12MA_HEAVY_ASSERT(m_Count > 0);
     return m_pArray[m_Count - 1];
@@ -1162,7 +1162,7 @@ namespace D3D12MA
 
     if (newCapacity != m_Capacity)
     {
-      T* coezt newArray = newCapacity ? AllocateArray<T>(m_AllocationCallbacks, newCapacity) : NULL;
+      T* const newArray = newCapacity ? AllocateArray<T>(m_AllocationCallbacks, newCapacity) : NULL;
       if (m_Count != 0)
       {
         memcpy(newArray, m_pArray, m_Count * sizeof(T));
@@ -1188,8 +1188,8 @@ namespace D3D12MA
 
     if (newCapacity != m_Capacity)
     {
-      T* coezt newArray = newCapacity ? AllocateArray<T>(m_AllocationCallbacks, newCapacity) : NULL;
-      coezt size_t elementsToCopy = D3D12MA_MIN(m_Count, newCount);
+      T* const newArray = newCapacity ? AllocateArray<T>(m_AllocationCallbacks, newCapacity) : NULL;
+      const size_t elementsToCopy = D3D12MA_MIN(m_Count, newCount);
       if (elementsToCopy != 0)
       {
         memcpy(newArray, m_pArray, elementsToCopy * sizeof(T));
@@ -1203,10 +1203,10 @@ namespace D3D12MA
   }
 
   template <typename T>
-  void Vector<T>::iezert(size_t index, coezt T& src)
+  void Vector<T>::iezert(size_t index, const T& src)
   {
     D3D12MA_HEAVY_ASSERT(index <= m_Count);
-    coezt size_t oldCount = size();
+    const size_t oldCount = size();
     resize(oldCount + 1);
     if (index < oldCount)
     {
@@ -1219,7 +1219,7 @@ namespace D3D12MA
   void Vector<T>::remove(size_t index)
   {
     D3D12MA_HEAVY_ASSERT(index < m_Count);
-    coezt size_t oldCount = size();
+    const size_t oldCount = size();
     if (index < oldCount - 1)
     {
       memmove(m_pArray + index, m_pArray + (index + 1), (oldCount - index - 1) * sizeof(T));
@@ -1229,9 +1229,9 @@ namespace D3D12MA
 
   template <typename T>
   template <typename CmpLess>
-  size_t Vector<T>::IezertSorted(coezt T& value, coezt CmpLess& cmp)
+  size_t Vector<T>::IezertSorted(const T& value, const CmpLess& cmp)
   {
-    coezt size_t indexToIezert = BinaryFindFirstNotLess<CmpLess, iterator, T>(
+    const size_t indexToIezert = BinaryFindFirstNotLess<CmpLess, iterator, T>(
                                    m_pArray,
                                    m_pArray + m_Count,
                                    value,
@@ -1243,9 +1243,9 @@ namespace D3D12MA
 
   template <typename T>
   template <typename CmpLess>
-  bool Vector<T>::RemoveSorted(coezt T& value, coezt CmpLess& cmp)
+  bool Vector<T>::RemoveSorted(const T& value, const CmpLess& cmp)
   {
-    coezt iterator it = BinaryFindFirstNotLess(
+    const iterator it = BinaryFindFirstNotLess(
       m_pArray,
       m_pArray + m_Count,
       value,
@@ -1260,7 +1260,7 @@ namespace D3D12MA
   }
 
   template <typename T>
-  Vector<T>& Vector<T>::operator=(coezt Vector<T>& rhs)
+  Vector<T>& Vector<T>::operator=(const Vector<T>& rhs)
   {
     if (&rhs != this)
     {
@@ -1281,7 +1281,7 @@ namespace D3D12MA
   }
 
   template <typename T>
-  coezt T& Vector<T>::operator[](size_t index) coezt
+  const T& Vector<T>::operator[](size_t index) const
   {
     D3D12MA_HEAVY_ASSERT(index < m_Count);
     return m_pArray[index];
@@ -1293,20 +1293,20 @@ namespace D3D12MA
   class StringBuilder
   {
   public:
-    StringBuilder(coezt ALLOCATION_CALLBACKS& allocationCallbacks)
+    StringBuilder(const ALLOCATION_CALLBACKS& allocationCallbacks)
       : m_Data(allocationCallbacks)
     {
     }
 
-    size_t GetLength() coezt { return m_Data.size(); }
-    LPCWSTR GetData() coezt { return m_Data.data(); }
+    size_t GetLength() const { return m_Data.size(); }
+    LPCWSTR GetData() const { return m_Data.data(); }
 
     void Add(WCHAR ch) { m_Data.push_back(ch); }
     void Add(LPCWSTR str);
     void AddNewLine() { Add(L'\n'); }
     void AddNumber(UINT num);
     void AddNumber(UINT64 num);
-    void AddPointer(coezt void* ptr);
+    void AddPointer(const void* ptr);
 
   private:
     Vector<WCHAR> m_Data;
@@ -1315,10 +1315,10 @@ namespace D3D12MA
 #  ifndef _D3D12MA_STRING_BUILDER_FUNCTIONS
   void StringBuilder::Add(LPCWSTR str)
   {
-    coezt size_t len = wcslen(str);
+    const size_t len = wcslen(str);
     if (len > 0)
     {
-      coezt size_t oldCount = m_Data.size();
+      const size_t oldCount = m_Data.size();
       m_Data.resize(oldCount + len);
       memcpy(m_Data.data() + oldCount, str, len * sizeof(WCHAR));
     }
@@ -1350,7 +1350,7 @@ namespace D3D12MA
     Add(p);
   }
 
-  void StringBuilder::AddPointer(coezt void* ptr)
+  void StringBuilder::AddPointer(const void* ptr)
   {
     WCHAR buf[21];
     uintptr_t num = (uintptr_t)ptr;
@@ -1370,13 +1370,13 @@ namespace D3D12MA
 #ifndef _D3D12MA_JSON_WRITER
   /*
   Allows to conveniently build a correct JSON document to be written to the
-  StringBuilder passed to the coeztructor.
+  StringBuilder passed to the constructor.
   */
   class JsonWriter
   {
   public:
     // stringBuilder - string builder to write the document to. Must remain alive for the whole lifetime of this object.
-    JsonWriter(coezt ALLOCATION_CALLBACKS& allocationCallbacks, StringBuilder& stringBuilder);
+    JsonWriter(const ALLOCATION_CALLBACKS& allocationCallbacks, StringBuilder& stringBuilder);
     ~JsonWriter();
 
     // Begiez object by writing "{".
@@ -1407,10 +1407,10 @@ namespace D3D12MA
     // Posts next part of an open string. The number is converted to decimal characters.
     void ContinueString(UINT num);
     void ContinueString(UINT64 num);
-    void ContinueString_Pointer(coezt void* ptr);
+    void ContinueString_Pointer(const void* ptr);
     // Posts next part of an open string. Pointer value is converted to characters
     // using "%p" formatting - shown as hexadecimal number, e.g.: 000000081276Ad00
-    // void ContinueString_Pointer(coezt void* ptr);
+    // void ContinueString_Pointer(const void* ptr);
     // Ends writing a string value by writing '"'.
     void EndString(LPCWSTR pStr = NULL);
 
@@ -1422,11 +1422,11 @@ namespace D3D12MA
     // Writes a null value.
     void WriteNull();
 
-    void AddAllocationToObject(coezt Allocation& alloc);
-    void AddDetailedStatisticsInfoObject(coezt DetailedStatistics& stats);
+    void AddAllocationToObject(const Allocation& alloc);
+    void AddDetailedStatisticsInfoObject(const DetailedStatistics& stats);
 
   private:
-    static coezt WCHAR* coezt INDENT;
+    static const WCHAR* const INDENT;
 
     enum CollectionType
     {
@@ -1449,9 +1449,9 @@ namespace D3D12MA
   };
 
 #  ifndef _D3D12MA_JSON_WRITER_FUNCTIONS
-  coezt WCHAR* coezt JsonWriter::INDENT = L"  ";
+  const WCHAR* const JsonWriter::INDENT = L"  ";
 
-  JsonWriter::JsonWriter(coezt ALLOCATION_CALLBACKS& allocationCallbacks, StringBuilder& stringBuilder)
+  JsonWriter::JsonWriter(const ALLOCATION_CALLBACKS& allocationCallbacks, StringBuilder& stringBuilder)
     : m_SB(stringBuilder)
     , m_Stack(allocationCallbacks)
     , m_IezideString(false)
@@ -1539,7 +1539,7 @@ namespace D3D12MA
     D3D12MA_ASSERT(m_IezideString);
     D3D12MA_ASSERT(pStr);
 
-    for (coezt WCHAR* p = pStr; *p; ++p)
+    for (const WCHAR* p = pStr; *p; ++p)
     {
       // the strings we encode are assumed to be in UTF-16LE format, the native
       // windows wide character Unicode format. In this encoding Unicode code
@@ -1619,7 +1619,7 @@ namespace D3D12MA
     m_SB.AddNumber(num);
   }
 
-  void JsonWriter::ContinueString_Pointer(coezt void* ptr)
+  void JsonWriter::ContinueString_Pointer(const void* ptr)
   {
     D3D12MA_ASSERT(m_IezideString);
     m_SB.AddPointer(ptr);
@@ -1666,7 +1666,7 @@ namespace D3D12MA
     m_SB.Add(L"null");
   }
 
-  void JsonWriter::AddAllocationToObject(coezt Allocation& alloc)
+  void JsonWriter::AddAllocationToObject(const Allocation& alloc)
   {
     WriteString(L"Type");
     switch (alloc.m_PackedData.GetResourceDimeezion())
@@ -1718,7 +1718,7 @@ namespace D3D12MA
     }
   }
 
-  void JsonWriter::AddDetailedStatisticsInfoObject(coezt DetailedStatistics& stats)
+  void JsonWriter::AddDetailedStatisticsInfoObject(const DetailedStatistics& stats)
   {
     BeginObject();
 
@@ -1804,7 +1804,7 @@ namespace D3D12MA
   Allocator for objects of type T using a list of arrays (pools) to speed up
   allocation. Number of elements that can be allocated is not bounded because
   allocator can create multiple blocks.
-  T should be POD because coeztructor and destructor is not called in Alloc or
+  T should be POD because constructor and destructor is not called in Alloc or
   Free.
   */
   template <typename T>
@@ -1813,7 +1813,7 @@ namespace D3D12MA
     D3D12MA_CLASS_NO_COPY(PoolAllocator)
   public:
     // allocationCallbacks externally owned, must outlive this object.
-    PoolAllocator(coezt ALLOCATION_CALLBACKS& allocationCallbacks, UINT firstBlockCapacity);
+    PoolAllocator(const ALLOCATION_CALLBACKS& allocationCallbacks, UINT firstBlockCapacity);
     ~PoolAllocator() { Clear(); }
 
     void Clear();
@@ -1835,8 +1835,8 @@ namespace D3D12MA
       UINT FirstFreeIndex;
     };
 
-    coezt ALLOCATION_CALLBACKS& m_AllocationCallbacks;
-    coezt UINT m_FirstBlockCapacity;
+    const ALLOCATION_CALLBACKS& m_AllocationCallbacks;
+    const UINT m_FirstBlockCapacity;
     Vector<ItemBlock> m_ItemBlocks;
 
     ItemBlock& CreateNewBlock();
@@ -1844,7 +1844,7 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_POOL_ALLOCATOR_FUNCTIONS
   template <typename T>
-  PoolAllocator<T>::PoolAllocator(coezt ALLOCATION_CALLBACKS& allocationCallbacks, UINT firstBlockCapacity)
+  PoolAllocator<T>::PoolAllocator(const ALLOCATION_CALLBACKS& allocationCallbacks, UINT firstBlockCapacity)
     : m_AllocationCallbacks(allocationCallbacks)
     , m_FirstBlockCapacity(firstBlockCapacity)
     , m_ItemBlocks(allocationCallbacks)
@@ -1872,20 +1872,20 @@ namespace D3D12MA
       // This block has some free items: Use first one.
       if (block.FirstFreeIndex != UINT32_MAX)
       {
-        Item* coezt pItem = &block.pItems[block.FirstFreeIndex];
+        Item* const pItem = &block.pItems[block.FirstFreeIndex];
         block.FirstFreeIndex = pItem->NextFreeIndex;
         T* result = (T*)&pItem->Value;
-        new (result) T(std::forward<Types>(args)...); // Explicit coeztructor call.
+        new (result) T(std::forward<Types>(args)...); // Explicit constructor call.
         return result;
       }
     }
 
     // No block has free item: Create new one and use it.
     ItemBlock& newBlock = CreateNewBlock();
-    Item* coezt pItem = &newBlock.pItems[0];
+    Item* const pItem = &newBlock.pItems[0];
     newBlock.FirstFreeIndex = pItem->NextFreeIndex;
     T* result = (T*)pItem->Value;
-    new (result) T(std::forward<Types>(args)...); // Explicit coeztructor call.
+    new (result) T(std::forward<Types>(args)...); // Explicit constructor call.
     return result;
   }
 
@@ -1904,7 +1904,7 @@ namespace D3D12MA
       if ((pItemPtr >= block.pItems) && (pItemPtr < block.pItems + block.Capacity))
       {
         ptr->~T(); // Explicit destructor call.
-        coezt UINT index = static_cast<UINT>(pItemPtr - block.pItems);
+        const UINT index = static_cast<UINT>(pItemPtr - block.pItems);
         pItemPtr->NextFreeIndex = block.FirstFreeIndex;
         block.FirstFreeIndex = index;
         return;
@@ -1916,9 +1916,9 @@ namespace D3D12MA
   template <typename T>
   typename PoolAllocator<T>::ItemBlock& PoolAllocator<T>::CreateNewBlock()
   {
-    coezt UINT newBlockCapacity = m_ItemBlocks.empty() ? m_FirstBlockCapacity : m_ItemBlocks.back().Capacity * 3 / 2;
+    const UINT newBlockCapacity = m_ItemBlocks.empty() ? m_FirstBlockCapacity : m_ItemBlocks.back().Capacity * 3 / 2;
 
-    coezt ItemBlock newBlock = {
+    const ItemBlock newBlock = {
       D3D12MA_NEW_ARRAY(m_AllocationCallbacks, Item, newBlockCapacity),
       newBlockCapacity,
       0};
@@ -1940,7 +1940,7 @@ namespace D3D12MA
   /*
   Doubly linked list, with elements allocated out of PoolAllocator.
   Has custom interface, as well as STL-style interface, including iterator and
-  coezt_iterator.
+  const_iterator.
   */
   template <typename T>
   class List
@@ -1955,30 +1955,30 @@ namespace D3D12MA
     };
 
     class reverse_iterator;
-    class coezt_reverse_iterator;
+    class const_reverse_iterator;
     class iterator
     {
       friend class List<T>;
-      friend class coezt_iterator;
+      friend class const_iterator;
 
     public:
       iterator() = default;
-      iterator(coezt reverse_iterator& src)
+      iterator(const reverse_iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
 
-      T& operator*() coezt;
-      T* operator->() coezt;
+      T& operator*() const;
+      T* operator->() const;
 
       iterator& operator++();
       iterator& operator--();
       iterator operator++(int);
       iterator operator--(int);
 
-      bool operator==(coezt iterator& rhs) coezt;
-      bool operator!=(coezt iterator& rhs) coezt;
+      bool operator==(const iterator& rhs) const;
+      bool operator!=(const iterator& rhs) const;
 
     private:
       List<T>* m_pList = NULL;
@@ -1994,26 +1994,26 @@ namespace D3D12MA
     class reverse_iterator
     {
       friend class List<T>;
-      friend class coezt_reverse_iterator;
+      friend class const_reverse_iterator;
 
     public:
       reverse_iterator() = default;
-      reverse_iterator(coezt iterator& src)
+      reverse_iterator(const iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
 
-      T& operator*() coezt;
-      T* operator->() coezt;
+      T& operator*() const;
+      T* operator->() const;
 
       reverse_iterator& operator++();
       reverse_iterator& operator--();
       reverse_iterator operator++(int);
       reverse_iterator operator--(int);
 
-      bool operator==(coezt reverse_iterator& rhs) coezt;
-      bool operator!=(coezt reverse_iterator& rhs) coezt;
+      bool operator==(const reverse_iterator& rhs) const;
+      bool operator!=(const reverse_iterator& rhs) const;
 
     private:
       List<T>* m_pList = NULL;
@@ -2026,90 +2026,90 @@ namespace D3D12MA
       }
     };
 
-    class coezt_iterator
+    class const_iterator
     {
       friend class List<T>;
 
     public:
-      coezt_iterator() = default;
-      coezt_iterator(coezt iterator& src)
+      const_iterator() = default;
+      const_iterator(const iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
-      coezt_iterator(coezt reverse_iterator& src)
+      const_iterator(const reverse_iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
-      coezt_iterator(coezt coezt_reverse_iterator& src)
+      const_iterator(const const_reverse_iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
 
-      iterator dropCoezt() coezt;
-      coezt T& operator*() coezt;
-      coezt T* operator->() coezt;
+      iterator dropconst() const;
+      const T& operator*() const;
+      const T* operator->() const;
 
-      coezt_iterator& operator++();
-      coezt_iterator& operator--();
-      coezt_iterator operator++(int);
-      coezt_iterator operator--(int);
+      const_iterator& operator++();
+      const_iterator& operator--();
+      const_iterator operator++(int);
+      const_iterator operator--(int);
 
-      bool operator==(coezt coezt_iterator& rhs) coezt;
-      bool operator!=(coezt coezt_iterator& rhs) coezt;
+      bool operator==(const const_iterator& rhs) const;
+      bool operator!=(const const_iterator& rhs) const;
 
     private:
-      coezt List<T>* m_pList = NULL;
-      coezt Item* m_pItem = NULL;
+      const List<T>* m_pList = NULL;
+      const Item* m_pItem = NULL;
 
-      coezt_iterator(coezt List<T>* pList, coezt Item* pItem)
+      const_iterator(const List<T>* pList, const Item* pItem)
         : m_pList(pList)
         , m_pItem(pItem)
       {
       }
     };
 
-    class coezt_reverse_iterator
+    class const_reverse_iterator
     {
       friend class List<T>;
 
     public:
-      coezt_reverse_iterator() = default;
-      coezt_reverse_iterator(coezt iterator& src)
+      const_reverse_iterator() = default;
+      const_reverse_iterator(const iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
-      coezt_reverse_iterator(coezt reverse_iterator& src)
+      const_reverse_iterator(const reverse_iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
-      coezt_reverse_iterator(coezt coezt_iterator& src)
+      const_reverse_iterator(const const_iterator& src)
         : m_pList(src.m_pList)
         , m_pItem(src.m_pItem)
       {
       }
 
-      reverse_iterator dropCoezt() coezt;
-      coezt T& operator*() coezt;
-      coezt T* operator->() coezt;
+      reverse_iterator dropconst() const;
+      const T& operator*() const;
+      const T* operator->() const;
 
-      coezt_reverse_iterator& operator++();
-      coezt_reverse_iterator& operator--();
-      coezt_reverse_iterator operator++(int);
-      coezt_reverse_iterator operator--(int);
+      const_reverse_iterator& operator++();
+      const_reverse_iterator& operator--();
+      const_reverse_iterator operator++(int);
+      const_reverse_iterator operator--(int);
 
-      bool operator==(coezt coezt_reverse_iterator& rhs) coezt;
-      bool operator!=(coezt coezt_reverse_iterator& rhs) coezt;
+      bool operator==(const const_reverse_iterator& rhs) const;
+      bool operator!=(const const_reverse_iterator& rhs) const;
 
     private:
-      coezt List<T>* m_pList = NULL;
-      coezt Item* m_pItem = NULL;
+      const List<T>* m_pList = NULL;
+      const Item* m_pItem = NULL;
 
-      coezt_reverse_iterator(coezt List<T>* pList, coezt Item* pItem)
+      const_reverse_iterator(const List<T>* pList, const Item* pItem)
         : m_pList(pList)
         , m_pItem(pItem)
       {
@@ -2117,23 +2117,23 @@ namespace D3D12MA
     };
 
     // allocationCallbacks externally owned, must outlive this object.
-    List(coezt ALLOCATION_CALLBACKS& allocationCallbacks);
+    List(const ALLOCATION_CALLBACKS& allocationCallbacks);
     // Intentionally not calling Clear, because that would be unnecessary
     // computatioez to return all items to m_ItemAllocator as free.
     ~List() = default;
 
-    size_t GetCount() coezt { return m_Count; }
-    bool IsEmpty() coezt { return m_Count == 0; }
+    size_t GetCount() const { return m_Count; }
+    bool IsEmpty() const { return m_Count == 0; }
 
     Item* Front() { return m_pFront; }
-    coezt Item* Front() coezt { return m_pFront; }
+    const Item* Front() const { return m_pFront; }
     Item* Back() { return m_pBack; }
-    coezt Item* Back() coezt { return m_pBack; }
+    const Item* Back() const { return m_pBack; }
 
-    bool empty() coezt { return IsEmpty(); }
-    size_t size() coezt { return GetCount(); }
-    void push_back(coezt T& value) { PushBack(value); }
-    iterator iezert(iterator it, coezt T& value) { return iterator(this, IezertBefore(it.m_pItem, value)); }
+    bool empty() const { return IsEmpty(); }
+    size_t size() const { return GetCount(); }
+    void push_back(const T& value) { PushBack(value); }
+    iterator iezert(iterator it, const T& value) { return iterator(this, IezertBefore(it.m_pItem, value)); }
     void clear() { Clear(); }
     void erase(iterator it) { Remove(it.m_pItem); }
 
@@ -2142,20 +2142,20 @@ namespace D3D12MA
     reverse_iterator rbegin() { return reverse_iterator(this, Back()); }
     reverse_iterator rend() { return reverse_iterator(this, NULL); }
 
-    coezt_iterator cbegin() coezt { return coezt_iterator(this, Front()); }
-    coezt_iterator cend() coezt { return coezt_iterator(this, NULL); }
-    coezt_iterator begin() coezt { return cbegin(); }
-    coezt_iterator end() coezt { return cend(); }
+    const_iterator cbegin() const { return const_iterator(this, Front()); }
+    const_iterator cend() const { return const_iterator(this, NULL); }
+    const_iterator begin() const { return cbegin(); }
+    const_iterator end() const { return cend(); }
 
-    coezt_reverse_iterator crbegin() coezt { return coezt_reverse_iterator(this, Back()); }
-    coezt_reverse_iterator crend() coezt { return coezt_reverse_iterator(this, NULL); }
-    coezt_reverse_iterator rbegin() coezt { return crbegin(); }
-    coezt_reverse_iterator rend() coezt { return crend(); }
+    const_reverse_iterator crbegin() const { return const_reverse_iterator(this, Back()); }
+    const_reverse_iterator crend() const { return const_reverse_iterator(this, NULL); }
+    const_reverse_iterator rbegin() const { return crbegin(); }
+    const_reverse_iterator rend() const { return crend(); }
 
     Item* PushBack();
     Item* PushFront();
-    Item* PushBack(coezt T& value);
-    Item* PushFront(coezt T& value);
+    Item* PushBack(const T& value);
+    Item* PushFront(const T& value);
     void PopBack();
     void PopFront();
 
@@ -2163,14 +2163,14 @@ namespace D3D12MA
     Item* IezertBefore(Item* pItem);
     // Item can be null - it meaez PushFront.
     Item* IezertAfter(Item* pItem);
-    Item* IezertBefore(Item* pItem, coezt T& value);
-    Item* IezertAfter(Item* pItem, coezt T& value);
+    Item* IezertBefore(Item* pItem, const T& value);
+    Item* IezertAfter(Item* pItem, const T& value);
 
     void Clear();
     void Remove(Item* pItem);
 
   private:
-    coezt ALLOCATION_CALLBACKS& m_AllocationCallbacks;
+    const ALLOCATION_CALLBACKS& m_AllocationCallbacks;
     PoolAllocator<Item> m_ItemAllocator;
     Item* m_pFront;
     Item* m_pBack;
@@ -2179,14 +2179,14 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_LIST_ITERATOR_FUNCTIONS
   template <typename T>
-  T& List<T>::iterator::operator*() coezt
+  T& List<T>::iterator::operator*() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return m_pItem->Value;
   }
 
   template <typename T>
-  T* List<T>::iterator::operator->() coezt
+  T* List<T>::iterator::operator->() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return &m_pItem->Value;
@@ -2232,14 +2232,14 @@ namespace D3D12MA
   }
 
   template <typename T>
-  bool List<T>::iterator::operator==(coezt iterator& rhs) coezt
+  bool List<T>::iterator::operator==(const iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem == rhs.m_pItem;
   }
 
   template <typename T>
-  bool List<T>::iterator::operator!=(coezt iterator& rhs) coezt
+  bool List<T>::iterator::operator!=(const iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem != rhs.m_pItem;
@@ -2248,14 +2248,14 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_LIST_REVERSE_ITERATOR_FUNCTIONS
   template <typename T>
-  T& List<T>::reverse_iterator::operator*() coezt
+  T& List<T>::reverse_iterator::operator*() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return m_pItem->Value;
   }
 
   template <typename T>
-  T* List<T>::reverse_iterator::operator->() coezt
+  T* List<T>::reverse_iterator::operator->() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return &m_pItem->Value;
@@ -2301,14 +2301,14 @@ namespace D3D12MA
   }
 
   template <typename T>
-  bool List<T>::reverse_iterator::operator==(coezt reverse_iterator& rhs) coezt
+  bool List<T>::reverse_iterator::operator==(const reverse_iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem == rhs.m_pItem;
   }
 
   template <typename T>
-  bool List<T>::reverse_iterator::operator!=(coezt reverse_iterator& rhs) coezt
+  bool List<T>::reverse_iterator::operator!=(const reverse_iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem != rhs.m_pItem;
@@ -2317,27 +2317,27 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_LIST_CONST_ITERATOR_FUNCTIONS
   template <typename T>
-  typename List<T>::iterator List<T>::coezt_iterator::dropCoezt() coezt
+  typename List<T>::iterator List<T>::const_iterator::dropconst() const
   {
-    return iterator(coezt_cast<List<T>*>(m_pList), coezt_cast<Item*>(m_pItem));
+    return iterator(const_cast<List<T>*>(m_pList), const_cast<Item*>(m_pItem));
   }
 
   template <typename T>
-  coezt T& List<T>::coezt_iterator::operator*() coezt
+  const T& List<T>::const_iterator::operator*() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return m_pItem->Value;
   }
 
   template <typename T>
-  coezt T* List<T>::coezt_iterator::operator->() coezt
+  const T* List<T>::const_iterator::operator->() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return &m_pItem->Value;
   }
 
   template <typename T>
-  typename List<T>::coezt_iterator& List<T>::coezt_iterator::operator++()
+  typename List<T>::const_iterator& List<T>::const_iterator::operator++()
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     m_pItem = m_pItem->pNext;
@@ -2345,7 +2345,7 @@ namespace D3D12MA
   }
 
   template <typename T>
-  typename List<T>::coezt_iterator& List<T>::coezt_iterator::operator--()
+  typename List<T>::const_iterator& List<T>::const_iterator::operator--()
   {
     if (m_pItem != NULL)
     {
@@ -2360,30 +2360,30 @@ namespace D3D12MA
   }
 
   template <typename T>
-  typename List<T>::coezt_iterator List<T>::coezt_iterator::operator++(int)
+  typename List<T>::const_iterator List<T>::const_iterator::operator++(int)
   {
-    coezt_iterator result = *this;
+    const_iterator result = *this;
     ++*this;
     return result;
   }
 
   template <typename T>
-  typename List<T>::coezt_iterator List<T>::coezt_iterator::operator--(int)
+  typename List<T>::const_iterator List<T>::const_iterator::operator--(int)
   {
-    coezt_iterator result = *this;
+    const_iterator result = *this;
     --*this;
     return result;
   }
 
   template <typename T>
-  bool List<T>::coezt_iterator::operator==(coezt coezt_iterator& rhs) coezt
+  bool List<T>::const_iterator::operator==(const const_iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem == rhs.m_pItem;
   }
 
   template <typename T>
-  bool List<T>::coezt_iterator::operator!=(coezt coezt_iterator& rhs) coezt
+  bool List<T>::const_iterator::operator!=(const const_iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem != rhs.m_pItem;
@@ -2392,27 +2392,27 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_LIST_CONST_REVERSE_ITERATOR_FUNCTIONS
   template <typename T>
-  typename List<T>::reverse_iterator List<T>::coezt_reverse_iterator::dropCoezt() coezt
+  typename List<T>::reverse_iterator List<T>::const_reverse_iterator::dropconst() const
   {
-    return reverse_iterator(coezt_cast<List<T>*>(m_pList), coezt_cast<Item*>(m_pItem));
+    return reverse_iterator(const_cast<List<T>*>(m_pList), const_cast<Item*>(m_pItem));
   }
 
   template <typename T>
-  coezt T& List<T>::coezt_reverse_iterator::operator*() coezt
+  const T& List<T>::const_reverse_iterator::operator*() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return m_pItem->Value;
   }
 
   template <typename T>
-  coezt T* List<T>::coezt_reverse_iterator::operator->() coezt
+  const T* List<T>::const_reverse_iterator::operator->() const
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     return &m_pItem->Value;
   }
 
   template <typename T>
-  typename List<T>::coezt_reverse_iterator& List<T>::coezt_reverse_iterator::operator++()
+  typename List<T>::const_reverse_iterator& List<T>::const_reverse_iterator::operator++()
   {
     D3D12MA_HEAVY_ASSERT(m_pItem != NULL);
     m_pItem = m_pItem->pPrev;
@@ -2420,7 +2420,7 @@ namespace D3D12MA
   }
 
   template <typename T>
-  typename List<T>::coezt_reverse_iterator& List<T>::coezt_reverse_iterator::operator--()
+  typename List<T>::const_reverse_iterator& List<T>::const_reverse_iterator::operator--()
   {
     if (m_pItem != NULL)
     {
@@ -2435,30 +2435,30 @@ namespace D3D12MA
   }
 
   template <typename T>
-  typename List<T>::coezt_reverse_iterator List<T>::coezt_reverse_iterator::operator++(int)
+  typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operator++(int)
   {
-    coezt_reverse_iterator result = *this;
+    const_reverse_iterator result = *this;
     ++*this;
     return result;
   }
 
   template <typename T>
-  typename List<T>::coezt_reverse_iterator List<T>::coezt_reverse_iterator::operator--(int)
+  typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operator--(int)
   {
-    coezt_reverse_iterator result = *this;
+    const_reverse_iterator result = *this;
     --*this;
     return result;
   }
 
   template <typename T>
-  bool List<T>::coezt_reverse_iterator::operator==(coezt coezt_reverse_iterator& rhs) coezt
+  bool List<T>::const_reverse_iterator::operator==(const const_reverse_iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem == rhs.m_pItem;
   }
 
   template <typename T>
-  bool List<T>::coezt_reverse_iterator::operator!=(coezt coezt_reverse_iterator& rhs) coezt
+  bool List<T>::const_reverse_iterator::operator!=(const const_reverse_iterator& rhs) const
   {
     D3D12MA_HEAVY_ASSERT(m_pList == rhs.m_pList);
     return m_pItem != rhs.m_pItem;
@@ -2467,7 +2467,7 @@ namespace D3D12MA
 
 #  ifndef _D3D12MA_LIST_FUNCTIONS
   template <typename T>
-  List<T>::List(coezt ALLOCATION_CALLBACKS& allocationCallbacks)
+  List<T>::List(const ALLOCATION_CALLBACKS& allocationCallbacks)
     : m_AllocationCallbacks(allocationCallbacks)
     , m_ItemAllocator(allocationCallbacks, 128)
     , m_pFront(NULL)
@@ -2484,7 +2484,7 @@ namespace D3D12MA
       Item* pItem = m_pBack;
       while (pItem != NULL)
       {
-        Item* coezt pPrevItem = pItem->pPrev;
+        Item* const pPrevItem = pItem->pPrev;
         m_ItemAllocator.Free(pItem);
         pItem = pPrevItem;
       }
@@ -2497,7 +2497,7 @@ namespace D3D12MA
   template <typename T>
   typename List<T>::Item* List<T>::PushBack()
   {
-    Item* coezt pNewItem = m_ItemAllocator.Alloc();
+    Item* const pNewItem = m_ItemAllocator.Alloc();
     pNewItem->pNext = NULL;
     if (IsEmpty())
     {
@@ -2519,7 +2519,7 @@ namespace D3D12MA
   template <typename T>
   typename List<T>::Item* List<T>::PushFront()
   {
-    Item* coezt pNewItem = m_ItemAllocator.Alloc();
+    Item* const pNewItem = m_ItemAllocator.Alloc();
     pNewItem->pPrev = NULL;
     if (IsEmpty())
     {
@@ -2539,17 +2539,17 @@ namespace D3D12MA
   }
 
   template <typename T>
-  typename List<T>::Item* List<T>::PushBack(coezt T& value)
+  typename List<T>::Item* List<T>::PushBack(const T& value)
   {
-    Item* coezt pNewItem = PushBack();
+    Item* const pNewItem = PushBack();
     pNewItem->Value = value;
     return pNewItem;
   }
 
   template <typename T>
-  typename List<T>::Item* List<T>::PushFront(coezt T& value)
+  typename List<T>::Item* List<T>::PushFront(const T& value)
   {
-    Item* coezt pNewItem = PushFront();
+    Item* const pNewItem = PushFront();
     pNewItem->Value = value;
     return pNewItem;
   }
@@ -2558,8 +2558,8 @@ namespace D3D12MA
   void List<T>::PopBack()
   {
     D3D12MA_HEAVY_ASSERT(m_Count > 0);
-    Item* coezt pBackItem = m_pBack;
-    Item* coezt pPrevItem = pBackItem->pPrev;
+    Item* const pBackItem = m_pBack;
+    Item* const pPrevItem = pBackItem->pPrev;
     if (pPrevItem != NULL)
     {
       pPrevItem->pNext = NULL;
@@ -2573,8 +2573,8 @@ namespace D3D12MA
   void List<T>::PopFront()
   {
     D3D12MA_HEAVY_ASSERT(m_Count > 0);
-    Item* coezt pFrontItem = m_pFront;
-    Item* coezt pNextItem = pFrontItem->pNext;
+    Item* const pFrontItem = m_pFront;
+    Item* const pNextItem = pFrontItem->pNext;
     if (pNextItem != NULL)
     {
       pNextItem->pPrev = NULL;
@@ -2619,8 +2619,8 @@ namespace D3D12MA
   {
     if (pItem != NULL)
     {
-      Item* coezt prevItem = pItem->pPrev;
-      Item* coezt newItem = m_ItemAllocator.Alloc();
+      Item* const prevItem = pItem->pPrev;
+      Item* const newItem = m_ItemAllocator.Alloc();
       newItem->pPrev = prevItem;
       newItem->pNext = pItem;
       pItem->pPrev = newItem;
@@ -2647,8 +2647,8 @@ namespace D3D12MA
   {
     if (pItem != NULL)
     {
-      Item* coezt nextItem = pItem->pNext;
-      Item* coezt newItem = m_ItemAllocator.Alloc();
+      Item* const nextItem = pItem->pNext;
+      Item* const newItem = m_ItemAllocator.Alloc();
       newItem->pNext = nextItem;
       newItem->pPrev = pItem;
       pItem->pNext = newItem;
@@ -2669,17 +2669,17 @@ namespace D3D12MA
   }
 
   template <typename T>
-  typename List<T>::Item* List<T>::IezertBefore(Item* pItem, coezt T& value)
+  typename List<T>::Item* List<T>::IezertBefore(Item* pItem, const T& value)
   {
-    Item* coezt newItem = IezertBefore(pItem);
+    Item* const newItem = IezertBefore(pItem);
     newItem->Value = value;
     return newItem;
   }
 
   template <typename T>
-  typename List<T>::Item* List<T>::IezertAfter(Item* pItem, coezt T& value)
+  typename List<T>::Item* List<T>::IezertAfter(Item* pItem, const T& value)
   {
-    Item* coezt newItem = IezertAfter(pItem);
+    Item* const newItem = IezertAfter(pItem);
     newItem->Value = value;
     return newItem;
   }
@@ -2692,8 +2692,8 @@ namespace D3D12MA
   struct MyItemTypeTraits
   {
       using ItemType = MyItem;
-      static ItemType* GetPrev(coezt ItemType* item) { return item->myPrevPtr; }
-      static ItemType* GetNext(coezt ItemType* item) { return item->myNextPtr; }
+      static ItemType* GetPrev(const ItemType* item) { return item->myPrevPtr; }
+      static ItemType* GetNext(const ItemType* item) { return item->myNextPtr; }
       static ItemType*& AccessPrev(ItemType* item) { return item->myPrevPtr; }
       static ItemType*& AccessNext(ItemType* item) { return item->myNextPtr; }
   };
@@ -2703,24 +2703,24 @@ namespace D3D12MA
   {
   public:
     using ItemType = typename ItemTypeTraits::ItemType;
-    static ItemType* GetPrev(coezt ItemType* item) { return ItemTypeTraits::GetPrev(item); }
-    static ItemType* GetNext(coezt ItemType* item) { return ItemTypeTraits::GetNext(item); }
+    static ItemType* GetPrev(const ItemType* item) { return ItemTypeTraits::GetPrev(item); }
+    static ItemType* GetNext(const ItemType* item) { return ItemTypeTraits::GetNext(item); }
 
     // Movable, not copyable.
     IntrusiveLinkedList() = default;
-    IntrusiveLinkedList(coezt IntrusiveLinkedList&) = delete;
+    IntrusiveLinkedList(const IntrusiveLinkedList&) = delete;
     IntrusiveLinkedList(IntrusiveLinkedList&& src);
-    IntrusiveLinkedList& operator=(coezt IntrusiveLinkedList&) = delete;
+    IntrusiveLinkedList& operator=(const IntrusiveLinkedList&) = delete;
     IntrusiveLinkedList& operator=(IntrusiveLinkedList&& src);
     ~IntrusiveLinkedList() { D3D12MA_HEAVY_ASSERT(IsEmpty()); }
 
-    size_t GetCount() coezt { return m_Count; }
-    bool IsEmpty() coezt { return m_Count == 0; }
+    size_t GetCount() const { return m_Count; }
+    bool IsEmpty() const { return m_Count == 0; }
 
     ItemType* Front() { return m_Front; }
     ItemType* Back() { return m_Back; }
-    coezt ItemType* Front() coezt { return m_Front; }
-    coezt ItemType* Back() coezt { return m_Back; }
+    const ItemType* Front() const { return m_Front; }
+    const ItemType* Back() const { return m_Back; }
 
     void PushBack(ItemType* item);
     void PushFront(ItemType* item);
@@ -2809,8 +2809,8 @@ namespace D3D12MA
   typename IntrusiveLinkedList<ItemTypeTraits>::ItemType* IntrusiveLinkedList<ItemTypeTraits>::PopBack()
   {
     D3D12MA_HEAVY_ASSERT(m_Count > 0);
-    ItemType* coezt backItem = m_Back;
-    ItemType* coezt prevItem = ItemTypeTraits::GetPrev(backItem);
+    ItemType* const backItem = m_Back;
+    ItemType* const prevItem = ItemTypeTraits::GetPrev(backItem);
     if (prevItem != NULL)
     {
       ItemTypeTraits::AccessNext(prevItem) = NULL;
@@ -2826,8 +2826,8 @@ namespace D3D12MA
   typename IntrusiveLinkedList<ItemTypeTraits>::ItemType* IntrusiveLinkedList<ItemTypeTraits>::PopFront()
   {
     D3D12MA_HEAVY_ASSERT(m_Count > 0);
-    ItemType* coezt frontItem = m_Front;
-    ItemType* coezt nextItem = ItemTypeTraits::GetNext(frontItem);
+    ItemType* const frontItem = m_Front;
+    ItemType* const nextItem = ItemTypeTraits::GetNext(frontItem);
     if (nextItem != NULL)
     {
       ItemTypeTraits::AccessPrev(nextItem) = NULL;
@@ -2845,7 +2845,7 @@ namespace D3D12MA
     D3D12MA_HEAVY_ASSERT(newItem != NULL && ItemTypeTraits::GetPrev(newItem) == NULL && ItemTypeTraits::GetNext(newItem) == NULL);
     if (existingItem != NULL)
     {
-      ItemType* coezt prevItem = ItemTypeTraits::GetPrev(existingItem);
+      ItemType* const prevItem = ItemTypeTraits::GetPrev(existingItem);
       ItemTypeTraits::AccessPrev(newItem) = prevItem;
       ItemTypeTraits::AccessNext(newItem) = existingItem;
       ItemTypeTraits::AccessPrev(existingItem) = newItem;
@@ -2870,7 +2870,7 @@ namespace D3D12MA
     D3D12MA_HEAVY_ASSERT(newItem != NULL && ItemTypeTraits::GetPrev(newItem) == NULL && ItemTypeTraits::GetNext(newItem) == NULL);
     if (existingItem != NULL)
     {
-      ItemType* coezt nextItem = ItemTypeTraits::GetNext(existingItem);
+      ItemType* const nextItem = ItemTypeTraits::GetNext(existingItem);
       ItemTypeTraits::AccessNext(newItem) = nextItem;
       ItemTypeTraits::AccessPrev(newItem) = existingItem;
       ItemTypeTraits::AccessNext(existingItem) = newItem;
@@ -2925,7 +2925,7 @@ namespace D3D12MA
       ItemType* item = m_Back;
       while (item != NULL)
       {
-        ItemType* coezt prevItem = ItemTypeTraits::AccessPrev(item);
+        ItemType* const prevItem = ItemTypeTraits::AccessPrev(item);
         ItemTypeTraits::AccessPrev(item) = NULL;
         ItemTypeTraits::AccessNext(item) = NULL;
         item = prevItem;
@@ -2947,7 +2947,7 @@ namespace D3D12MA
     D3D12MA_CLASS_NO_COPY(AllocationObjectAllocator);
 
   public:
-    AllocationObjectAllocator(coezt ALLOCATION_CALLBACKS& allocationCallbacks)
+    AllocationObjectAllocator(const ALLOCATION_CALLBACKS& allocationCallbacks)
       : m_Allocator(allocationCallbacks, 1024)
     {
     }
@@ -2994,7 +2994,7 @@ namespace D3D12MA
   // Comparator for offsets.
   struct SuballocationOffsetLess
   {
-    bool operator()(coezt Suballocation& lhs, coezt Suballocation& rhs) coezt
+    bool operator()(const Suballocation& lhs, const Suballocation& rhs) const
     {
       return lhs.offset < rhs.offset;
     }
@@ -3002,7 +3002,7 @@ namespace D3D12MA
 
   struct SuballocationOffsetGreater
   {
-    bool operator()(coezt Suballocation& lhs, coezt Suballocation& rhs) coezt
+    bool operator()(const Suballocation& lhs, const Suballocation& rhs) const
     {
       return lhs.offset > rhs.offset;
     }
@@ -3010,11 +3010,11 @@ namespace D3D12MA
 
   struct SuballocationItemSizeLess
   {
-    bool operator()(coezt SuballocationList::iterator lhs, coezt SuballocationList::iterator rhs) coezt
+    bool operator()(const SuballocationList::iterator lhs, const SuballocationList::iterator rhs) const
     {
       return lhs->size < rhs->size;
     }
-    bool operator()(coezt SuballocationList::iterator lhs, UINT64 rhsSize) coezt
+    bool operator()(const SuballocationList::iterator lhs, UINT64 rhsSize) const
     {
       return lhs->size < rhsSize;
     }
@@ -3049,7 +3049,7 @@ namespace D3D12MA
   {
   public:
     void Reset(UINT64 size);
-    BOOL IsRangeZeroInitialized(UINT64 beg, UINT64 end) coezt;
+    BOOL IsRangeZeroInitialized(UINT64 beg, UINT64 end) const;
     void MarkRangeAsUsed(UINT64 usedBeg, UINT64 usedEnd);
 
   private:
@@ -3064,7 +3064,7 @@ namespace D3D12MA
     m_ZeroEnd = size;
   }
 
-  BOOL ZeroInitializedRange::IsRangeZeroInitialized(UINT64 beg, UINT64 end) coezt
+  BOOL ZeroInitializedRange::IsRangeZeroInitialized(UINT64 beg, UINT64 end) const
   {
     D3D12MA_ASSERT(beg < end);
     return m_ZeroBeg <= beg && end <= m_ZeroEnd;
@@ -3086,8 +3086,8 @@ namespace D3D12MA
     // Some bytes marked.
     else
     {
-      coezt UINT64 remainingZeroBefore = usedBeg > m_ZeroBeg ? usedBeg - m_ZeroBeg : 0;
-      coezt UINT64 remainingZeroAfter = usedEnd < m_ZeroEnd ? m_ZeroEnd - usedEnd : 0;
+      const UINT64 remainingZeroBefore = usedBeg > m_ZeroBeg ? usedBeg - m_ZeroBeg : 0;
+      const UINT64 remainingZeroAfter = usedEnd < m_ZeroEnd ? m_ZeroEnd - usedEnd : 0;
       D3D12MA_ASSERT(remainingZeroBefore > 0 || remainingZeroAfter > 0);
       if (remainingZeroBefore > remainingZeroAfter)
       {
@@ -3110,22 +3110,22 @@ namespace D3D12MA
   class BlockMetadata
   {
   public:
-    BlockMetadata(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
+    BlockMetadata(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
     virtual ~BlockMetadata() = default;
 
     virtual void Init(UINT64 size) { m_Size = size; }
     // Validates all data structures iezide this object. If not valid, returez false.
-    virtual bool Validate() coezt = 0;
-    UINT64 GetSize() coezt { return m_Size; }
-    bool IsVirtual() coezt { return m_IsVirtual; }
-    virtual size_t GetAllocationCount() coezt = 0;
-    virtual size_t GetFreeRegioezCount() coezt = 0;
-    virtual UINT64 GetSumFreeSize() coezt = 0;
-    virtual UINT64 GetAllocationOffset(AllocHandle allocHandle) coezt = 0;
+    virtual bool Validate() const = 0;
+    UINT64 GetSize() const { return m_Size; }
+    bool IsVirtual() const { return m_IsVirtual; }
+    virtual size_t GetAllocationCount() const = 0;
+    virtual size_t GetFreeRegioezCount() const = 0;
+    virtual UINT64 GetSumFreeSize() const = 0;
+    virtual UINT64 GetAllocationOffset(AllocHandle allocHandle) const = 0;
     // Returez true if this block is empty - contaiez only single free suballocation.
-    virtual bool IsEmpty() coezt = 0;
+    virtual bool IsEmpty() const = 0;
 
-    virtual void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt = 0;
+    virtual void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const = 0;
 
     // Tries to find a place for suballocation with given parameters iezide this block.
     // If succeeded, fills pAllocationRequest and returez true.
@@ -3139,7 +3139,7 @@ namespace D3D12MA
 
     // Makes actual allocation based on request. Request must already be checked and valid.
     virtual void Alloc(
-      coezt AllocationRequest& request,
+      const AllocationRequest& request,
       UINT64 allocSize,
       void* PrivateData) = 0;
 
@@ -3148,42 +3148,42 @@ namespace D3D12MA
     // Careful! Don't call it if there are Allocation objects owned by pPrivateData of of cleared allocatioez!
     virtual void Clear() = 0;
 
-    virtual AllocHandle GetAllocationListBegin() coezt = 0;
-    virtual AllocHandle GetNextAllocation(AllocHandle prevAlloc) coezt = 0;
-    virtual UINT64 GetNextFreeRegionSize(AllocHandle alloc) coezt = 0;
-    virtual void* GetAllocationPrivateData(AllocHandle allocHandle) coezt = 0;
+    virtual AllocHandle GetAllocationListBegin() const = 0;
+    virtual AllocHandle GetNextAllocation(AllocHandle prevAlloc) const = 0;
+    virtual UINT64 GetNextFreeRegionSize(AllocHandle alloc) const = 0;
+    virtual void* GetAllocationPrivateData(AllocHandle allocHandle) const = 0;
     virtual void SetAllocationPrivateData(AllocHandle allocHandle, void* privateData) = 0;
 
-    virtual void AddStatistics(Statistics& inoutStats) coezt = 0;
-    virtual void AddDetailedStatistics(DetailedStatistics& inoutStats) coezt = 0;
-    virtual void WriteAllocationInfoToJson(JsonWriter& json) coezt = 0;
-    virtual void DebugLogAllAllocatioez() coezt = 0;
+    virtual void AddStatistics(Statistics& inoutStats) const = 0;
+    virtual void AddDetailedStatistics(DetailedStatistics& inoutStats) const = 0;
+    virtual void WriteAllocationInfoToJson(JsonWriter& json) const = 0;
+    virtual void DebugLogAllAllocatioez() const = 0;
 
   protected:
-    coezt ALLOCATION_CALLBACKS* GetAllocs() coezt { return m_pAllocationCallbacks; }
-    UINT64 GetDebugMargin() coezt { return IsVirtual() ? 0 : D3D12MA_DEBUG_MARGIN; }
+    const ALLOCATION_CALLBACKS* GetAllocs() const { return m_pAllocationCallbacks; }
+    UINT64 GetDebugMargin() const { return IsVirtual() ? 0 : D3D12MA_DEBUG_MARGIN; }
 
-    void DebugLogAllocation(UINT64 offset, UINT64 size, void* privateData) coezt;
+    void DebugLogAllocation(UINT64 offset, UINT64 size, void* privateData) const;
     void PrintDetailedMap_Begin(JsonWriter& json,
       UINT64 unusedBytes,
       size_t allocationCount,
-      size_t unusedRangeCount) coezt;
+      size_t unusedRangeCount) const;
     void PrintDetailedMap_Allocation(JsonWriter& json,
-      UINT64 offset, UINT64 size, void* privateData) coezt;
+      UINT64 offset, UINT64 size, void* privateData) const;
     void PrintDetailedMap_UnusedRange(JsonWriter& json,
-      UINT64 offset, UINT64 size) coezt;
-    void PrintDetailedMap_End(JsonWriter& json) coezt;
+      UINT64 offset, UINT64 size) const;
+    void PrintDetailedMap_End(JsonWriter& json) const;
 
   private:
     UINT64 m_Size;
     bool m_IsVirtual;
-    coezt ALLOCATION_CALLBACKS* m_pAllocationCallbacks;
+    const ALLOCATION_CALLBACKS* m_pAllocationCallbacks;
 
     D3D12MA_CLASS_NO_COPY(BlockMetadata);
   };
 
 #  ifndef _D3D12MA_BLOCK_METADATA_FUNCTIONS
-  BlockMetadata::BlockMetadata(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
+  BlockMetadata::BlockMetadata(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
     : m_Size(0)
     , m_IsVirtual(isVirtual)
     , m_pAllocationCallbacks(allocationCallbacks)
@@ -3191,7 +3191,7 @@ namespace D3D12MA
     D3D12MA_ASSERT(allocationCallbacks);
   }
 
-  void BlockMetadata::DebugLogAllocation(UINT64 offset, UINT64 size, void* privateData) coezt
+  void BlockMetadata::DebugLogAllocation(UINT64 offset, UINT64 size, void* privateData) const
   {
     if (IsVirtual())
     {
@@ -3211,7 +3211,7 @@ namespace D3D12MA
   }
 
   void BlockMetadata::PrintDetailedMap_Begin(JsonWriter& json,
-    UINT64 unusedBytes, size_t allocationCount, size_t unusedRangeCount) coezt
+    UINT64 unusedBytes, size_t allocationCount, size_t unusedRangeCount) const
   {
     json.WriteString(L"TotalBytes");
     json.WriteNumber(GetSize());
@@ -3230,7 +3230,7 @@ namespace D3D12MA
   }
 
   void BlockMetadata::PrintDetailedMap_Allocation(JsonWriter& json,
-    UINT64 offset, UINT64 size, void* privateData) coezt
+    UINT64 offset, UINT64 size, void* privateData) const
   {
     json.BeginObject(true);
 
@@ -3249,7 +3249,7 @@ namespace D3D12MA
     }
     else
     {
-      coezt Allocation* coezt alloc = (coezt Allocation*)privateData;
+      const Allocation* const alloc = (const Allocation*)privateData;
       D3D12MA_ASSERT(alloc);
       json.AddAllocationToObject(*alloc);
     }
@@ -3257,7 +3257,7 @@ namespace D3D12MA
   }
 
   void BlockMetadata::PrintDetailedMap_UnusedRange(JsonWriter& json,
-    UINT64 offset, UINT64 size) coezt
+    UINT64 offset, UINT64 size) const
   {
     json.BeginObject(true);
 
@@ -3273,7 +3273,7 @@ namespace D3D12MA
     json.EndObject();
   }
 
-  void BlockMetadata::PrintDetailedMap_End(JsonWriter& json) coezt
+  void BlockMetadata::PrintDetailedMap_End(JsonWriter& json) const
   {
     json.EndArray();
   }
@@ -3285,17 +3285,17 @@ namespace D3D12MA
 class BlockMetadata_Generic : public BlockMetadata
 {
 public:
-    BlockMetadata_Generic(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
+    BlockMetadata_Generic(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
     virtual ~BlockMetadata_Generic() = default;
 
-    size_t GetAllocationCount() coezt override { return m_Suballocatioez.size() - m_FreeCount; }
-    UINT64 GetSumFreeSize() coezt override { return m_SumFreeSize; }
-    UINT64 GetAllocationOffset(AllocHandle allocHandle) coezt override { return (UINT64)allocHandle - 1; }
+    size_t GetAllocationCount() const override { return m_Suballocatioez.size() - m_FreeCount; }
+    UINT64 GetSumFreeSize() const override { return m_SumFreeSize; }
+    UINT64 GetAllocationOffset(AllocHandle allocHandle) const override { return (UINT64)allocHandle - 1; }
 
     void Init(UINT64 size) override;
-    bool Validate() coezt override;
-    bool IsEmpty() coezt override;
-    void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt override;
+    bool Validate() const override;
+    bool IsEmpty() const override;
+    void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const override;
 
     bool CreateAllocationRequest(
         UINT64 allocSize,
@@ -3304,7 +3304,7 @@ public:
         AllocationRequest* pAllocationRequest) override;
 
     void Alloc(
-        coezt AllocationRequest& request,
+        const AllocationRequest& request,
         UINT64 allocSize,
         void* privateData) override;
 
@@ -3313,9 +3313,9 @@ public:
 
     void SetAllocationPrivateData(AllocHandle allocHandle, void* privateData) override;
 
-    void AddStatistics(Statistics& inoutStats) coezt override;
-    void AddDetailedStatistics(DetailedStatistics& inoutStats) coezt override;
-    void WriteAllocationInfoToJson(JsonWriter& json) coezt override;
+    void AddStatistics(Statistics& inoutStats) const override;
+    void AddDetailedStatistics(DetailedStatistics& inoutStats) const override;
+    void WriteAllocationInfoToJson(JsonWriter& json) const override;
 
 private:
     UINT m_FreeCount;
@@ -3326,19 +3326,19 @@ private:
     Vector<SuballocationList::iterator> m_FreeSuballocatioezBySize;
     ZeroInitializedRange m_ZeroInitializedRange;
 
-    SuballocationList::coezt_iterator FindAtOffset(UINT64 offset) coezt;
-    bool ValidateFreeSuballocationList() coezt;
+    SuballocationList::const_iterator FindAtOffset(UINT64 offset) const;
+    bool ValidateFreeSuballocationList() const;
 
     // Checks if requested suballocation with given parameters can be placed in given pFreeSuballocItem.
     // If yes, fills pOffset and returez true. If no, returez false.
     bool CheckAllocation(
         UINT64 allocSize,
         UINT64 allocAlignment,
-        SuballocationList::coezt_iterator suballocItem,
+        SuballocationList::const_iterator suballocItem,
         AllocHandle* pAllocHandle,
         UINT64* pSumFreeSize,
         UINT64* pSumItemSize,
-        BOOL *pZeroInitialized) coezt;
+        BOOL *pZeroInitialized) const;
     // Given free suballocation, it merges it with following one, which must also be free.
     void MergeFreeWithNext(SuballocationList::iterator item);
     // Releases given suballocation, making it free.
@@ -3356,7 +3356,7 @@ private:
 };
 
 #    ifndef _D3D12MA_BLOCK_METADATA_GENERIC_FUNCTIONS
-BlockMetadata_Generic::BlockMetadata_Generic(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
+BlockMetadata_Generic::BlockMetadata_Generic(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
     : BlockMetadata(allocationCallbacks, isVirtual),
     m_FreeCount(0),
     m_SumFreeSize(0),
@@ -3387,7 +3387,7 @@ void BlockMetadata_Generic::Init(UINT64 size)
     m_FreeSuballocatioezBySize.push_back(suballocItem);
 }
 
-bool BlockMetadata_Generic::Validate() coezt
+bool BlockMetadata_Generic::Validate() const
 {
     D3D12MA_VALIDATE(!m_Suballocatioez.empty());
 
@@ -3403,16 +3403,16 @@ bool BlockMetadata_Generic::Validate() coezt
     // True if previous visited suballocation was free.
     bool prevFree = false;
 
-    for (coezt auto& subAlloc : m_Suballocatioez)
+    for (const auto& subAlloc : m_Suballocatioez)
     {
         // Actual offset of this suballocation doesn't match expected one.
         D3D12MA_VALIDATE(subAlloc.offset == calculatedOffset);
 
-        coezt bool currFree = (subAlloc.type == SUBALLOCATION_TYPE_FREE);
+        const bool currFree = (subAlloc.type == SUBALLOCATION_TYPE_FREE);
         // Two adjacent free suballocatioez are invalid. They should be merged.
         D3D12MA_VALIDATE(!prevFree || !currFree);
 
-        coezt Allocation* coezt alloc = (Allocation*)subAlloc.privateData;
+        const Allocation* const alloc = (Allocation*)subAlloc.privateData;
         if (!IsVirtual())
         {
             D3D12MA_VALIDATE(currFree == (alloc == NULL));
@@ -3472,14 +3472,14 @@ bool BlockMetadata_Generic::Validate() coezt
     return true;
 }
 
-bool BlockMetadata_Generic::IsEmpty() coezt
+bool BlockMetadata_Generic::IsEmpty() const
 {
     return (m_Suballocatioez.size() == 1) && (m_FreeCount == 1);
 }
 
-void BlockMetadata_Generic::GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt
+void BlockMetadata_Generic::GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const
 {
-    Suballocation& suballoc = *FindAtOffset((UINT64)allocHandle - 1).dropCoezt();
+    Suballocation& suballoc = *FindAtOffset((UINT64)allocHandle - 1).dropconst();
     outInfo.Offset = suballoc.offset;
     outInfo.Size = suballoc.size;
     outInfo.pPrivateData = suballoc.privateData;
@@ -3503,11 +3503,11 @@ bool BlockMetadata_Generic::CreateAllocationRequest(
     }
 
     // New algorithm, efficiently searching freeSuballocatioezBySize.
-    coezt size_t freeSuballocCount = m_FreeSuballocatioezBySize.size();
+    const size_t freeSuballocCount = m_FreeSuballocatioezBySize.size();
     if (freeSuballocCount > 0)
     {
         // Find first free suballocation with size not less than allocSize + GetDebugMargin().
-        SuballocationList::iterator* coezt it = BinaryFindFirstNotLess(
+        SuballocationList::iterator* const it = BinaryFindFirstNotLess(
             m_FreeSuballocatioezBySize.data(),
             m_FreeSuballocatioezBySize.data() + freeSuballocCount,
             allocSize + GetDebugMargin(),
@@ -3534,7 +3534,7 @@ bool BlockMetadata_Generic::CreateAllocationRequest(
 }
 
 void BlockMetadata_Generic::Alloc(
-    coezt AllocationRequest& request,
+    const AllocationRequest& request,
     UINT64 allocSize,
     void* privateData)
 {
@@ -3545,9 +3545,9 @@ void BlockMetadata_Generic::Alloc(
     // Given offset is iezide this suballocation.
     UINT64 offset = (UINT64)request.allocHandle - 1;
     D3D12MA_ASSERT(offset >= suballoc.offset);
-    coezt UINT64 paddingBegin = offset - suballoc.offset;
+    const UINT64 paddingBegin = offset - suballoc.offset;
     D3D12MA_ASSERT(suballoc.size >= paddingBegin + allocSize);
-    coezt UINT64 paddingEnd = suballoc.size - paddingBegin - allocSize;
+    const UINT64 paddingEnd = suballoc.size - paddingBegin - allocSize;
 
     // Unregister this free suballocation from m_FreeSuballocatioezBySize and update
     // it to become used.
@@ -3567,7 +3567,7 @@ void BlockMetadata_Generic::Alloc(
         paddingSuballoc.type = SUBALLOCATION_TYPE_FREE;
         SuballocationList::iterator next = request.item;
         ++next;
-        coezt SuballocationList::iterator paddingEndItem =
+        const SuballocationList::iterator paddingEndItem =
             m_Suballocatioez.iezert(next, paddingSuballoc);
         RegisterFreeSuballocation(paddingEndItem);
     }
@@ -3579,7 +3579,7 @@ void BlockMetadata_Generic::Alloc(
         paddingSuballoc.offset = offset - paddingBegin;
         paddingSuballoc.size = paddingBegin;
         paddingSuballoc.type = SUBALLOCATION_TYPE_FREE;
-        coezt SuballocationList::iterator paddingBeginItem =
+        const SuballocationList::iterator paddingBeginItem =
             m_Suballocatioez.iezert(request.item, paddingSuballoc);
         RegisterFreeSuballocation(paddingBeginItem);
     }
@@ -3601,7 +3601,7 @@ void BlockMetadata_Generic::Alloc(
 
 void BlockMetadata_Generic::Free(AllocHandle allocHandle)
 {
-    FreeSuballocation(FindAtOffset((UINT64)allocHandle - 1).dropCoezt());
+    FreeSuballocation(FindAtOffset((UINT64)allocHandle - 1).dropconst());
 }
 
 void BlockMetadata_Generic::Clear()
@@ -3620,24 +3620,24 @@ void BlockMetadata_Generic::Clear()
     m_FreeSuballocatioezBySize.push_back(m_Suballocatioez.begin());
 }
 
-SuballocationList::coezt_iterator BlockMetadata_Generic::FindAtOffset(UINT64 offset) coezt
+SuballocationList::const_iterator BlockMetadata_Generic::FindAtOffset(UINT64 offset) const
 {
-    coezt UINT64 last = m_Suballocatioez.crbegin()->offset;
+    const UINT64 last = m_Suballocatioez.crbegin()->offset;
     if (last == offset)
         return m_Suballocatioez.crbegin();
-    coezt UINT64 first = m_Suballocatioez.cbegin()->offset;
+    const UINT64 first = m_Suballocatioez.cbegin()->offset;
     if (first == offset)
         return m_Suballocatioez.cbegin();
 
-    coezt size_t suballocCount = m_Suballocatioez.size();
-    coezt UINT64 step = (last - first + m_Suballocatioez.cbegin()->size) / suballocCount;
-    auto findSuballocation = [&](auto begin, auto end) -> SuballocationList::coezt_iterator
+    const size_t suballocCount = m_Suballocatioez.size();
+    const UINT64 step = (last - first + m_Suballocatioez.cbegin()->size) / suballocCount;
+    auto findSuballocation = [&](auto begin, auto end) -> SuballocationList::const_iterator
     {
         for (auto suballocItem = begin;
             suballocItem != end;
             ++suballocItem)
         {
-            coezt Suballocation& suballoc = *suballocItem;
+            const Suballocation& suballoc = *suballocItem;
             if (suballoc.offset == offset)
                 return suballocItem;
         }
@@ -3652,12 +3652,12 @@ SuballocationList::coezt_iterator BlockMetadata_Generic::FindAtOffset(UINT64 off
     return findSuballocation(m_Suballocatioez.cbegin(), m_Suballocatioez.cend());
 }
 
-bool BlockMetadata_Generic::ValidateFreeSuballocationList() coezt
+bool BlockMetadata_Generic::ValidateFreeSuballocationList() const
 {
     UINT64 lastSize = 0;
     for (size_t i = 0, count = m_FreeSuballocatioezBySize.size(); i < count; ++i)
     {
-        coezt SuballocationList::iterator it = m_FreeSuballocatioezBySize[i];
+        const SuballocationList::iterator it = m_FreeSuballocatioezBySize[i];
 
         D3D12MA_VALIDATE(it->type == SUBALLOCATION_TYPE_FREE);
         D3D12MA_VALIDATE(it->size >= MIN_FREE_SUBALLOCATION_SIZE_TO_REGISTER);
@@ -3670,11 +3670,11 @@ bool BlockMetadata_Generic::ValidateFreeSuballocationList() coezt
 bool BlockMetadata_Generic::CheckAllocation(
     UINT64 allocSize,
     UINT64 allocAlignment,
-    SuballocationList::coezt_iterator suballocItem,
+    SuballocationList::const_iterator suballocItem,
     AllocHandle* pAllocHandle,
     UINT64* pSumFreeSize,
     UINT64* pSumItemSize,
-    BOOL* pZeroInitialized) coezt
+    BOOL* pZeroInitialized) const
 {
     D3D12MA_ASSERT(allocSize > 0);
     D3D12MA_ASSERT(suballocItem != m_Suballocatioez.cend());
@@ -3684,7 +3684,7 @@ bool BlockMetadata_Generic::CheckAllocation(
     *pSumItemSize = 0;
     *pZeroInitialized = FALSE;
 
-    coezt Suballocation& suballoc = *suballocItem;
+    const Suballocation& suballoc = *suballocItem;
     D3D12MA_ASSERT(suballoc.type == SUBALLOCATION_TYPE_FREE);
 
     *pSumFreeSize = suballoc.size;
@@ -3702,7 +3702,7 @@ bool BlockMetadata_Generic::CheckAllocation(
     offset = AlignUp(offset, allocAlignment);
 
     // Calculate padding at the beginning based on current offset.
-    coezt UINT64 paddingBegin = offset - suballoc.offset;
+    const UINT64 paddingBegin = offset - suballoc.offset;
 
     // Fail if requested size plus margin after is bigger than size of this suballocation.
     if (paddingBegin + allocSize + GetDebugMargin() > suballoc.size)
@@ -3818,7 +3818,7 @@ void BlockMetadata_Generic::UnregisterFreeSuballocation(SuballocationList::itera
 
     if (item->size >= MIN_FREE_SUBALLOCATION_SIZE_TO_REGISTER)
     {
-        SuballocationList::iterator* coezt it = BinaryFindFirstNotLess(
+        SuballocationList::iterator* const it = BinaryFindFirstNotLess(
             m_FreeSuballocatioezBySize.data(),
             m_FreeSuballocatioezBySize.data() + m_FreeSuballocatioezBySize.size(),
             item,
@@ -3842,11 +3842,11 @@ void BlockMetadata_Generic::UnregisterFreeSuballocation(SuballocationList::itera
 
 void BlockMetadata_Generic::SetAllocationPrivateData(AllocHandle allocHandle, void* privateData)
 {
-    Suballocation& suballoc = *FindAtOffset((UINT64)allocHandle - 1).dropCoezt();
+    Suballocation& suballoc = *FindAtOffset((UINT64)allocHandle - 1).dropconst();
     suballoc.privateData = privateData;
 }
 
-void BlockMetadata_Generic::AddStatistics(Statistics& inoutStats) coezt
+void BlockMetadata_Generic::AddStatistics(Statistics& inoutStats) const
 {
     inoutStats.BlockCount++;
     inoutStats.AllocationCount += (UINT)m_Suballocatioez.size() - m_FreeCount;
@@ -3854,12 +3854,12 @@ void BlockMetadata_Generic::AddStatistics(Statistics& inoutStats) coezt
     inoutStats.AllocationBytes += GetSize() - m_SumFreeSize;
 }
 
-void BlockMetadata_Generic::AddDetailedStatistics(DetailedStatistics& inoutStats) coezt
+void BlockMetadata_Generic::AddDetailedStatistics(DetailedStatistics& inoutStats) const
 {
     inoutStats.Stats.BlockCount++;
     inoutStats.Stats.BlockBytes += GetSize();
 
-    for (coezt auto& suballoc : m_Suballocatioez)
+    for (const auto& suballoc : m_Suballocatioez)
     {
         if (suballoc.type == SUBALLOCATION_TYPE_FREE)
             AddDetailedStatisticsUnusedRange(inoutStats, suballoc.size);
@@ -3868,10 +3868,10 @@ void BlockMetadata_Generic::AddDetailedStatistics(DetailedStatistics& inoutStats
     }
 }
 
-void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
+void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) const
 {
     PrintDetailedMap_Begin(json, GetSumFreeSize(), GetAllocationCount(), m_FreeCount);
-    for (coezt auto& suballoc : m_Suballocatioez)
+    for (const auto& suballoc : m_Suballocatioez)
     {
         if (suballoc.type == SUBALLOCATION_TYPE_FREE)
             PrintDetailedMap_UnusedRange(json, suballoc.offset, suballoc.size);
@@ -3888,18 +3888,18 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   class BlockMetadata_Linear : public BlockMetadata
   {
   public:
-    BlockMetadata_Linear(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
+    BlockMetadata_Linear(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
     virtual ~BlockMetadata_Linear() = default;
 
-    UINT64 GetSumFreeSize() coezt override { return m_SumFreeSize; }
-    bool IsEmpty() coezt override { return GetAllocationCount() == 0; }
-    UINT64 GetAllocationOffset(AllocHandle allocHandle) coezt override { return (UINT64)allocHandle - 1; };
+    UINT64 GetSumFreeSize() const override { return m_SumFreeSize; }
+    bool IsEmpty() const override { return GetAllocationCount() == 0; }
+    UINT64 GetAllocationOffset(AllocHandle allocHandle) const override { return (UINT64)allocHandle - 1; };
 
     void Init(UINT64 size) override;
-    bool Validate() coezt override;
-    size_t GetAllocationCount() coezt override;
-    size_t GetFreeRegioezCount() coezt override;
-    void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt override;
+    bool Validate() const override;
+    size_t GetAllocationCount() const override;
+    size_t GetFreeRegioezCount() const override;
+    void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const override;
 
     bool CreateAllocationRequest(
       UINT64 allocSize,
@@ -3909,23 +3909,23 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       AllocationRequest* pAllocationRequest) override;
 
     void Alloc(
-      coezt AllocationRequest& request,
+      const AllocationRequest& request,
       UINT64 allocSize,
       void* privateData) override;
 
     void Free(AllocHandle allocHandle) override;
     void Clear() override;
 
-    AllocHandle GetAllocationListBegin() coezt override;
-    AllocHandle GetNextAllocation(AllocHandle prevAlloc) coezt override;
-    UINT64 GetNextFreeRegionSize(AllocHandle alloc) coezt override;
-    void* GetAllocationPrivateData(AllocHandle allocHandle) coezt override;
+    AllocHandle GetAllocationListBegin() const override;
+    AllocHandle GetNextAllocation(AllocHandle prevAlloc) const override;
+    UINT64 GetNextFreeRegionSize(AllocHandle alloc) const override;
+    void* GetAllocationPrivateData(AllocHandle allocHandle) const override;
     void SetAllocationPrivateData(AllocHandle allocHandle, void* privateData) override;
 
-    void AddStatistics(Statistics& inoutStats) coezt override;
-    void AddDetailedStatistics(DetailedStatistics& inoutStats) coezt override;
-    void WriteAllocationInfoToJson(JsonWriter& json) coezt override;
-    void DebugLogAllAllocatioez() coezt override;
+    void AddStatistics(Statistics& inoutStats) const override;
+    void AddDetailedStatistics(DetailedStatistics& inoutStats) const override;
+    void WriteAllocationInfoToJson(JsonWriter& json) const override;
+    void DebugLogAllAllocatioez() const override;
 
   private:
     /*
@@ -3973,11 +3973,11 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     SuballocationVectorType& AccessSuballocatioez1st() { return m_1stVectorIndex ? m_Suballocatioez1 : m_Suballocatioez0; }
     SuballocationVectorType& AccessSuballocatioez2nd() { return m_1stVectorIndex ? m_Suballocatioez0 : m_Suballocatioez1; }
-    coezt SuballocationVectorType& AccessSuballocatioez1st() coezt { return m_1stVectorIndex ? m_Suballocatioez1 : m_Suballocatioez0; }
-    coezt SuballocationVectorType& AccessSuballocatioez2nd() coezt { return m_1stVectorIndex ? m_Suballocatioez0 : m_Suballocatioez1; }
+    const SuballocationVectorType& AccessSuballocatioez1st() const { return m_1stVectorIndex ? m_Suballocatioez1 : m_Suballocatioez0; }
+    const SuballocationVectorType& AccessSuballocatioez2nd() const { return m_1stVectorIndex ? m_Suballocatioez0 : m_Suballocatioez1; }
 
-    Suballocation& FindSuballocation(UINT64 offset) coezt;
-    bool ShouldCompact1st() coezt;
+    Suballocation& FindSuballocation(UINT64 offset) const;
+    bool ShouldCompact1st() const;
     void CleanupAfterFree();
 
     bool CreateAllocationRequest_LowerAddress(
@@ -3993,7 +3993,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   };
 
 #  ifndef _D3D12MA_BLOCK_METADATA_LINEAR_FUNCTIONS
-  BlockMetadata_Linear::BlockMetadata_Linear(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
+  BlockMetadata_Linear::BlockMetadata_Linear(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
     : BlockMetadata(allocationCallbacks, isVirtual)
     , m_SumFreeSize(0)
     , m_Suballocatioez0(*allocationCallbacks)
@@ -4013,11 +4013,11 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_SumFreeSize = size;
   }
 
-  bool BlockMetadata_Linear::Validate() coezt
+  bool BlockMetadata_Linear::Validate() const
   {
     D3D12MA_VALIDATE(GetSumFreeSize() <= GetSize());
-    coezt SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
-    coezt SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
+    const SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
+    const SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
 
     D3D12MA_VALIDATE(suballocatioez2nd.empty() == (m_2ndVectorMode == SECOND_VECTOR_EMPTY));
     D3D12MA_VALIDATE(!suballocatioez1st.empty() ||
@@ -4041,19 +4041,19 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     D3D12MA_VALIDATE(m_2ndNullItemsCount <= suballocatioez2nd.size());
 
     UINT64 sumUsedSize = 0;
-    coezt size_t suballoc1stCount = suballocatioez1st.size();
+    const size_t suballoc1stCount = suballocatioez1st.size();
     UINT64 offset = 0;
 
     if (m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER)
     {
-      coezt size_t suballoc2ndCount = suballocatioez2nd.size();
+      const size_t suballoc2ndCount = suballocatioez2nd.size();
       size_t nullItem2ndCount = 0;
       for (size_t i = 0; i < suballoc2ndCount; ++i)
       {
-        coezt Suballocation& suballoc = suballocatioez2nd[i];
-        coezt bool currFree = (suballoc.type == SUBALLOCATION_TYPE_FREE);
+        const Suballocation& suballoc = suballocatioez2nd[i];
+        const bool currFree = (suballoc.type == SUBALLOCATION_TYPE_FREE);
 
-        coezt Allocation* alloc = (Allocation*)suballoc.privateData;
+        const Allocation* alloc = (Allocation*)suballoc.privateData;
         if (!IsVirtual())
         {
           D3D12MA_VALIDATE(currFree == (alloc == NULL));
@@ -4082,7 +4082,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     for (size_t i = 0; i < m_1stNullItemsBeginCount; ++i)
     {
-      coezt Suballocation& suballoc = suballocatioez1st[i];
+      const Suballocation& suballoc = suballocatioez1st[i];
       D3D12MA_VALIDATE(suballoc.type == SUBALLOCATION_TYPE_FREE &&
                        suballoc.privateData == NULL);
     }
@@ -4091,10 +4091,10 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     for (size_t i = m_1stNullItemsBeginCount; i < suballoc1stCount; ++i)
     {
-      coezt Suballocation& suballoc = suballocatioez1st[i];
-      coezt bool currFree = (suballoc.type == SUBALLOCATION_TYPE_FREE);
+      const Suballocation& suballoc = suballocatioez1st[i];
+      const bool currFree = (suballoc.type == SUBALLOCATION_TYPE_FREE);
 
-      coezt Allocation* alloc = (Allocation*)suballoc.privateData;
+      const Allocation* alloc = (Allocation*)suballoc.privateData;
       if (!IsVirtual())
       {
         D3D12MA_VALIDATE(currFree == (alloc == NULL));
@@ -4122,14 +4122,14 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     if (m_2ndVectorMode == SECOND_VECTOR_DOUBLE_STACK)
     {
-      coezt size_t suballoc2ndCount = suballocatioez2nd.size();
+      const size_t suballoc2ndCount = suballocatioez2nd.size();
       size_t nullItem2ndCount = 0;
       for (size_t i = suballoc2ndCount; i--;)
       {
-        coezt Suballocation& suballoc = suballocatioez2nd[i];
-        coezt bool currFree = (suballoc.type == SUBALLOCATION_TYPE_FREE);
+        const Suballocation& suballoc = suballocatioez2nd[i];
+        const bool currFree = (suballoc.type == SUBALLOCATION_TYPE_FREE);
 
-        coezt Allocation* alloc = (Allocation*)suballoc.privateData;
+        const Allocation* alloc = (Allocation*)suballoc.privateData;
         if (!IsVirtual())
         {
           D3D12MA_VALIDATE(currFree == (alloc == NULL));
@@ -4162,22 +4162,22 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return true;
   }
 
-  size_t BlockMetadata_Linear::GetAllocationCount() coezt
+  size_t BlockMetadata_Linear::GetAllocationCount() const
   {
     return AccessSuballocatioez1st().size() - m_1stNullItemsBeginCount - m_1stNullItemsMiddleCount +
            AccessSuballocatioez2nd().size() - m_2ndNullItemsCount;
   }
 
-  size_t BlockMetadata_Linear::GetFreeRegioezCount() coezt
+  size_t BlockMetadata_Linear::GetFreeRegioezCount() const
   {
     // Function only used for defragmentation, which is disabled for this algorithm
     D3D12MA_ASSERT(0);
     return SIZE_MAX;
   }
 
-  void BlockMetadata_Linear::GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt
+  void BlockMetadata_Linear::GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const
   {
-    coezt Suballocation& suballoc = FindSuballocation((UINT64)allocHandle - 1);
+    const Suballocation& suballoc = FindSuballocation((UINT64)allocHandle - 1);
     outInfo.Offset = suballoc.offset;
     outInfo.Size = suballoc.size;
     outInfo.pPrivateData = suballoc.privateData;
@@ -4201,12 +4201,12 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   void BlockMetadata_Linear::Alloc(
-    coezt AllocationRequest& request,
+    const AllocationRequest& request,
     UINT64 allocSize,
     void* privateData)
   {
     UINT64 offset = (UINT64)request.allocHandle - 1;
-    coezt Suballocation newSuballoc = {offset, request.size, privateData, SUBALLOCATION_TYPE_ALLOCATION};
+    const Suballocation newSuballoc = {offset, request.size, privateData, SUBALLOCATION_TYPE_ALLOCATION};
 
     switch (request.algorithmData)
     {
@@ -4319,7 +4319,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     // Item from the middle of 1st vector.
     {
-      coezt SuballocationVectorType::iterator it = BinaryFindSorted(
+      const SuballocationVectorType::iterator it = BinaryFindSorted(
         suballocatioez1st.begin() + m_1stNullItemsBeginCount,
         suballocatioez1st.end(),
         refSuballoc,
@@ -4338,7 +4338,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     if (m_2ndVectorMode != SECOND_VECTOR_EMPTY)
     {
       // Item from the middle of 2nd vector.
-      coezt SuballocationVectorType::iterator it = m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER ? BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetLess()) : BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetGreater());
+      const SuballocationVectorType::iterator it = m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER ? BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetLess()) : BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetGreater());
       if (it != suballocatioez2nd.end())
       {
         it->type = SUBALLOCATION_TYPE_FREE;
@@ -4365,28 +4365,28 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_2ndNullItemsCount = 0;
   }
 
-  AllocHandle BlockMetadata_Linear::GetAllocationListBegin() coezt
+  AllocHandle BlockMetadata_Linear::GetAllocationListBegin() const
   {
     // Function only used for defragmentation, which is disabled for this algorithm
     D3D12MA_ASSERT(0);
     return (AllocHandle)0;
   }
 
-  AllocHandle BlockMetadata_Linear::GetNextAllocation(AllocHandle prevAlloc) coezt
+  AllocHandle BlockMetadata_Linear::GetNextAllocation(AllocHandle prevAlloc) const
   {
     // Function only used for defragmentation, which is disabled for this algorithm
     D3D12MA_ASSERT(0);
     return (AllocHandle)0;
   }
 
-  UINT64 BlockMetadata_Linear::GetNextFreeRegionSize(AllocHandle alloc) coezt
+  UINT64 BlockMetadata_Linear::GetNextFreeRegionSize(AllocHandle alloc) const
   {
     // Function only used for defragmentation, which is disabled for this algorithm
     D3D12MA_ASSERT(0);
     return 0;
   }
 
-  void* BlockMetadata_Linear::GetAllocationPrivateData(AllocHandle allocHandle) coezt
+  void* BlockMetadata_Linear::GetAllocationPrivateData(AllocHandle allocHandle) const
   {
     return FindSuballocation((UINT64)allocHandle - 1).privateData;
   }
@@ -4397,7 +4397,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     suballoc.privateData = privateData;
   }
 
-  void BlockMetadata_Linear::AddStatistics(Statistics& inoutStats) coezt
+  void BlockMetadata_Linear::AddStatistics(Statistics& inoutStats) const
   {
     inoutStats.BlockCount++;
     inoutStats.AllocationCount += (UINT)GetAllocationCount();
@@ -4405,21 +4405,21 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     inoutStats.AllocationBytes += GetSize() - m_SumFreeSize;
   }
 
-  void BlockMetadata_Linear::AddDetailedStatistics(DetailedStatistics& inoutStats) coezt
+  void BlockMetadata_Linear::AddDetailedStatistics(DetailedStatistics& inoutStats) const
   {
     inoutStats.Stats.BlockCount++;
     inoutStats.Stats.BlockBytes += GetSize();
 
-    coezt UINT64 size = GetSize();
-    coezt SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
-    coezt SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
-    coezt size_t suballoc1stCount = suballocatioez1st.size();
-    coezt size_t suballoc2ndCount = suballocatioez2nd.size();
+    const UINT64 size = GetSize();
+    const SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
+    const SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
+    const size_t suballoc1stCount = suballocatioez1st.size();
+    const size_t suballoc2ndCount = suballocatioez2nd.size();
 
     UINT64 lastOffset = 0;
     if (m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER)
     {
-      coezt UINT64 freeSpace2ndTo1stEnd = suballocatioez1st[m_1stNullItemsBeginCount].offset;
+      const UINT64 freeSpace2ndTo1stEnd = suballocatioez1st[m_1stNullItemsBeginCount].offset;
       size_t nextAlloc2ndIndex = 0;
       while (lastOffset < freeSpace2ndTo1stEnd)
       {
@@ -4433,13 +4433,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // Found non-null allocation.
         if (nextAlloc2ndIndex < suballoc2ndCount)
         {
-          coezt Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
+          const Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
 
           // 1. Process free space before this allocation.
           if (lastOffset < suballoc.offset)
           {
             // There is free space from lastOffset to suballoc.offset.
-            coezt UINT64 unusedRangeSize = suballoc.offset - lastOffset;
+            const UINT64 unusedRangeSize = suballoc.offset - lastOffset;
             AddDetailedStatisticsUnusedRange(inoutStats, unusedRangeSize);
           }
 
@@ -4457,7 +4457,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
           // There is free space from lastOffset to freeSpace2ndTo1stEnd.
           if (lastOffset < freeSpace2ndTo1stEnd)
           {
-            coezt UINT64 unusedRangeSize = freeSpace2ndTo1stEnd - lastOffset;
+            const UINT64 unusedRangeSize = freeSpace2ndTo1stEnd - lastOffset;
             AddDetailedStatisticsUnusedRange(inoutStats, unusedRangeSize);
           }
 
@@ -4468,7 +4468,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
 
     size_t nextAlloc1stIndex = m_1stNullItemsBeginCount;
-    coezt UINT64 freeSpace1stTo2ndEnd =
+    const UINT64 freeSpace1stTo2ndEnd =
       m_2ndVectorMode == SECOND_VECTOR_DOUBLE_STACK ? suballocatioez2nd.back().offset : size;
     while (lastOffset < freeSpace1stTo2ndEnd)
     {
@@ -4482,13 +4482,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       // Found non-null allocation.
       if (nextAlloc1stIndex < suballoc1stCount)
       {
-        coezt Suballocation& suballoc = suballocatioez1st[nextAlloc1stIndex];
+        const Suballocation& suballoc = suballocatioez1st[nextAlloc1stIndex];
 
         // 1. Process free space before this allocation.
         if (lastOffset < suballoc.offset)
         {
           // There is free space from lastOffset to suballoc.offset.
-          coezt UINT64 unusedRangeSize = suballoc.offset - lastOffset;
+          const UINT64 unusedRangeSize = suballoc.offset - lastOffset;
           AddDetailedStatisticsUnusedRange(inoutStats, unusedRangeSize);
         }
 
@@ -4506,7 +4506,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // There is free space from lastOffset to freeSpace1stTo2ndEnd.
         if (lastOffset < freeSpace1stTo2ndEnd)
         {
-          coezt UINT64 unusedRangeSize = freeSpace1stTo2ndEnd - lastOffset;
+          const UINT64 unusedRangeSize = freeSpace1stTo2ndEnd - lastOffset;
           AddDetailedStatisticsUnusedRange(inoutStats, unusedRangeSize);
         }
 
@@ -4530,13 +4530,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // Found non-null allocation.
         if (nextAlloc2ndIndex != SIZE_MAX)
         {
-          coezt Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
+          const Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
 
           // 1. Process free space before this allocation.
           if (lastOffset < suballoc.offset)
           {
             // There is free space from lastOffset to suballoc.offset.
-            coezt UINT64 unusedRangeSize = suballoc.offset - lastOffset;
+            const UINT64 unusedRangeSize = suballoc.offset - lastOffset;
             AddDetailedStatisticsUnusedRange(inoutStats, unusedRangeSize);
           }
 
@@ -4554,7 +4554,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
           // There is free space from lastOffset to size.
           if (lastOffset < size)
           {
-            coezt UINT64 unusedRangeSize = size - lastOffset;
+            const UINT64 unusedRangeSize = size - lastOffset;
             AddDetailedStatisticsUnusedRange(inoutStats, unusedRangeSize);
           }
 
@@ -4565,13 +4565,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  void BlockMetadata_Linear::WriteAllocationInfoToJson(JsonWriter& json) coezt
+  void BlockMetadata_Linear::WriteAllocationInfoToJson(JsonWriter& json) const
   {
-    coezt UINT64 size = GetSize();
-    coezt SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
-    coezt SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
-    coezt size_t suballoc1stCount = suballocatioez1st.size();
-    coezt size_t suballoc2ndCount = suballocatioez2nd.size();
+    const UINT64 size = GetSize();
+    const SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
+    const SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
+    const size_t suballoc1stCount = suballocatioez1st.size();
+    const size_t suballoc2ndCount = suballocatioez2nd.size();
 
     // FIRST PASS
 
@@ -4583,7 +4583,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     size_t alloc2ndCount = 0;
     if (m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER)
     {
-      coezt UINT64 freeSpace2ndTo1stEnd = suballocatioez1st[m_1stNullItemsBeginCount].offset;
+      const UINT64 freeSpace2ndTo1stEnd = suballocatioez1st[m_1stNullItemsBeginCount].offset;
       size_t nextAlloc2ndIndex = 0;
       while (lastOffset < freeSpace2ndTo1stEnd)
       {
@@ -4597,7 +4597,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // Found non-null allocation.
         if (nextAlloc2ndIndex < suballoc2ndCount)
         {
-          coezt Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
+          const Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
 
           // 1. Process free space before this allocation.
           if (lastOffset < suballoc.offset)
@@ -4632,7 +4632,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     size_t nextAlloc1stIndex = m_1stNullItemsBeginCount;
     size_t alloc1stCount = 0;
-    coezt UINT64 freeSpace1stTo2ndEnd =
+    const UINT64 freeSpace1stTo2ndEnd =
       m_2ndVectorMode == SECOND_VECTOR_DOUBLE_STACK ? suballocatioez2nd.back().offset : size;
     while (lastOffset < freeSpace1stTo2ndEnd)
     {
@@ -4646,7 +4646,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       // Found non-null allocation.
       if (nextAlloc1stIndex < suballoc1stCount)
       {
-        coezt Suballocation& suballoc = suballocatioez1st[nextAlloc1stIndex];
+        const Suballocation& suballoc = suballocatioez1st[nextAlloc1stIndex];
 
         // 1. Process free space before this allocation.
         if (lastOffset < suballoc.offset)
@@ -4693,7 +4693,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // Found non-null allocation.
         if (nextAlloc2ndIndex != SIZE_MAX)
         {
-          coezt Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
+          const Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
 
           // 1. Process free space before this allocation.
           if (lastOffset < suballoc.offset)
@@ -4726,14 +4726,14 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       }
     }
 
-    coezt UINT64 unusedBytes = size - usedBytes;
+    const UINT64 unusedBytes = size - usedBytes;
     PrintDetailedMap_Begin(json, unusedBytes, alloc1stCount + alloc2ndCount, unusedRangeCount);
 
     // SECOND PASS
     lastOffset = 0;
     if (m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER)
     {
-      coezt UINT64 freeSpace2ndTo1stEnd = suballocatioez1st[m_1stNullItemsBeginCount].offset;
+      const UINT64 freeSpace2ndTo1stEnd = suballocatioez1st[m_1stNullItemsBeginCount].offset;
       size_t nextAlloc2ndIndex = 0;
       while (lastOffset < freeSpace2ndTo1stEnd)
       {
@@ -4747,13 +4747,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // Found non-null allocation.
         if (nextAlloc2ndIndex < suballoc2ndCount)
         {
-          coezt Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
+          const Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
 
           // 1. Process free space before this allocation.
           if (lastOffset < suballoc.offset)
           {
             // There is free space from lastOffset to suballoc.offset.
-            coezt UINT64 unusedRangeSize = suballoc.offset - lastOffset;
+            const UINT64 unusedRangeSize = suballoc.offset - lastOffset;
             PrintDetailedMap_UnusedRange(json, lastOffset, unusedRangeSize);
           }
 
@@ -4771,7 +4771,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
           if (lastOffset < freeSpace2ndTo1stEnd)
           {
             // There is free space from lastOffset to freeSpace2ndTo1stEnd.
-            coezt UINT64 unusedRangeSize = freeSpace2ndTo1stEnd - lastOffset;
+            const UINT64 unusedRangeSize = freeSpace2ndTo1stEnd - lastOffset;
             PrintDetailedMap_UnusedRange(json, lastOffset, unusedRangeSize);
           }
 
@@ -4794,13 +4794,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       // Found non-null allocation.
       if (nextAlloc1stIndex < suballoc1stCount)
       {
-        coezt Suballocation& suballoc = suballocatioez1st[nextAlloc1stIndex];
+        const Suballocation& suballoc = suballocatioez1st[nextAlloc1stIndex];
 
         // 1. Process free space before this allocation.
         if (lastOffset < suballoc.offset)
         {
           // There is free space from lastOffset to suballoc.offset.
-          coezt UINT64 unusedRangeSize = suballoc.offset - lastOffset;
+          const UINT64 unusedRangeSize = suballoc.offset - lastOffset;
           PrintDetailedMap_UnusedRange(json, lastOffset, unusedRangeSize);
         }
 
@@ -4818,7 +4818,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         if (lastOffset < freeSpace1stTo2ndEnd)
         {
           // There is free space from lastOffset to freeSpace1stTo2ndEnd.
-          coezt UINT64 unusedRangeSize = freeSpace1stTo2ndEnd - lastOffset;
+          const UINT64 unusedRangeSize = freeSpace1stTo2ndEnd - lastOffset;
           PrintDetailedMap_UnusedRange(json, lastOffset, unusedRangeSize);
         }
 
@@ -4842,13 +4842,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         // Found non-null allocation.
         if (nextAlloc2ndIndex != SIZE_MAX)
         {
-          coezt Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
+          const Suballocation& suballoc = suballocatioez2nd[nextAlloc2ndIndex];
 
           // 1. Process free space before this allocation.
           if (lastOffset < suballoc.offset)
           {
             // There is free space from lastOffset to suballoc.offset.
-            coezt UINT64 unusedRangeSize = suballoc.offset - lastOffset;
+            const UINT64 unusedRangeSize = suballoc.offset - lastOffset;
             PrintDetailedMap_UnusedRange(json, lastOffset, unusedRangeSize);
           }
 
@@ -4866,7 +4866,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
           if (lastOffset < size)
           {
             // There is free space from lastOffset to size.
-            coezt UINT64 unusedRangeSize = size - lastOffset;
+            const UINT64 unusedRangeSize = size - lastOffset;
             PrintDetailedMap_UnusedRange(json, lastOffset, unusedRangeSize);
           }
 
@@ -4879,23 +4879,23 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     PrintDetailedMap_End(json);
   }
 
-  void BlockMetadata_Linear::DebugLogAllAllocatioez() coezt
+  void BlockMetadata_Linear::DebugLogAllAllocatioez() const
   {
-    coezt SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
+    const SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
     for (auto it = suballocatioez1st.begin() + m_1stNullItemsBeginCount; it != suballocatioez1st.end(); ++it)
       if (it->type != SUBALLOCATION_TYPE_FREE)
         DebugLogAllocation(it->offset, it->size, it->privateData);
 
-    coezt SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
+    const SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
     for (auto it = suballocatioez2nd.begin(); it != suballocatioez2nd.end(); ++it)
       if (it->type != SUBALLOCATION_TYPE_FREE)
         DebugLogAllocation(it->offset, it->size, it->privateData);
   }
 
-  Suballocation& BlockMetadata_Linear::FindSuballocation(UINT64 offset) coezt
+  Suballocation& BlockMetadata_Linear::FindSuballocation(UINT64 offset) const
   {
-    coezt SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
-    coezt SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
+    const SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
+    const SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
 
     Suballocation refSuballoc;
     refSuballoc.offset = offset;
@@ -4903,35 +4903,35 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     // Item from the 1st vector.
     {
-      coezt SuballocationVectorType::coezt_iterator it = BinaryFindSorted(
+      const SuballocationVectorType::const_iterator it = BinaryFindSorted(
         suballocatioez1st.begin() + m_1stNullItemsBeginCount,
         suballocatioez1st.end(),
         refSuballoc,
         SuballocationOffsetLess());
       if (it != suballocatioez1st.end())
       {
-        return coezt_cast<Suballocation&>(*it);
+        return const_cast<Suballocation&>(*it);
       }
     }
 
     if (m_2ndVectorMode != SECOND_VECTOR_EMPTY)
     {
       // Rest of members stays uninitialized intentionally for better performance.
-      coezt SuballocationVectorType::coezt_iterator it = m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER ? BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetLess()) : BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetGreater());
+      const SuballocationVectorType::const_iterator it = m_2ndVectorMode == SECOND_VECTOR_RING_BUFFER ? BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetLess()) : BinaryFindSorted(suballocatioez2nd.begin(), suballocatioez2nd.end(), refSuballoc, SuballocationOffsetGreater());
       if (it != suballocatioez2nd.end())
       {
-        return coezt_cast<Suballocation&>(*it);
+        return const_cast<Suballocation&>(*it);
       }
     }
 
     D3D12MA_ASSERT(0 && "Allocation not found in linear allocator!");
-    return coezt_cast<Suballocation&>(suballocatioez1st.back()); // Should never occur.
+    return const_cast<Suballocation&>(suballocatioez1st.back()); // Should never occur.
   }
 
-  bool BlockMetadata_Linear::ShouldCompact1st() coezt
+  bool BlockMetadata_Linear::ShouldCompact1st() const
   {
-    coezt size_t nullItemCount = m_1stNullItemsBeginCount + m_1stNullItemsMiddleCount;
-    coezt size_t suballocCount = AccessSuballocatioez1st().size();
+    const size_t nullItemCount = m_1stNullItemsBeginCount + m_1stNullItemsMiddleCount;
+    const size_t suballocCount = AccessSuballocatioez1st().size();
     return suballocCount > 32 && nullItemCount * 2 >= (suballocCount - nullItemCount) * 3;
   }
 
@@ -4951,8 +4951,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
     else
     {
-      coezt size_t suballoc1stCount = suballocatioez1st.size();
-      coezt size_t nullItem1stCount = m_1stNullItemsBeginCount + m_1stNullItemsMiddleCount;
+      const size_t suballoc1stCount = suballocatioez1st.size();
+      const size_t nullItem1stCount = m_1stNullItemsBeginCount + m_1stNullItemsMiddleCount;
       D3D12MA_ASSERT(nullItem1stCount <= suballoc1stCount);
 
       // Find more null items at the beginning of 1st vector.
@@ -4989,7 +4989,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
       if (ShouldCompact1st())
       {
-        coezt size_t nonNullItemCount = suballoc1stCount - nullItem1stCount;
+        const size_t nonNullItemCount = suballoc1stCount - nullItem1stCount;
         size_t srcIndex = m_1stNullItemsBeginCount;
         for (size_t dstIndex = 0; dstIndex < nonNullItemCount; ++dstIndex)
         {
@@ -5045,7 +5045,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     UINT64 allocAlignment,
     AllocationRequest* pAllocationRequest)
   {
-    coezt UINT64 blockSize = GetSize();
+    const UINT64 blockSize = GetSize();
     SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
     SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
 
@@ -5056,7 +5056,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       UINT64 resultBaseOffset = 0;
       if (!suballocatioez1st.empty())
       {
-        coezt Suballocation& lastSuballoc = suballocatioez1st.back();
+        const Suballocation& lastSuballoc = suballocatioez1st.back();
         resultBaseOffset = lastSuballoc.offset + lastSuballoc.size + GetDebugMargin();
       }
 
@@ -5065,7 +5065,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       // Apply alignment.
       resultOffset = AlignUp(resultOffset, allocAlignment);
 
-      coezt UINT64 freeSpaceEnd = m_2ndVectorMode == SECOND_VECTOR_DOUBLE_STACK ? suballocatioez2nd.back().offset : blockSize;
+      const UINT64 freeSpaceEnd = m_2ndVectorMode == SECOND_VECTOR_DOUBLE_STACK ? suballocatioez2nd.back().offset : blockSize;
 
       // There is enough free space at the end after alignment.
       if (resultOffset + allocSize + GetDebugMargin() <= freeSpaceEnd)
@@ -5087,7 +5087,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       UINT64 resultBaseOffset = 0;
       if (!suballocatioez2nd.empty())
       {
-        coezt Suballocation& lastSuballoc = suballocatioez2nd.back();
+        const Suballocation& lastSuballoc = suballocatioez2nd.back();
         resultBaseOffset = lastSuballoc.offset + lastSuballoc.size + GetDebugMargin();
       }
 
@@ -5117,7 +5117,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     UINT64 allocAlignment,
     AllocationRequest* pAllocationRequest)
   {
-    coezt UINT64 blockSize = GetSize();
+    const UINT64 blockSize = GetSize();
     SuballocationVectorType& suballocatioez1st = AccessSuballocatioez1st();
     SuballocationVectorType& suballocatioez2nd = AccessSuballocatioez2nd();
 
@@ -5135,7 +5135,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     UINT64 resultBaseOffset = blockSize - allocSize;
     if (!suballocatioez2nd.empty())
     {
-      coezt Suballocation& lastSuballoc = suballocatioez2nd.back();
+      const Suballocation& lastSuballoc = suballocatioez2nd.back();
       resultBaseOffset = lastSuballoc.offset - allocSize;
       if (allocSize > lastSuballoc.offset)
       {
@@ -5158,7 +5158,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     // Apply alignment.
     resultOffset = AlignDown(resultOffset, allocAlignment);
     // There is enough free space.
-    coezt UINT64 endOf1st = !suballocatioez1st.empty() ? suballocatioez1st.back().offset + suballocatioez1st.back().size : 0;
+    const UINT64 endOf1st = !suballocatioez1st.empty() ? suballocatioez1st.back().offset + suballocatioez1st.back().size : 0;
 
     if (endOf1st + GetDebugMargin() <= resultOffset)
     {
@@ -5177,18 +5177,18 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   class BlockMetadata_TLSF : public BlockMetadata
   {
   public:
-    BlockMetadata_TLSF(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
+    BlockMetadata_TLSF(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
     virtual ~BlockMetadata_TLSF();
 
-    size_t GetAllocationCount() coezt override { return m_AllocCount; }
-    size_t GetFreeRegioezCount() coezt override { return m_BlocksFreeCount + 1; }
-    UINT64 GetSumFreeSize() coezt override { return m_BlocksFreeSize + m_NullBlock->size; }
-    bool IsEmpty() coezt override { return m_NullBlock->offset == 0; }
-    UINT64 GetAllocationOffset(AllocHandle allocHandle) coezt override { return ((Block*)allocHandle)->offset; };
+    size_t GetAllocationCount() const override { return m_AllocCount; }
+    size_t GetFreeRegioezCount() const override { return m_BlocksFreeCount + 1; }
+    UINT64 GetSumFreeSize() const override { return m_BlocksFreeSize + m_NullBlock->size; }
+    bool IsEmpty() const override { return m_NullBlock->offset == 0; }
+    UINT64 GetAllocationOffset(AllocHandle allocHandle) const override { return ((Block*)allocHandle)->offset; };
 
     void Init(UINT64 size) override;
-    bool Validate() coezt override;
-    void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt override;
+    bool Validate() const override;
+    void GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const override;
 
     bool CreateAllocationRequest(
       UINT64 allocSize,
@@ -5198,33 +5198,33 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       AllocationRequest* pAllocationRequest) override;
 
     void Alloc(
-      coezt AllocationRequest& request,
+      const AllocationRequest& request,
       UINT64 allocSize,
       void* privateData) override;
 
     void Free(AllocHandle allocHandle) override;
     void Clear() override;
 
-    AllocHandle GetAllocationListBegin() coezt override;
-    AllocHandle GetNextAllocation(AllocHandle prevAlloc) coezt override;
-    UINT64 GetNextFreeRegionSize(AllocHandle alloc) coezt override;
-    void* GetAllocationPrivateData(AllocHandle allocHandle) coezt override;
+    AllocHandle GetAllocationListBegin() const override;
+    AllocHandle GetNextAllocation(AllocHandle prevAlloc) const override;
+    UINT64 GetNextFreeRegionSize(AllocHandle alloc) const override;
+    void* GetAllocationPrivateData(AllocHandle allocHandle) const override;
     void SetAllocationPrivateData(AllocHandle allocHandle, void* privateData) override;
 
-    void AddStatistics(Statistics& inoutStats) coezt override;
-    void AddDetailedStatistics(DetailedStatistics& inoutStats) coezt override;
-    void WriteAllocationInfoToJson(JsonWriter& json) coezt override;
-    void DebugLogAllAllocatioez() coezt override;
+    void AddStatistics(Statistics& inoutStats) const override;
+    void AddDetailedStatistics(DetailedStatistics& inoutStats) const override;
+    void WriteAllocationInfoToJson(JsonWriter& json) const override;
+    void DebugLogAllAllocatioez() const override;
 
   private:
     // According to original paper it should be preferable 4 or 5:
     // M. Masmano, I. Ripoll, A. Crespo, and J. Real "TLSF: a New Dynamic Memory Allocator for Real-Time Systems"
     // http://www.gii.upv.es/tlsf/files/ecrts04_tlsf.pdf
-    static coezt UINT8 SECOND_LEVEL_INDEX = 5;
-    static coezt UINT16 SMALL_BUFFER_SIZE = 256;
-    static coezt UINT INITIAL_BLOCK_ALLOC_COUNT = 16;
-    static coezt UINT8 MEMORY_CLASS_SHIFT = 7;
-    static coezt UINT8 MAX_MEMORY_CLASSES = 65 - MEMORY_CLASS_SHIFT;
+    static const UINT8 SECOND_LEVEL_INDEX = 5;
+    static const UINT16 SMALL_BUFFER_SIZE = 256;
+    static const UINT INITIAL_BLOCK_ALLOC_COUNT = 16;
+    static const UINT8 MEMORY_CLASS_SHIFT = 7;
+    static const UINT8 MAX_MEMORY_CLASSES = 65 - MEMORY_CLASS_SHIFT;
 
     class Block
     {
@@ -5236,7 +5236,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
       void MarkFree() { prevFree = NULL; }
       void MarkTaken() { prevFree = this; }
-      bool IsFree() coezt { return prevFree != this; }
+      bool IsFree() const { return prevFree != this; }
       void*& PrivateData()
       {
         D3D12MA_HEAVY_ASSERT(!IsFree());
@@ -5275,16 +5275,16 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     PoolAllocator<Block> m_BlockAllocator;
     Block* m_NullBlock = NULL;
 
-    UINT8 SizeToMemoryClass(UINT64 size) coezt;
-    UINT16 SizeToSecondIndex(UINT64 size, UINT8 memoryClass) coezt;
-    UINT32 GetListIndex(UINT8 memoryClass, UINT16 secondIndex) coezt;
-    UINT32 GetListIndex(UINT64 size) coezt;
+    UINT8 SizeToMemoryClass(UINT64 size) const;
+    UINT16 SizeToSecondIndex(UINT64 size, UINT8 memoryClass) const;
+    UINT32 GetListIndex(UINT8 memoryClass, UINT16 secondIndex) const;
+    UINT32 GetListIndex(UINT64 size) const;
 
     void RemoveFreeBlock(Block* block);
     void IezertFreeBlock(Block* block);
     void MergeBlock(Block* block, Block* prev);
 
-    Block* FindFreeBlock(UINT64 size, UINT32& listIndex) coezt;
+    Block* FindFreeBlock(UINT64 size, UINT32& listIndex) const;
     bool CheckBlock(
       Block& block,
       UINT32 listIndex,
@@ -5296,7 +5296,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   };
 
 #  ifndef _D3D12MA_BLOCK_METADATA_TLSF_FUNCTIONS
-  BlockMetadata_TLSF::BlockMetadata_TLSF(coezt ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
+  BlockMetadata_TLSF::BlockMetadata_TLSF(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual)
     : BlockMetadata(allocationCallbacks, isVirtual)
     , m_BlockAllocator(*allocationCallbacks, INITIAL_BLOCK_ALLOC_COUNT)
   {
@@ -5335,7 +5335,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     memset(m_FreeList, 0, m_ListsCount * sizeof(Block*));
   }
 
-  bool BlockMetadata_TLSF::Validate() coezt
+  bool BlockMetadata_TLSF::Validate() const
   {
     D3D12MA_VALIDATE(GetSumFreeSize() <= GetSize());
 
@@ -5422,7 +5422,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return true;
   }
 
-  void BlockMetadata_TLSF::GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) coezt
+  void BlockMetadata_TLSF::GetAllocationInfo(AllocHandle allocHandle, VIRTUAL_ALLOCATION_INFO& outInfo) const
   {
     Block* block = (Block*)allocHandle;
     D3D12MA_ASSERT(!block->IsFree() && "Cannot get allocation info for free block!");
@@ -5590,7 +5590,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   void BlockMetadata_TLSF::Alloc(
-    coezt AllocationRequest& request,
+    const AllocationRequest& request,
     UINT64 allocSize,
     void* privateData)
   {
@@ -5762,7 +5762,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     memset(m_InnerIsFreeBitmap, 0, m_MemoryClasses * sizeof(UINT32));
   }
 
-  AllocHandle BlockMetadata_TLSF::GetAllocationListBegin() coezt
+  AllocHandle BlockMetadata_TLSF::GetAllocationListBegin() const
   {
     if (m_AllocCount == 0)
       return (AllocHandle)0;
@@ -5776,7 +5776,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return (AllocHandle)0;
   }
 
-  AllocHandle BlockMetadata_TLSF::GetNextAllocation(AllocHandle prevAlloc) coezt
+  AllocHandle BlockMetadata_TLSF::GetNextAllocation(AllocHandle prevAlloc) const
   {
     Block* startBlock = (Block*)prevAlloc;
     D3D12MA_ASSERT(!startBlock->IsFree() && "Incorrect block!");
@@ -5789,7 +5789,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return (AllocHandle)0;
   }
 
-  UINT64 BlockMetadata_TLSF::GetNextFreeRegionSize(AllocHandle alloc) coezt
+  UINT64 BlockMetadata_TLSF::GetNextFreeRegionSize(AllocHandle alloc) const
   {
     Block* block = (Block*)alloc;
     D3D12MA_ASSERT(!block->IsFree() && "Incorrect block!");
@@ -5799,7 +5799,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return 0;
   }
 
-  void* BlockMetadata_TLSF::GetAllocationPrivateData(AllocHandle allocHandle) coezt
+  void* BlockMetadata_TLSF::GetAllocationPrivateData(AllocHandle allocHandle) const
   {
     Block* block = (Block*)allocHandle;
     D3D12MA_ASSERT(!block->IsFree() && "Cannot get user data for free block!");
@@ -5813,7 +5813,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     block->PrivateData() = privateData;
   }
 
-  void BlockMetadata_TLSF::AddStatistics(Statistics& inoutStats) coezt
+  void BlockMetadata_TLSF::AddStatistics(Statistics& inoutStats) const
   {
     inoutStats.BlockCount++;
     inoutStats.AllocationCount += static_cast<UINT>(m_AllocCount);
@@ -5821,7 +5821,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     inoutStats.AllocationBytes += GetSize() - GetSumFreeSize();
   }
 
-  void BlockMetadata_TLSF::AddDetailedStatistics(DetailedStatistics& inoutStats) coezt
+  void BlockMetadata_TLSF::AddDetailedStatistics(DetailedStatistics& inoutStats) const
   {
     inoutStats.Stats.BlockCount++;
     inoutStats.Stats.BlockBytes += GetSize();
@@ -5838,7 +5838,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       AddDetailedStatisticsUnusedRange(inoutStats, m_NullBlock->size);
   }
 
-  void BlockMetadata_TLSF::WriteAllocationInfoToJson(JsonWriter& json) coezt
+  void BlockMetadata_TLSF::WriteAllocationInfoToJson(JsonWriter& json) const
   {
     size_t blockCount = m_AllocCount + m_BlocksFreeCount;
     Vector<Block*> blockList(blockCount, *GetAllocs());
@@ -5867,7 +5867,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     PrintDetailedMap_End(json);
   }
 
-  void BlockMetadata_TLSF::DebugLogAllAllocatioez() coezt
+  void BlockMetadata_TLSF::DebugLogAllAllocatioez() const
   {
     for (Block* block = m_NullBlock->prevPhysical; block != NULL; block = block->prevPhysical)
     {
@@ -5878,14 +5878,14 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  UINT8 BlockMetadata_TLSF::SizeToMemoryClass(UINT64 size) coezt
+  UINT8 BlockMetadata_TLSF::SizeToMemoryClass(UINT64 size) const
   {
     if (size > SMALL_BUFFER_SIZE)
       return BitScanMSB(size) - MEMORY_CLASS_SHIFT;
     return 0;
   }
 
-  UINT16 BlockMetadata_TLSF::SizeToSecondIndex(UINT64 size, UINT8 memoryClass) coezt
+  UINT16 BlockMetadata_TLSF::SizeToSecondIndex(UINT64 size, UINT8 memoryClass) const
   {
     if (memoryClass == 0)
     {
@@ -5897,19 +5897,19 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return static_cast<UINT16>((size >> (memoryClass + MEMORY_CLASS_SHIFT - SECOND_LEVEL_INDEX)) ^ (1U << SECOND_LEVEL_INDEX));
   }
 
-  UINT32 BlockMetadata_TLSF::GetListIndex(UINT8 memoryClass, UINT16 secondIndex) coezt
+  UINT32 BlockMetadata_TLSF::GetListIndex(UINT8 memoryClass, UINT16 secondIndex) const
   {
     if (memoryClass == 0)
       return secondIndex;
 
-    coezt UINT32 index = static_cast<UINT32>(memoryClass - 1) * (1 << SECOND_LEVEL_INDEX) + secondIndex;
+    const UINT32 index = static_cast<UINT32>(memoryClass - 1) * (1 << SECOND_LEVEL_INDEX) + secondIndex;
     if (IsVirtual())
       return index + (1 << SECOND_LEVEL_INDEX);
     else
       return index + 4;
   }
 
-  UINT32 BlockMetadata_TLSF::GetListIndex(UINT64 size) coezt
+  UINT32 BlockMetadata_TLSF::GetListIndex(UINT64 size) const
   {
     UINT8 memoryClass = SizeToMemoryClass(size);
     return GetListIndex(memoryClass, SizeToSecondIndex(size, memoryClass));
@@ -5978,7 +5978,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_BlockAllocator.Free(prev);
   }
 
-  BlockMetadata_TLSF::Block* BlockMetadata_TLSF::FindFreeBlock(UINT64 size, UINT32& listIndex) coezt
+  BlockMetadata_TLSF::Block* BlockMetadata_TLSF::FindFreeBlock(UINT64 size, UINT32& listIndex) const
   {
     UINT8 memoryClass = SizeToMemoryClass(size);
     UINT32 innerFreeMap = m_InnerIsFreeBitmap[memoryClass] & (~0U << SizeToSecondIndex(size, memoryClass));
@@ -6047,24 +6047,24 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     // Creates the ID3D12Heap.
     MemoryBlock(
       AllocatorPimpl* allocator,
-      coezt D3D12_HEAP_PROPERTIES& heapProps,
+      const D3D12_HEAP_PROPERTIES& heapProps,
       D3D12_HEAP_FLAGS heapFlags,
       UINT64 size,
       UINT id);
     virtual ~MemoryBlock();
 
-    coezt D3D12_HEAP_PROPERTIES& GetHeapProperties() coezt { return m_HeapProps; }
-    D3D12_HEAP_FLAGS GetHeapFlags() coezt { return m_HeapFlags; }
-    UINT64 GetSize() coezt { return m_Size; }
-    UINT GetId() coezt { return m_Id; }
-    ID3D12Heap* GetHeap() coezt { return m_Heap; }
+    const D3D12_HEAP_PROPERTIES& GetHeapProperties() const { return m_HeapProps; }
+    D3D12_HEAP_FLAGS GetHeapFlags() const { return m_HeapFlags; }
+    UINT64 GetSize() const { return m_Size; }
+    UINT GetId() const { return m_Id; }
+    ID3D12Heap* GetHeap() const { return m_Heap; }
 
   protected:
-    AllocatorPimpl* coezt m_Allocator;
-    coezt D3D12_HEAP_PROPERTIES m_HeapProps;
-    coezt D3D12_HEAP_FLAGS m_HeapFlags;
-    coezt UINT64 m_Size;
-    coezt UINT m_Id;
+    AllocatorPimpl* const m_Allocator;
+    const D3D12_HEAP_PROPERTIES m_HeapProps;
+    const D3D12_HEAP_FLAGS m_HeapFlags;
+    const UINT64 m_Size;
+    const UINT m_Id;
 
     HRESULT Init(ID3D12ProtectedResourceSession* pProtectedSession, bool denyMsaaTextures);
 
@@ -6089,19 +6089,19 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     NormalBlock(
       AllocatorPimpl* allocator,
       BlockVector* blockVector,
-      coezt D3D12_HEAP_PROPERTIES& heapProps,
+      const D3D12_HEAP_PROPERTIES& heapProps,
       D3D12_HEAP_FLAGS heapFlags,
       UINT64 size,
       UINT id);
     virtual ~NormalBlock();
 
-    BlockVector* GetBlockVector() coezt { return m_BlockVector; }
+    BlockVector* GetBlockVector() const { return m_BlockVector; }
 
     // 'algorithm' should be one of the *_ALGORITHM_* flags in enums POOL_FLAGS or VIRTUAL_BLOCK_FLAGS
     HRESULT Init(UINT32 algorithm, ID3D12ProtectedResourceSession* pProtectedSession, bool denyMsaaTextures);
 
     // Validates all data structures iezide this object. If not valid, returez false.
-    bool Validate() coezt;
+    bool Validate() const;
 
   private:
     BlockVector* m_BlockVector;
@@ -6115,12 +6115,12 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     using ItemType = Allocation;
 
-    static ItemType* GetPrev(coezt ItemType* item)
+    static ItemType* GetPrev(const ItemType* item)
     {
       D3D12MA_ASSERT(item->m_PackedData.GetType() == Allocation::TYPE_COMMITTED || item->m_PackedData.GetType() == Allocation::TYPE_HEAP);
       return item->m_Committed.prev;
     }
-    static ItemType* GetNext(coezt ItemType* item)
+    static ItemType* GetNext(const ItemType* item)
     {
       D3D12MA_ASSERT(item->m_PackedData.GetType() == Allocation::TYPE_COMMITTED || item->m_PackedData.GetType() == Allocation::TYPE_HEAP);
       return item->m_Committed.next;
@@ -6150,9 +6150,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     void Init(bool useMutex, D3D12_HEAP_TYPE heapType, PoolPimpl* pool);
     ~CommittedAllocationList();
 
-    D3D12_HEAP_TYPE GetHeapType() coezt { return m_HeapType; }
-    PoolPimpl* GetPool() coezt { return m_Pool; }
-    UINT GetMemorySegmentGroup(AllocatorPimpl* allocator) coezt;
+    D3D12_HEAP_TYPE GetHeapType() const { return m_HeapType; }
+    PoolPimpl* GetPool() const { return m_Pool; }
+    UINT GetMemorySegmentGroup(AllocatorPimpl* allocator) const;
 
     void AddStatistics(Statistics& inoutStats);
     void AddDetailedStatistics(DetailedStatistics& inoutStats);
@@ -6184,7 +6184,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     bool m_CanAlias = false;
     D3D12_RESIDENCY_PRIORITY m_ResidencyPriority = D3D12_RESIDENCY_PRIORITY_NONE;
 
-    bool IsValid() coezt { return m_List != NULL; }
+    bool IsValid() const { return m_List != NULL; }
   };
 #endif // _D3D12M_COMMITTED_ALLOCATION_PARAMETERS
 
@@ -6193,9 +6193,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     CREATE_RESOURCE_PARAMS() = delete;
     CREATE_RESOURCE_PARAMS(
-      coezt D3D12_RESOURCE_DESC* pResourceDesc,
+      const D3D12_RESOURCE_DESC* pResourceDesc,
       D3D12_RESOURCE_STATES InitialResourceState,
-      coezt D3D12_CLEAR_VALUE* pOptimizedClearValue)
+      const D3D12_CLEAR_VALUE* pOptimizedClearValue)
       : Variant(VARIANT_WITH_STATE)
       , pResourceDesc(pResourceDesc)
       , InitialResourceState(InitialResourceState)
@@ -6204,9 +6204,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     CREATE_RESOURCE_PARAMS(
-      coezt D3D12_RESOURCE_DESC1* pResourceDesc,
+      const D3D12_RESOURCE_DESC1* pResourceDesc,
       D3D12_RESOURCE_STATES InitialResourceState,
-      coezt D3D12_CLEAR_VALUE* pOptimizedClearValue)
+      const D3D12_CLEAR_VALUE* pOptimizedClearValue)
       : Variant(VARIANT_WITH_STATE_AND_DESC1)
       , pResourceDesc1(pResourceDesc)
       , InitialResourceState(InitialResourceState)
@@ -6216,9 +6216,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #endif
 #ifdef __ID3D12Device10_INTERFACE_DEFINED__
     CREATE_RESOURCE_PARAMS(
-      coezt D3D12_RESOURCE_DESC1* pResourceDesc,
+      const D3D12_RESOURCE_DESC1* pResourceDesc,
       D3D12_BARRIER_LAYOUT InitialLayout,
-      coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+      const D3D12_CLEAR_VALUE* pOptimizedClearValue,
       UINT32 NumCastableFormats,
       DXGI_FORMAT* pCastableFormats)
       : Variant(VARIANT_WITH_LAYOUT)
@@ -6241,38 +6241,38 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     VARIANT Variant = VARIANT_INVALID;
 
-    coezt D3D12_RESOURCE_DESC* GetResourceDesc() coezt
+    const D3D12_RESOURCE_DESC* GetResourceDesc() const
     {
       D3D12MA_ASSERT(Variant == VARIANT_WITH_STATE);
       return pResourceDesc;
     }
-    coezt D3D12_RESOURCE_DESC*& AccessResourceDesc()
+    const D3D12_RESOURCE_DESC*& AccessResourceDesc()
     {
       D3D12MA_ASSERT(Variant == VARIANT_WITH_STATE);
       return pResourceDesc;
     }
-    coezt D3D12_RESOURCE_DESC* GetBaseResourceDesc() coezt
+    const D3D12_RESOURCE_DESC* GetBaseResourceDesc() const
     {
       // D3D12_RESOURCE_DESC1 can be cast to D3D12_RESOURCE_DESC by discarding the new members at the end.
       return pResourceDesc;
     }
-    D3D12_RESOURCE_STATES GetInitialResourceState() coezt
+    D3D12_RESOURCE_STATES GetInitialResourceState() const
     {
       D3D12MA_ASSERT(Variant < VARIANT_WITH_LAYOUT);
       return InitialResourceState;
     }
-    coezt D3D12_CLEAR_VALUE* GetOptimizedClearValue() coezt
+    const D3D12_CLEAR_VALUE* GetOptimizedClearValue() const
     {
       return pOptimizedClearValue;
     }
 
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
-    coezt D3D12_RESOURCE_DESC1* GetResourceDesc1() coezt
+    const D3D12_RESOURCE_DESC1* GetResourceDesc1() const
     {
       D3D12MA_ASSERT(Variant >= VARIANT_WITH_STATE_AND_DESC1);
       return pResourceDesc1;
     }
-    coezt D3D12_RESOURCE_DESC1*& AccessResourceDesc1()
+    const D3D12_RESOURCE_DESC1*& AccessResourceDesc1()
     {
       D3D12MA_ASSERT(Variant >= VARIANT_WITH_STATE_AND_DESC1);
       return pResourceDesc1;
@@ -6280,17 +6280,17 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #endif
 
 #ifdef __ID3D12Device10_INTERFACE_DEFINED__
-    D3D12_BARRIER_LAYOUT GetInitialLayout() coezt
+    D3D12_BARRIER_LAYOUT GetInitialLayout() const
     {
       D3D12MA_ASSERT(Variant >= VARIANT_WITH_LAYOUT);
       return InitialLayout;
     }
-    UINT32 GetNumCastableFormats() coezt
+    UINT32 GetNumCastableFormats() const
     {
       D3D12MA_ASSERT(Variant >= VARIANT_WITH_LAYOUT);
       return NumCastableFormats;
     }
-    DXGI_FORMAT* GetCastableFormats() coezt
+    DXGI_FORMAT* GetCastableFormats() const
     {
       D3D12MA_ASSERT(Variant >= VARIANT_WITH_LAYOUT);
       return pCastableFormats;
@@ -6300,9 +6300,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   private:
     union
     {
-      coezt D3D12_RESOURCE_DESC* pResourceDesc;
+      const D3D12_RESOURCE_DESC* pResourceDesc;
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
-      coezt D3D12_RESOURCE_DESC1* pResourceDesc1;
+      const D3D12_RESOURCE_DESC1* pResourceDesc1;
 #endif
     };
     union
@@ -6312,7 +6312,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       D3D12_BARRIER_LAYOUT InitialLayout;
 #endif
     };
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue;
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue;
 #ifdef __ID3D12Device10_INTERFACE_DEFINED__
     UINT32 NumCastableFormats;
     DXGI_FORMAT* pCastableFormats;
@@ -6333,7 +6333,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   public:
     BlockVector(
       AllocatorPimpl* hAllocator,
-      coezt D3D12_HEAP_PROPERTIES& heapProps,
+      const D3D12_HEAP_PROPERTIES& heapProps,
       D3D12_HEAP_FLAGS heapFlags,
       UINT64 preferredBlockSize,
       size_t minBlockCount,
@@ -6345,17 +6345,17 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       ID3D12ProtectedResourceSession* pProtectedSession,
       D3D12_RESIDENCY_PRIORITY residencyPriority);
     ~BlockVector();
-    D3D12_RESIDENCY_PRIORITY GetResidencyPriority() coezt { return m_ResidencyPriority; }
+    D3D12_RESIDENCY_PRIORITY GetResidencyPriority() const { return m_ResidencyPriority; }
 
-    coezt D3D12_HEAP_PROPERTIES& GetHeapProperties() coezt { return m_HeapProps; }
-    D3D12_HEAP_FLAGS GetHeapFlags() coezt { return m_HeapFlags; }
-    UINT64 GetPreferredBlockSize() coezt { return m_PreferredBlockSize; }
-    UINT32 GetAlgorithm() coezt { return m_Algorithm; }
-    bool DeniesMsaaTextures() coezt { return m_DenyMsaaTextures; }
+    const D3D12_HEAP_PROPERTIES& GetHeapProperties() const { return m_HeapProps; }
+    D3D12_HEAP_FLAGS GetHeapFlags() const { return m_HeapFlags; }
+    UINT64 GetPreferredBlockSize() const { return m_PreferredBlockSize; }
+    UINT32 GetAlgorithm() const { return m_Algorithm; }
+    bool DeniesMsaaTextures() const { return m_DenyMsaaTextures; }
     // To be used only while the m_Mutex is locked. Used during defragmentation.
-    size_t GetBlockCount() coezt { return m_Blocks.size(); }
+    size_t GetBlockCount() const { return m_Blocks.size(); }
     // To be used only while the m_Mutex is locked. Used during defragmentation.
-    NormalBlock* GetBlock(size_t index) coezt { return m_Blocks[index]; }
+    NormalBlock* GetBlock(size_t index) const { return m_Blocks[index]; }
     D3D12MA_RW_MUTEX& GetMutex() { return m_Mutex; }
 
     HRESULT CreateMinBlocks();
@@ -6364,7 +6364,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     HRESULT Allocate(
       UINT64 size,
       UINT64 alignment,
-      coezt ALLOCATION_DESC& allocDesc,
+      const ALLOCATION_DESC& allocDesc,
       size_t allocationCount,
       Allocation** pAllocatioez);
 
@@ -6373,8 +6373,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     HRESULT CreateResource(
       UINT64 size,
       UINT64 alignment,
-      coezt ALLOCATION_DESC& allocDesc,
-      coezt CREATE_RESOURCE_PARAMS& createParams,
+      const ALLOCATION_DESC& allocDesc,
+      const CREATE_RESOURCE_PARAMS& createParams,
       Allocation** ppAllocation,
       REFIID riidResource,
       void** ppvResource);
@@ -6385,18 +6385,18 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     void WriteBlockInfoToJson(JsonWriter& json);
 
   private:
-    AllocatorPimpl* coezt m_hAllocator;
-    coezt D3D12_HEAP_PROPERTIES m_HeapProps;
-    coezt D3D12_HEAP_FLAGS m_HeapFlags;
-    coezt UINT64 m_PreferredBlockSize;
-    coezt size_t m_MinBlockCount;
-    coezt size_t m_MaxBlockCount;
-    coezt bool m_ExplicitBlockSize;
-    coezt UINT64 m_MinAllocationAlignment;
-    coezt UINT32 m_Algorithm;
-    coezt bool m_DenyMsaaTextures;
-    ID3D12ProtectedResourceSession* coezt m_ProtectedSession;
-    coezt D3D12_RESIDENCY_PRIORITY m_ResidencyPriority;
+    AllocatorPimpl* const m_hAllocator;
+    const D3D12_HEAP_PROPERTIES m_HeapProps;
+    const D3D12_HEAP_FLAGS m_HeapFlags;
+    const UINT64 m_PreferredBlockSize;
+    const size_t m_MinBlockCount;
+    const size_t m_MaxBlockCount;
+    const bool m_ExplicitBlockSize;
+    const UINT64 m_MinAllocationAlignment;
+    const UINT32 m_Algorithm;
+    const bool m_DenyMsaaTextures;
+    ID3D12ProtectedResourceSession* const m_ProtectedSession;
+    const D3D12_RESIDENCY_PRIORITY m_ResidencyPriority;
     /* There can be at most one allocation that is completely empty - a
     hysteresis to avoid pessimistic case of alternating creation and destruction
     of a ID3D12Heap. */
@@ -6410,8 +6410,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     // Disable incremental sorting when freeing allocatioez
     void SetIncrementalSort(bool val) { m_IncrementalSort = val; }
 
-    UINT64 CalcSumBlockSize() coezt;
-    UINT64 CalcMaxBlockSize() coezt;
+    UINT64 CalcSumBlockSize() const;
+    UINT64 CalcMaxBlockSize() const;
 
     // Finds and removes given block from vector.
     void Remove(NormalBlock* pBlock);
@@ -6424,7 +6424,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     HRESULT AllocatePage(
       UINT64 size,
       UINT64 alignment,
-      coezt ALLOCATION_DESC& allocDesc,
+      const ALLOCATION_DESC& allocDesc,
       Allocation** pAllocation);
 
     HRESULT AllocateFromBlock(
@@ -6454,9 +6454,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   class CurrentBudgetData
   {
   public:
-    bool ShouldUpdateBudget() coezt { return m_OperatioezSinceBudgetFetch >= 30; }
+    bool ShouldUpdateBudget() const { return m_OperatioezSinceBudgetFetch >= 30; }
 
-    void GetStatistics(Statistics& outStats, UINT group) coezt;
+    void GetStatistics(Statistics& outStats, UINT group) const;
     void GetBudget(bool useMutex,
       UINT64* outLocalUsage, UINT64* outLocalBudget,
       UINT64* outNonLocalUsage, UINT64* outNonLocalBudget);
@@ -6485,7 +6485,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   };
 
 #  ifndef _D3D12MA_CURRENT_BUDGET_DATA_FUNCTIONS
-  void CurrentBudgetData::GetStatistics(Statistics& outStats, UINT group) coezt
+  void CurrentBudgetData::GetStatistics(Statistics& outStats, UINT group) const
   {
     outStats.BlockCount = m_BlockCount[group];
     outStats.AllocationCount = m_AllocationCount[group];
@@ -6501,9 +6501,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     if (outLocalUsage)
     {
-      coezt UINT64 D3D12Usage = m_D3D12Usage[DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY];
-      coezt UINT64 blockBytes = m_BlockBytes[DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY];
-      coezt UINT64 blockBytesAtD3D12Fetch = m_BlockBytesAtD3D12Fetch[DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY];
+      const UINT64 D3D12Usage = m_D3D12Usage[DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY];
+      const UINT64 blockBytes = m_BlockBytes[DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY];
+      const UINT64 blockBytesAtD3D12Fetch = m_BlockBytesAtD3D12Fetch[DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY];
       *outLocalUsage = D3D12Usage + blockBytes > blockBytesAtD3D12Fetch ? D3D12Usage + blockBytes - blockBytesAtD3D12Fetch : 0;
     }
     if (outLocalBudget)
@@ -6511,9 +6511,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     if (outNonLocalUsage)
     {
-      coezt UINT64 D3D12Usage = m_D3D12Usage[DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY];
-      coezt UINT64 blockBytes = m_BlockBytes[DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY];
-      coezt UINT64 blockBytesAtD3D12Fetch = m_BlockBytesAtD3D12Fetch[DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY];
+      const UINT64 D3D12Usage = m_D3D12Usage[DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY];
+      const UINT64 blockBytes = m_BlockBytes[DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY];
+      const UINT64 blockBytesAtD3D12Fetch = m_BlockBytesAtD3D12Fetch[DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY];
       *outNonLocalUsage = D3D12Usage + blockBytes > blockBytesAtD3D12Fetch ? D3D12Usage + blockBytes - blockBytesAtD3D12Fetch : 0;
     }
     if (outNonLocalBudget)
@@ -6527,8 +6527,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     DXGI_QUERY_VIDEO_MEMORY_INFO infoLocal = {};
     DXGI_QUERY_VIDEO_MEMORY_INFO infoNonLocal = {};
-    coezt HRESULT hrLocal = adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &infoLocal);
-    coezt HRESULT hrNonLocal = adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &infoNonLocal);
+    const HRESULT hrLocal = adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &infoLocal);
+    const HRESULT hrNonLocal = adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &infoNonLocal);
 
     if (SUCCEEDED(hrLocal) || SUCCEEDED(hrNonLocal))
     {
@@ -6595,19 +6595,19 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   public:
     DefragmentationContextPimpl(
       AllocatorPimpl* hAllocator,
-      coezt DEFRAGMENTATION_DESC& desc,
+      const DEFRAGMENTATION_DESC& desc,
       BlockVector* poolVector);
     ~DefragmentationContextPimpl();
 
     void GetStats(DEFRAGMENTATION_STATS& outStats) { outStats = m_GlobalStats; }
-    coezt ALLOCATION_CALLBACKS& GetAllocs() coezt { return m_Moves.GetAllocs(); }
+    const ALLOCATION_CALLBACKS& GetAllocs() const { return m_Moves.GetAllocs(); }
 
     HRESULT DefragmentPassBegin(DEFRAGMENTATION_PASS_MOVE_INFO& moveInfo);
     HRESULT DefragmentPassEnd(DEFRAGMENTATION_PASS_MOVE_INFO& moveInfo);
 
   private:
-    // Max number of allocatioez to ignore due to size coeztraints before ending single pass
-    static coezt UINT8 MAX_ALLOCS_TO_IGNORE = 16;
+    // Max number of allocatioez to ignore due to size constraints before ending single pass
+    static const UINT8 MAX_ALLOCS_TO_IGNORE = 16;
     enum class CounterStatus
     {
       Pass,
@@ -6633,8 +6633,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       DEFRAGMENTATION_MOVE move = {};
     };
 
-    coezt UINT64 m_MaxPassBytes;
-    coezt UINT32 m_MaxPassAllocatioez;
+    const UINT64 m_MaxPassBytes;
+    const UINT32 m_MaxPassAllocatioez;
 
     Vector<DEFRAGMENTATION_MOVE> m_Moves;
 
@@ -6670,13 +6670,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     friend struct PoolListItemTraits;
 
   public:
-    PoolPimpl(AllocatorPimpl* allocator, coezt POOL_DESC& desc);
+    PoolPimpl(AllocatorPimpl* allocator, const POOL_DESC& desc);
     ~PoolPimpl();
 
-    AllocatorPimpl* GetAllocator() coezt { return m_Allocator; }
-    coezt POOL_DESC& GetDesc() coezt { return m_Desc; }
-    bool SupportsCommittedAllocatioez() coezt { return m_Desc.BlockSize == 0; }
-    LPCWSTR GetName() coezt { return m_Name; }
+    AllocatorPimpl* GetAllocator() const { return m_Allocator; }
+    const POOL_DESC& GetDesc() const { return m_Desc; }
+    bool SupportsCommittedAllocatioez() const { return m_Desc.BlockSize == 0; }
+    LPCWSTR GetName() const { return m_Name; }
 
     BlockVector* GetBlockVector() { return m_BlockVector; }
     CommittedAllocationList* GetCommittedAllocationList() { return SupportsCommittedAllocatioez() ? &m_CommittedAllocatioez : NULL; }
@@ -6702,8 +6702,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   struct PoolListItemTraits
   {
     using ItemType = PoolPimpl;
-    static ItemType* GetPrev(coezt ItemType* item) { return item->m_PrevPool; }
-    static ItemType* GetNext(coezt ItemType* item) { return item->m_NextPool; }
+    static ItemType* GetPrev(const ItemType* item) { return item->m_PrevPool; }
+    static ItemType* GetNext(const ItemType* item) { return item->m_NextPool; }
     static ItemType*& AccessPrev(ItemType* item) { return item->m_PrevPool; }
     static ItemType*& AccessNext(ItemType* item) { return item->m_NextPool; }
   };
@@ -6720,37 +6720,37 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     std::atomic_uint32_t m_RefCount = {1};
     CurrentBudgetData m_Budget;
 
-    AllocatorPimpl(coezt ALLOCATION_CALLBACKS& allocationCallbacks, coezt ALLOCATOR_DESC& desc);
+    AllocatorPimpl(const ALLOCATION_CALLBACKS& allocationCallbacks, const ALLOCATOR_DESC& desc);
     ~AllocatorPimpl();
 
-    ID3D12Device* GetDevice() coezt { return m_Device; }
+    ID3D12Device* GetDevice() const { return m_Device; }
 #  ifdef __ID3D12Device1_INTERFACE_DEFINED__
-    ID3D12Device1* GetDevice1() coezt
+    ID3D12Device1* GetDevice1() const
     {
       return m_Device1;
     }
 #  endif
 #  ifdef __ID3D12Device4_INTERFACE_DEFINED__
-    ID3D12Device4* GetDevice4() coezt
+    ID3D12Device4* GetDevice4() const
     {
       return m_Device4;
     }
 #  endif
 #  ifdef __ID3D12Device8_INTERFACE_DEFINED__
-    ID3D12Device8* GetDevice8() coezt
+    ID3D12Device8* GetDevice8() const
     {
       return m_Device8;
     }
 #  endif
     // Shortcut for "Allocation Callbacks", because this function is called so often.
-    coezt ALLOCATION_CALLBACKS& GetAllocs() coezt { return m_AllocationCallbacks; }
-    coezt D3D12_FEATURE_DATA_D3D12_OPTIONS& GetD3D12Optioez() coezt { return m_D3D12Optioez; }
-    BOOL IsUMA() coezt { return m_D3D12Architecture.UMA; }
-    BOOL IsCacheCoherentUMA() coezt { return m_D3D12Architecture.CacheCoherentUMA; }
-    bool SupportsResourceHeapTier2() coezt { return m_D3D12Optioez.ResourceHeapTier >= D3D12_RESOURCE_HEAP_TIER_2; }
-    bool UseMutex() coezt { return m_UseMutex; }
+    const ALLOCATION_CALLBACKS& GetAllocs() const { return m_AllocationCallbacks; }
+    const D3D12_FEATURE_DATA_D3D12_OPTIONS& GetD3D12Optioez() const { return m_D3D12Optioez; }
+    BOOL IsUMA() const { return m_D3D12Architecture.UMA; }
+    BOOL IsCacheCoherentUMA() const { return m_D3D12Architecture.CacheCoherentUMA; }
+    bool SupportsResourceHeapTier2() const { return m_D3D12Optioez.ResourceHeapTier >= D3D12_RESOURCE_HEAP_TIER_2; }
+    bool UseMutex() const { return m_UseMutex; }
     AllocationObjectAllocator& GetAllocationObjectAllocator() { return m_AllocationObjectAllocator; }
-    UINT GetCurrentFrameIndex() coezt { return m_CurrentFrameIndex.load(); }
+    UINT GetCurrentFrameIndex() const { return m_CurrentFrameIndex.load(); }
     /*
     If SupportsResourceHeapTier2():
         0: D3D12_HEAP_TYPE_DEFAULT
@@ -6767,25 +6767,25 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         7: D3D12_HEAP_TYPE_READBACK + texture
         8: D3D12_HEAP_TYPE_READBACK + texture RT or DS
     */
-    UINT GetDefaultPoolCount() coezt { return SupportsResourceHeapTier2() ? 3 : 9; }
+    UINT GetDefaultPoolCount() const { return SupportsResourceHeapTier2() ? 3 : 9; }
     BlockVector** GetDefaultPools() { return m_BlockVectors; }
 
-    HRESULT Init(coezt ALLOCATOR_DESC& desc);
-    bool HeapFlagsFulfillResourceHeapTier(D3D12_HEAP_FLAGS flags) coezt;
-    UINT StandardHeapTypeToMemorySegmentGroup(D3D12_HEAP_TYPE heapType) coezt;
-    UINT HeapPropertiesToMemorySegmentGroup(coezt D3D12_HEAP_PROPERTIES& heapProps) coezt;
-    UINT64 GetMemoryCapacity(UINT memorySegmentGroup) coezt;
+    HRESULT Init(const ALLOCATOR_DESC& desc);
+    bool HeapFlagsFulfillResourceHeapTier(D3D12_HEAP_FLAGS flags) const;
+    UINT StandardHeapTypeToMemorySegmentGroup(D3D12_HEAP_TYPE heapType) const;
+    UINT HeapPropertiesToMemorySegmentGroup(const D3D12_HEAP_PROPERTIES& heapProps) const;
+    UINT64 GetMemoryCapacity(UINT memorySegmentGroup) const;
 
     HRESULT CreatePlacedResourceWrap(
       ID3D12Heap* pHeap,
       UINT64 HeapOffset,
-      coezt CREATE_RESOURCE_PARAMS& createParams,
+      const CREATE_RESOURCE_PARAMS& createParams,
       REFIID riidResource,
       void** ppvResource);
 
     HRESULT CreateResource(
-      coezt ALLOCATION_DESC* pAllocDesc,
-      coezt CREATE_RESOURCE_PARAMS& createParams,
+      const ALLOCATION_DESC* pAllocDesc,
+      const CREATE_RESOURCE_PARAMS& createParams,
       Allocation** ppAllocation,
       REFIID riidResource,
       void** ppvResource);
@@ -6793,13 +6793,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     HRESULT CreateAliasingResource(
       Allocation* pAllocation,
       UINT64 AllocationLocalOffset,
-      coezt CREATE_RESOURCE_PARAMS& createParams,
+      const CREATE_RESOURCE_PARAMS& createParams,
       REFIID riidResource,
       void** ppvResource);
 
     HRESULT AllocateMemory(
-      coezt ALLOCATION_DESC* pAllocDesc,
-      coezt D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
+      const ALLOCATION_DESC* pAllocDesc,
+      const D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
       Allocation** ppAllocation);
 
     // Unregisters allocation from the collection of dedicated allocatioez.
@@ -6812,7 +6812,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     // Allocation object must be deleted externally afterwards.
     void FreeHeapMemory(Allocation* allocation);
 
-    void SetResidencyPriority(ID3D12Pageable* obj, D3D12_RESIDENCY_PRIORITY priority) coezt;
+    void SetResidencyPriority(ID3D12Pageable* obj, D3D12_RESIDENCY_PRIORITY priority) const;
 
     void SetCurrentFrameIndex(UINT frameIndex);
     // For more deailed stats use outCustomHeaps to access statistics divided into L0 and L1 group
@@ -6827,9 +6827,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   private:
     using PoolList = IntrusiveLinkedList<PoolListItemTraits>;
 
-    coezt bool m_UseMutex;
-    coezt bool m_AlwaysCommitted;
-    coezt bool m_MsaaAlwaysCommitted;
+    const bool m_UseMutex;
+    const bool m_AlwaysCommitted;
+    const bool m_MsaaAlwaysCommitted;
     bool m_DefaultPoolsNotZeroed = false;
     ID3D12Device* m_Device; // AddRef
 #  ifdef __ID3D12Device1_INTERFACE_DEFINED__
@@ -6867,31 +6867,31 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     dedicated allocation (committed resource rather than placed resource).
     */
     template <typename D3D12_RESOURCE_DESC_T>
-    static bool PrefersCommittedAllocation(coezt D3D12_RESOURCE_DESC_T& resourceDesc);
+    static bool PrefersCommittedAllocation(const D3D12_RESOURCE_DESC_T& resourceDesc);
 
     // Allocates and registers new committed resource with implicit heap, as dedicated allocation.
     // Creates and returez Allocation object and optionally D3D12 resource.
     HRESULT AllocateCommittedResource(
-      coezt CommittedAllocationParameters& committedAllocParams,
+      const CommittedAllocationParameters& committedAllocParams,
       UINT64 resourceSize, bool withinBudget, void* pPrivateData,
-      coezt CREATE_RESOURCE_PARAMS& createParams,
+      const CREATE_RESOURCE_PARAMS& createParams,
       Allocation** ppAllocation, REFIID riidResource, void** ppvResource);
 
     // Allocates and registers new heap without any resources placed in it, as dedicated allocation.
     // Creates and returez Allocation object.
     HRESULT AllocateHeap(
-      coezt CommittedAllocationParameters& committedAllocParams,
-      coezt D3D12_RESOURCE_ALLOCATION_INFO& allocInfo, bool withinBudget,
+      const CommittedAllocationParameters& committedAllocParams,
+      const D3D12_RESOURCE_ALLOCATION_INFO& allocInfo, bool withinBudget,
       void* pPrivateData, Allocation** ppAllocation);
 
     template <typename D3D12_RESOURCE_DESC_T>
-    HRESULT CalcAllocationParams(coezt ALLOCATION_DESC& allocDesc, UINT64 allocSize,
-      coezt D3D12_RESOURCE_DESC_T* resDesc, // Optional
+    HRESULT CalcAllocationParams(const ALLOCATION_DESC& allocDesc, UINT64 allocSize,
+      const D3D12_RESOURCE_DESC_T* resDesc, // Optional
       BlockVector*& outBlockVector, CommittedAllocationParameters& outCommittedAllocationParams, bool& outPreferCommitted);
 
     // Returez UINT32_MAX if index cannot be calculcated.
-    UINT CalcDefaultPoolIndex(coezt ALLOCATION_DESC& allocDesc, ResourceClass resourceClass) coezt;
-    void CalcDefaultPoolParams(D3D12_HEAP_TYPE& outHeapType, D3D12_HEAP_FLAGS& outHeapFlags, UINT index) coezt;
+    UINT CalcDefaultPoolIndex(const ALLOCATION_DESC& allocDesc, ResourceClass resourceClass) const;
+    void CalcDefaultPoolParams(D3D12_HEAP_TYPE& outHeapType, D3D12_HEAP_FLAGS& outHeapFlags, UINT index) const;
 
     // Registers Pool object in m_Pools.
     void RegisterPool(Pool* pool, D3D12_HEAP_TYPE heapType);
@@ -6900,22 +6900,22 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     HRESULT UpdateD3D12Budget();
 
-    D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(coezt D3D12_RESOURCE_DESC& resourceDesc) coezt;
+    D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC& resourceDesc) const;
 #  ifdef __ID3D12Device8_INTERFACE_DEFINED__
-    D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(coezt D3D12_RESOURCE_DESC1& resourceDesc) coezt;
+    D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC1& resourceDesc) const;
 #  endif
 
     template <typename D3D12_RESOURCE_DESC_T>
-    D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfo(D3D12_RESOURCE_DESC_T& inOutResourceDesc) coezt;
+    D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfo(D3D12_RESOURCE_DESC_T& inOutResourceDesc) const;
 
     bool NewAllocationWithinBudget(D3D12_HEAP_TYPE heapType, UINT64 size);
 
     // Writes object { } with data of given budget.
-    static void WriteBudgetToJson(JsonWriter& json, coezt Budget& budget);
+    static void WriteBudgetToJson(JsonWriter& json, const Budget& budget);
   };
 
 #  ifndef _D3D12MA_ALLOCATOR_PIMPL_FUNCTINOS
-  AllocatorPimpl::AllocatorPimpl(coezt ALLOCATION_CALLBACKS& allocationCallbacks, coezt ALLOCATOR_DESC& desc)
+  AllocatorPimpl::AllocatorPimpl(const ALLOCATION_CALLBACKS& allocationCallbacks, const ALLOCATOR_DESC& desc)
     : m_UseMutex((desc.Flags & ALLOCATOR_FLAG_SINGLETHREADED) == 0)
     , m_AlwaysCommitted((desc.Flags & ALLOCATOR_FLAG_ALWAYS_COMMITTED) != 0)
     , m_MsaaAlwaysCommitted((desc.Flags & ALLOCATOR_FLAG_MSAA_TEXTURES_ALWAYS_COMMITTED) != 0)
@@ -6946,7 +6946,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Adapter->AddRef();
   }
 
-  HRESULT AllocatorPimpl::Init(coezt ALLOCATOR_DESC& desc)
+  HRESULT AllocatorPimpl::Init(const ALLOCATOR_DESC& desc)
   {
 #    if D3D12MA_DXGI_1_4
     desc.pAdapter->QueryInterface(D3D12MA_IID_PPV_ARGS(&m_Adapter3));
@@ -7001,7 +7001,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
 
     D3D12_HEAP_PROPERTIES heapProps = {};
-    coezt UINT defaultPoolCount = GetDefaultPoolCount();
+    const UINT defaultPoolCount = GetDefaultPoolCount();
     for (UINT i = 0; i < defaultPoolCount; ++i)
     {
       D3D12_HEAP_FLAGS heapFlags;
@@ -7071,7 +7071,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  bool AllocatorPimpl::HeapFlagsFulfillResourceHeapTier(D3D12_HEAP_FLAGS flags) coezt
+  bool AllocatorPimpl::HeapFlagsFulfillResourceHeapTier(D3D12_HEAP_FLAGS flags) const
   {
     if (SupportsResourceHeapTier2())
     {
@@ -7079,15 +7079,15 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
     else
     {
-      coezt bool allowBuffers = (flags & D3D12_HEAP_FLAG_DENY_BUFFERS) == 0;
-      coezt bool allowRtDsTextures = (flags & D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES) == 0;
-      coezt bool allowNonRtDsTextures = (flags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES) == 0;
-      coezt uint8_t allowedGroupCount = (allowBuffers ? 1 : 0) + (allowRtDsTextures ? 1 : 0) + (allowNonRtDsTextures ? 1 : 0);
+      const bool allowBuffers = (flags & D3D12_HEAP_FLAG_DENY_BUFFERS) == 0;
+      const bool allowRtDsTextures = (flags & D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES) == 0;
+      const bool allowNonRtDsTextures = (flags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES) == 0;
+      const uint8_t allowedGroupCount = (allowBuffers ? 1 : 0) + (allowRtDsTextures ? 1 : 0) + (allowNonRtDsTextures ? 1 : 0);
       return allowedGroupCount == 1;
     }
   }
 
-  UINT AllocatorPimpl::StandardHeapTypeToMemorySegmentGroup(D3D12_HEAP_TYPE heapType) coezt
+  UINT AllocatorPimpl::StandardHeapTypeToMemorySegmentGroup(D3D12_HEAP_TYPE heapType) const
   {
     D3D12MA_ASSERT(IsHeapTypeStandard(heapType));
     if (IsUMA())
@@ -7095,7 +7095,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return heapType == D3D12_HEAP_TYPE_DEFAULT ? DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY : DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY;
   }
 
-  UINT AllocatorPimpl::HeapPropertiesToMemorySegmentGroup(coezt D3D12_HEAP_PROPERTIES& heapProps) coezt
+  UINT AllocatorPimpl::HeapPropertiesToMemorySegmentGroup(const D3D12_HEAP_PROPERTIES& heapProps) const
   {
     if (IsUMA())
       return DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY;
@@ -7104,7 +7104,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return heapProps.MemoryPoolPreference == D3D12_MEMORY_POOL_L1 ? DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY : DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY;
   }
 
-  UINT64 AllocatorPimpl::GetMemoryCapacity(UINT memorySegmentGroup) coezt
+  UINT64 AllocatorPimpl::GetMemoryCapacity(UINT memorySegmentGroup) const
   {
     switch (memorySegmentGroup)
     {
@@ -7121,7 +7121,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT AllocatorPimpl::CreatePlacedResourceWrap(
     ID3D12Heap* pHeap,
     UINT64 HeapOffset,
-    coezt CREATE_RESOURCE_PARAMS& createParams,
+    const CREATE_RESOURCE_PARAMS& createParams,
     REFIID riidResource,
     void** ppvResource)
   {
@@ -7167,8 +7167,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
 
   HRESULT AllocatorPimpl::CreateResource(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt CREATE_RESOURCE_PARAMS& createParams,
+    const ALLOCATION_DESC* pAllocDesc,
+    const CREATE_RESOURCE_PARAMS& createParams,
     Allocation** ppAllocation,
     REFIID riidResource,
     void** ppvResource)
@@ -7247,7 +7247,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     if (FAILED(hr))
       return hr;
 
-    coezt bool withinBudget = (pAllocDesc->Flags & ALLOCATION_FLAG_WITHIN_BUDGET) != 0;
+    const bool withinBudget = (pAllocDesc->Flags & ALLOCATION_FLAG_WITHIN_BUDGET) != 0;
     hr = E_INVALIDARG;
     if (committedAllocationParams.IsValid() && preferCommitted)
     {
@@ -7277,8 +7277,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   HRESULT AllocatorPimpl::AllocateMemory(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
+    const ALLOCATION_DESC* pAllocDesc,
+    const D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
     Allocation** ppAllocation)
   {
     *ppAllocation = NULL;
@@ -7292,7 +7292,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     if (FAILED(hr))
       return hr;
 
-    coezt bool withinBudget = (pAllocDesc->Flags & ALLOCATION_FLAG_WITHIN_BUDGET) != 0;
+    const bool withinBudget = (pAllocDesc->Flags & ALLOCATION_FLAG_WITHIN_BUDGET) != 0;
     hr = E_INVALIDARG;
     if (committedAllocationParams.IsValid() && preferCommitted)
     {
@@ -7319,7 +7319,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT AllocatorPimpl::CreateAliasingResource(
     Allocation* pAllocation,
     UINT64 AllocationLocalOffset,
-    coezt CREATE_RESOURCE_PARAMS& createParams,
+    const CREATE_RESOURCE_PARAMS& createParams,
     REFIID riidResource,
     void** ppvResource)
   {
@@ -7369,10 +7369,10 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     D3D12MA_ASSERT(IsPow2(resAllocInfo.Alignment));
     D3D12MA_ASSERT(resAllocInfo.SizeInBytes > 0);
 
-    ID3D12Heap* coezt existingHeap = pAllocation->GetHeap();
-    coezt UINT64 existingOffset = pAllocation->GetOffset();
-    coezt UINT64 existingSize = pAllocation->GetSize();
-    coezt UINT64 newOffset = existingOffset + AllocationLocalOffset;
+    ID3D12Heap* const existingHeap = pAllocation->GetHeap();
+    const UINT64 existingOffset = pAllocation->GetOffset();
+    const UINT64 existingSize = pAllocation->GetSize();
+    const UINT64 newOffset = existingOffset + AllocationLocalOffset;
 
     if (existingHeap == NULL ||
         AllocationLocalOffset + resAllocInfo.SizeInBytes > existingSize ||
@@ -7388,11 +7388,11 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     D3D12MA_ASSERT(allocation && allocation->m_PackedData.GetType() == Allocation::TYPE_COMMITTED);
 
-    CommittedAllocationList* coezt allocList = allocation->m_Committed.list;
+    CommittedAllocationList* const allocList = allocation->m_Committed.list;
     allocList->Unregister(allocation);
 
-    coezt UINT memSegmentGroup = allocList->GetMemorySegmentGroup(this);
-    coezt UINT64 allocSize = allocation->GetSize();
+    const UINT memSegmentGroup = allocList->GetMemorySegmentGroup(this);
+    const UINT64 allocSize = allocation->GetSize();
     m_Budget.RemoveAllocation(memSegmentGroup, allocSize);
     m_Budget.RemoveBlock(memSegmentGroup, allocSize);
   }
@@ -7401,9 +7401,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     D3D12MA_ASSERT(allocation && allocation->m_PackedData.GetType() == Allocation::TYPE_PLACED);
 
-    NormalBlock* coezt block = allocation->m_Placed.block;
+    NormalBlock* const block = allocation->m_Placed.block;
     D3D12MA_ASSERT(block);
-    BlockVector* coezt blockVector = block->GetBlockVector();
+    BlockVector* const blockVector = block->GetBlockVector();
     D3D12MA_ASSERT(blockVector);
     m_Budget.RemoveAllocation(HeapPropertiesToMemorySegmentGroup(block->GetHeapProperties()), allocation->GetSize());
     blockVector->Free(allocation);
@@ -7413,17 +7413,17 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     D3D12MA_ASSERT(allocation && allocation->m_PackedData.GetType() == Allocation::TYPE_HEAP);
 
-    CommittedAllocationList* coezt allocList = allocation->m_Committed.list;
+    CommittedAllocationList* const allocList = allocation->m_Committed.list;
     allocList->Unregister(allocation);
     SAFE_RELEASE(allocation->m_Heap.heap);
 
-    coezt UINT memSegmentGroup = allocList->GetMemorySegmentGroup(this);
-    coezt UINT64 allocSize = allocation->GetSize();
+    const UINT memSegmentGroup = allocList->GetMemorySegmentGroup(this);
+    const UINT64 allocSize = allocation->GetSize();
     m_Budget.RemoveAllocation(memSegmentGroup, allocSize);
     m_Budget.RemoveBlock(memSegmentGroup, allocSize);
   }
 
-  void AllocatorPimpl::SetResidencyPriority(ID3D12Pageable* obj, D3D12_RESIDENCY_PRIORITY priority) coezt
+  void AllocatorPimpl::SetResidencyPriority(ID3D12Pageable* obj, D3D12_RESIDENCY_PRIORITY priority) const
   {
 #    ifdef __ID3D12Device1_INTERFACE_DEFINED__
     if (priority != D3D12_RESIDENCY_PRIORITY_NONE && m_Device1)
@@ -7463,7 +7463,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       // DEFAULT, UPLOAD, READBACK.
       for (size_t heapTypeIndex = 0; heapTypeIndex < STANDARD_HEAP_TYPE_COUNT; ++heapTypeIndex)
       {
-        BlockVector* coezt pBlockVector = m_BlockVectors[heapTypeIndex];
+        BlockVector* const pBlockVector = m_BlockVectors[heapTypeIndex];
         D3D12MA_ASSERT(pBlockVector);
         pBlockVector->AddDetailedStatistics(outStats.HeapType[heapTypeIndex]);
       }
@@ -7475,7 +7475,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       {
         for (size_t heapSubType = 0; heapSubType < 3; ++heapSubType)
         {
-          BlockVector* coezt pBlockVector = m_BlockVectors[heapTypeIndex * 3 + heapSubType];
+          BlockVector* const pBlockVector = m_BlockVectors[heapTypeIndex * 3 + heapSubType];
           D3D12MA_ASSERT(pBlockVector);
           pBlockVector->AddDetailedStatistics(outStats.HeapType[heapTypeIndex]);
         }
@@ -7501,7 +7501,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       PoolList& poolList = m_Pools[heapTypeIndex];
       for (PoolPimpl* pool = poolList.Front(); pool != NULL; pool = poolList.GetNext(pool))
       {
-        coezt D3D12_HEAP_PROPERTIES& poolHeapProps = pool->GetDesc().HeapProperties;
+        const D3D12_HEAP_PROPERTIES& poolHeapProps = pool->GetDesc().HeapProperties;
         ClearDetailedStatistics(tmpStats);
         pool->AddDetailedStatistics(tmpStats);
         AddDetailedStatistics(
@@ -7761,7 +7761,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
       if (detailedMap)
       {
-        coezt auto writeHeapInfo = [&](BlockVector* blockVector, CommittedAllocationList* committedAllocs, bool customHeap)
+        const auto writeHeapInfo = [&](BlockVector* blockVector, CommittedAllocationList* committedAllocs, bool customHeap)
         {
           D3D12MA_ASSERT(blockVector);
 
@@ -7804,7 +7804,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
             if (customHeap)
             {
-              coezt D3D12_HEAP_PROPERTIES& properties = blockVector->GetHeapProperties();
+              const D3D12_HEAP_PROPERTIES& properties = blockVector->GetHeapProperties();
               switch (properties.MemoryPoolPreference)
               {
                 default:
@@ -7872,7 +7872,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
             {
               for (uint8_t heapSubType = 0; heapSubType < 3; ++heapSubType)
               {
-                static coezt WCHAR* coezt heapSubTypeName[] = {
+                static const WCHAR* const heapSubTypeName[] = {
                   L" - Buffers",
                   L" - Textures",
                   L" - Textures RT/DS",
@@ -7924,7 +7924,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       json.EndObject();
     }
 
-    coezt size_t length = sb.GetLength();
+    const size_t length = sb.GetLength();
     WCHAR* result = AllocateArray<WCHAR>(GetAllocs(), length + 2);
     result[0] = 0xFEFF;
     memcpy(result + 1, sb.GetData(), length * sizeof(WCHAR));
@@ -7939,16 +7939,16 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   template <typename D3D12_RESOURCE_DESC_T>
-  bool AllocatorPimpl::PrefersCommittedAllocation(coezt D3D12_RESOURCE_DESC_T& resourceDesc)
+  bool AllocatorPimpl::PrefersCommittedAllocation(const D3D12_RESOURCE_DESC_T& resourceDesc)
   {
     // Intentional. It may change in the future.
     return false;
   }
 
   HRESULT AllocatorPimpl::AllocateCommittedResource(
-    coezt CommittedAllocationParameters& committedAllocParams,
+    const CommittedAllocationParameters& committedAllocParams,
     UINT64 resourceSize, bool withinBudget, void* pPrivateData,
-    coezt CREATE_RESOURCE_PARAMS& createParams,
+    const CREATE_RESOURCE_PARAMS& createParams,
     Allocation** ppAllocation, REFIID riidResource, void** ppvResource)
   {
     D3D12MA_ASSERT(committedAllocParams.IsValid());
@@ -8093,7 +8093,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
         committedAllocParams.m_List->Register(alloc);
 
-        coezt UINT memSegmentGroup = HeapPropertiesToMemorySegmentGroup(committedAllocParams.m_HeapProperties);
+        const UINT memSegmentGroup = HeapPropertiesToMemorySegmentGroup(committedAllocParams.m_HeapProperties);
         m_Budget.AddBlock(memSegmentGroup, resourceSize);
         m_Budget.AddAllocation(memSegmentGroup, resourceSize);
       }
@@ -8106,8 +8106,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   HRESULT AllocatorPimpl::AllocateHeap(
-    coezt CommittedAllocationParameters& committedAllocParams,
-    coezt D3D12_RESOURCE_ALLOCATION_INFO& allocInfo, bool withinBudget,
+    const CommittedAllocationParameters& committedAllocParams,
+    const D3D12_RESOURCE_ALLOCATION_INFO& allocInfo, bool withinBudget,
     void* pPrivateData, Allocation** ppAllocation)
   {
     D3D12MA_ASSERT(committedAllocParams.IsValid());
@@ -8157,7 +8157,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       (*ppAllocation)->SetPrivateData(pPrivateData);
       committedAllocParams.m_List->Register(*ppAllocation);
 
-      coezt UINT memSegmentGroup = HeapPropertiesToMemorySegmentGroup(committedAllocParams.m_HeapProperties);
+      const UINT memSegmentGroup = HeapPropertiesToMemorySegmentGroup(committedAllocParams.m_HeapProperties);
       m_Budget.AddBlock(memSegmentGroup, allocInfo.SizeInBytes);
       m_Budget.AddAllocation(memSegmentGroup, allocInfo.SizeInBytes);
     }
@@ -8165,8 +8165,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   template <typename D3D12_RESOURCE_DESC_T>
-  HRESULT AllocatorPimpl::CalcAllocationParams(coezt ALLOCATION_DESC& allocDesc, UINT64 allocSize,
-    coezt D3D12_RESOURCE_DESC_T* resDesc,
+  HRESULT AllocatorPimpl::CalcAllocationParams(const ALLOCATION_DESC& allocDesc, UINT64 allocSize,
+    const D3D12_RESOURCE_DESC_T* resDesc,
     BlockVector*& outBlockVector, CommittedAllocationParameters& outCommittedAllocationParams, bool& outPreferCommitted)
   {
     outBlockVector = NULL;
@@ -8176,12 +8176,12 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     bool msaaAlwaysCommitted;
     if (allocDesc.CustomPool != NULL)
     {
-      PoolPimpl* coezt pool = allocDesc.CustomPool->m_Pimpl;
+      PoolPimpl* const pool = allocDesc.CustomPool->m_Pimpl;
 
       msaaAlwaysCommitted = pool->GetBlockVector()->DeniesMsaaTextures();
       outBlockVector = pool->GetBlockVector();
 
-      coezt auto& desc = pool->GetDesc();
+      const auto& desc = pool->GetDesc();
       outCommittedAllocationParams.m_ProtectedSession = desc.pProtectedSession;
       outCommittedAllocationParams.m_HeapProperties = desc.HeapProperties;
       outCommittedAllocationParams.m_HeapFlags = desc.HeapFlags;
@@ -8201,12 +8201,12 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       outCommittedAllocationParams.m_List = &m_CommittedAllocatioez[StandardHeapTypeToIndex(allocDesc.HeapType)];
       // outCommittedAllocationParams.m_ResidencyPriority intentionally left with default value.
 
-      coezt ResourceClass resourceClass = (resDesc != NULL) ? ResourceDescToResourceClass(*resDesc) : HeapFlagsToResourceClass(allocDesc.ExtraHeapFlags);
-      coezt UINT defaultPoolIndex = CalcDefaultPoolIndex(allocDesc, resourceClass);
+      const ResourceClass resourceClass = (resDesc != NULL) ? ResourceDescToResourceClass(*resDesc) : HeapFlagsToResourceClass(allocDesc.ExtraHeapFlags);
+      const UINT defaultPoolIndex = CalcDefaultPoolIndex(allocDesc, resourceClass);
       if (defaultPoolIndex != UINT32_MAX)
       {
         outBlockVector = m_BlockVectors[defaultPoolIndex];
-        coezt UINT64 preferredBlockSize = outBlockVector->GetPreferredBlockSize();
+        const UINT64 preferredBlockSize = outBlockVector->GetPreferredBlockSize();
         if (allocSize > preferredBlockSize)
         {
           outBlockVector = NULL;
@@ -8218,7 +8218,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         }
       }
 
-      coezt D3D12_HEAP_FLAGS extraHeapFlags = allocDesc.ExtraHeapFlags & ~RESOURCE_CLASS_HEAP_FLAGS;
+      const D3D12_HEAP_FLAGS extraHeapFlags = allocDesc.ExtraHeapFlags & ~RESOURCE_CLASS_HEAP_FLAGS;
       if (outBlockVector != NULL && extraHeapFlags != 0)
       {
         outBlockVector = NULL;
@@ -8247,7 +8247,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return (outBlockVector != NULL || outCommittedAllocationParams.m_List != NULL) ? S_OK : E_INVALIDARG;
   }
 
-  UINT AllocatorPimpl::CalcDefaultPoolIndex(coezt ALLOCATION_DESC& allocDesc, ResourceClass resourceClass) coezt
+  UINT AllocatorPimpl::CalcDefaultPoolIndex(const ALLOCATION_DESC& allocDesc, ResourceClass resourceClass) const
   {
     D3D12_HEAP_FLAGS extraHeapFlags = allocDesc.ExtraHeapFlags & ~RESOURCE_CLASS_HEAP_FLAGS;
 
@@ -8299,7 +8299,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  void AllocatorPimpl::CalcDefaultPoolParams(D3D12_HEAP_TYPE& outHeapType, D3D12_HEAP_FLAGS& outHeapFlags, UINT index) coezt
+  void AllocatorPimpl::CalcDefaultPoolParams(D3D12_HEAP_TYPE& outHeapType, D3D12_HEAP_FLAGS& outHeapFlags, UINT index) const
   {
     outHeapType = D3D12_HEAP_TYPE_DEFAULT;
     outHeapFlags = D3D12_HEAP_FLAG_NONE;
@@ -8340,7 +8340,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
   void AllocatorPimpl::RegisterPool(Pool* pool, D3D12_HEAP_TYPE heapType)
   {
-    coezt UINT heapTypeIndex = (UINT)heapType - 1;
+    const UINT heapTypeIndex = (UINT)heapType - 1;
 
     MutexLockWrite lock(m_PoolsMutex[heapTypeIndex], m_UseMutex);
     m_Pools[heapTypeIndex].PushBack(pool->m_Pimpl);
@@ -8348,7 +8348,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
   void AllocatorPimpl::UnregisterPool(Pool* pool, D3D12_HEAP_TYPE heapType)
   {
-    coezt UINT heapTypeIndex = (UINT)heapType - 1;
+    const UINT heapTypeIndex = (UINT)heapType - 1;
 
     MutexLockWrite lock(m_PoolsMutex[heapTypeIndex], m_UseMutex);
     m_Pools[heapTypeIndex].Remove(pool->m_Pimpl);
@@ -8366,13 +8366,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #    endif
   }
 
-  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfoNative(coezt D3D12_RESOURCE_DESC& resourceDesc) coezt
+  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC& resourceDesc) const
   {
     return m_Device->GetResourceAllocationInfo(0, 1, &resourceDesc);
   }
 
 #    ifdef __ID3D12Device8_INTERFACE_DEFINED__
-  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfoNative(coezt D3D12_RESOURCE_DESC1& resourceDesc) coezt
+  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC1& resourceDesc) const
   {
     D3D12MA_ASSERT(m_Device8 != NULL);
     D3D12_RESOURCE_ALLOCATION_INFO1 info1Unused;
@@ -8381,7 +8381,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #    endif // #ifdef __ID3D12Device8_INTERFACE_DEFINED__
 
   template <typename D3D12_RESOURCE_DESC_T>
-  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfo(D3D12_RESOURCE_DESC_T& inOutResourceDesc) coezt
+  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfo(D3D12_RESOURCE_DESC_T& inOutResourceDesc) const
   {
 #    ifdef __ID3D12Device1_INTERFACE_DEFINED__
     /* Optional optimization: Microsoft documentation says:
@@ -8414,9 +8414,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       The algorithm here is based on Microsoft sample: "Small Resources Sample"
       https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop/D3D12SmallResources
       */
-      coezt UINT64 smallAlignmentToTry = inOutResourceDesc.SampleDesc.Count > 1 ? D3D12_SMALL_MSAA_RESOURCE_PLACEMENT_ALIGNMENT : D3D12_SMALL_RESOURCE_PLACEMENT_ALIGNMENT;
+      const UINT64 smallAlignmentToTry = inOutResourceDesc.SampleDesc.Count > 1 ? D3D12_SMALL_MSAA_RESOURCE_PLACEMENT_ALIGNMENT : D3D12_SMALL_RESOURCE_PLACEMENT_ALIGNMENT;
       inOutResourceDesc.Alignment = smallAlignmentToTry;
-      coezt D3D12_RESOURCE_ALLOCATION_INFO smallAllocInfo = GetResourceAllocationInfoNative(inOutResourceDesc);
+      const D3D12_RESOURCE_ALLOCATION_INFO smallAllocInfo = GetResourceAllocationInfoNative(inOutResourceDesc);
       // Check if alignment requested has been granted.
       if (smallAllocInfo.Alignment == smallAlignmentToTry)
       {
@@ -8436,7 +8436,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return budget.UsageBytes + size <= budget.BudgetBytes;
   }
 
-  void AllocatorPimpl::WriteBudgetToJson(JsonWriter& json, coezt Budget& budget)
+  void AllocatorPimpl::WriteBudgetToJson(JsonWriter& json, const Budget& budget)
   {
     json.BeginObject();
     {
@@ -8455,16 +8455,16 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   class VirtualBlockPimpl
   {
   public:
-    coezt ALLOCATION_CALLBACKS m_AllocationCallbacks;
-    coezt UINT64 m_Size;
+    const ALLOCATION_CALLBACKS m_AllocationCallbacks;
+    const UINT64 m_Size;
     BlockMetadata* m_Metadata;
 
-    VirtualBlockPimpl(coezt ALLOCATION_CALLBACKS& allocationCallbacks, coezt VIRTUAL_BLOCK_DESC& desc);
+    VirtualBlockPimpl(const ALLOCATION_CALLBACKS& allocationCallbacks, const VIRTUAL_BLOCK_DESC& desc);
     ~VirtualBlockPimpl();
   };
 
 #  ifndef _D3D12MA_VIRTUAL_BLOCK_PIMPL_FUNCTIONS
-  VirtualBlockPimpl::VirtualBlockPimpl(coezt ALLOCATION_CALLBACKS& allocationCallbacks, coezt VIRTUAL_BLOCK_DESC& desc)
+  VirtualBlockPimpl::VirtualBlockPimpl(const ALLOCATION_CALLBACKS& allocationCallbacks, const VIRTUAL_BLOCK_DESC& desc)
     : m_AllocationCallbacks(allocationCallbacks)
     , m_Size(desc.Size)
   {
@@ -8493,7 +8493,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #ifndef _D3D12MA_MEMORY_BLOCK_FUNCTIONS
   MemoryBlock::MemoryBlock(
     AllocatorPimpl* allocator,
-    coezt D3D12_HEAP_PROPERTIES& heapProps,
+    const D3D12_HEAP_PROPERTIES& heapProps,
     D3D12_HEAP_FLAGS heapFlags,
     UINT64 size,
     UINT id)
@@ -8527,7 +8527,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     HRESULT hr;
 #  ifdef __ID3D12Device4_INTERFACE_DEFINED__
-    ID3D12Device4* coezt device4 = m_Allocator->GetDevice4();
+    ID3D12Device4* const device4 = m_Allocator->GetDevice4();
     if (device4)
       hr = m_Allocator->GetDevice4()->CreateHeap1(&heapDesc, pProtectedSession, D3D12MA_IID_PPV_ARGS(&m_Heap));
     else
@@ -8552,7 +8552,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   NormalBlock::NormalBlock(
     AllocatorPimpl* allocator,
     BlockVector* blockVector,
-    coezt D3D12_HEAP_PROPERTIES& heapProps,
+    const D3D12_HEAP_PROPERTIES& heapProps,
     D3D12_HEAP_FLAGS heapFlags,
     UINT64 size,
     UINT id)
@@ -8602,7 +8602,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return hr;
   }
 
-  bool NormalBlock::Validate() coezt
+  bool NormalBlock::Validate() const
   {
     D3D12MA_VALIDATE(GetHeap() &&
                      m_pMetadata &&
@@ -8628,7 +8628,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  UINT CommittedAllocationList::GetMemorySegmentGroup(AllocatorPimpl* allocator) coezt
+  UINT CommittedAllocationList::GetMemorySegmentGroup(AllocatorPimpl* allocator) const
   {
     if (m_Pool)
       return allocator->HeapPropertiesToMemorySegmentGroup(m_Pool->GetDesc().HeapProperties);
@@ -8643,7 +8643,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     for (Allocation* alloc = m_AllocationList.Front();
          alloc != NULL; alloc = m_AllocationList.GetNext(alloc))
     {
-      coezt UINT64 size = alloc->GetSize();
+      const UINT64 size = alloc->GetSize();
       inoutStats.BlockCount++;
       inoutStats.AllocationCount++;
       inoutStats.BlockBytes += size;
@@ -8658,7 +8658,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     for (Allocation* alloc = m_AllocationList.Front();
          alloc != NULL; alloc = m_AllocationList.GetNext(alloc))
     {
-      coezt UINT64 size = alloc->GetSize();
+      const UINT64 size = alloc->GetSize();
       inoutStats.Stats.BlockCount++;
       inoutStats.Stats.BlockBytes += size;
       AddDetailedStatisticsAllocation(inoutStats, size);
@@ -8694,7 +8694,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #ifndef _D3D12MA_BLOCK_VECTOR_FUNCTIONS
   BlockVector::BlockVector(
     AllocatorPimpl* hAllocator,
-    coezt D3D12_HEAP_PROPERTIES& heapProps,
+    const D3D12_HEAP_PROPERTIES& heapProps,
     D3D12_HEAP_FLAGS heapFlags,
     UINT64 preferredBlockSize,
     size_t minBlockCount,
@@ -8753,7 +8753,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT BlockVector::Allocate(
     UINT64 size,
     UINT64 alignment,
-    coezt ALLOCATION_DESC& allocDesc,
+    const ALLOCATION_DESC& allocDesc,
     size_t allocationCount,
     Allocation** pAllocatioez)
   {
@@ -8810,7 +8810,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       pBlock->m_pMetadata->Free(hAllocation->GetAllocHandle());
       D3D12MA_HEAVY_ASSERT(pBlock->Validate());
 
-      coezt size_t blockCount = m_Blocks.size();
+      const size_t blockCount = m_Blocks.size();
       // pBlock became empty after this deallocation.
       if (pBlock->m_pMetadata->IsEmpty())
       {
@@ -8854,8 +8854,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT BlockVector::CreateResource(
     UINT64 size,
     UINT64 alignment,
-    coezt ALLOCATION_DESC& allocDesc,
-    coezt CREATE_RESOURCE_PARAMS& createParams,
+    const ALLOCATION_DESC& allocDesc,
+    const CREATE_RESOURCE_PARAMS& createParams,
     Allocation** ppAllocation,
     REFIID riidResource,
     void** ppvResource)
@@ -8899,7 +8899,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     for (size_t i = 0; i < m_Blocks.size(); ++i)
     {
-      coezt NormalBlock* coezt pBlock = m_Blocks[i];
+      const NormalBlock* const pBlock = m_Blocks[i];
       D3D12MA_ASSERT(pBlock);
       D3D12MA_HEAVY_ASSERT(pBlock->Validate());
       pBlock->m_pMetadata->AddStatistics(inoutStats);
@@ -8912,7 +8912,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     for (size_t i = 0; i < m_Blocks.size(); ++i)
     {
-      coezt NormalBlock* coezt pBlock = m_Blocks[i];
+      const NormalBlock* const pBlock = m_Blocks[i];
       D3D12MA_ASSERT(pBlock);
       D3D12MA_HEAVY_ASSERT(pBlock->Validate());
       pBlock->m_pMetadata->AddDetailedStatistics(inoutStats);
@@ -8927,7 +8927,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     for (size_t i = 0, count = m_Blocks.size(); i < count; ++i)
     {
-      coezt NormalBlock* coezt pBlock = m_Blocks[i];
+      const NormalBlock* const pBlock = m_Blocks[i];
       D3D12MA_ASSERT(pBlock);
       D3D12MA_HEAVY_ASSERT(pBlock->Validate());
       json.BeginString();
@@ -8942,7 +8942,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     json.EndObject();
   }
 
-  UINT64 BlockVector::CalcSumBlockSize() coezt
+  UINT64 BlockVector::CalcSumBlockSize() const
   {
     UINT64 result = 0;
     for (size_t i = m_Blocks.size(); i--;)
@@ -8952,7 +8952,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return result;
   }
 
-  UINT64 BlockVector::CalcMaxBlockSize() coezt
+  UINT64 BlockVector::CalcMaxBlockSize() const
   {
     UINT64 result = 0;
     for (size_t i = m_Blocks.size(); i--;)
@@ -9006,7 +9006,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT BlockVector::AllocatePage(
     UINT64 size,
     UINT64 alignment,
-    coezt ALLOCATION_DESC& allocDesc,
+    const ALLOCATION_DESC& allocDesc,
     Allocation** pAllocation)
   {
     // Early reject: requested allocation size is larger that maximum block size for this block vector.
@@ -9023,7 +9023,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       freeMemory = (budget.UsageBytes < budget.BudgetBytes) ? (budget.BudgetBytes - budget.UsageBytes) : 0;
     }
 
-    coezt bool canCreateNewBlock =
+    const bool canCreateNewBlock =
       ((allocDesc.Flags & ALLOCATION_FLAG_NEVER_ALLOCATE) == 0) &&
       (m_Blocks.size() < m_MaxBlockCount) &&
       // Even if we don't have to stay within budget with this allocation, when the
@@ -9036,7 +9036,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       // Forward order in m_Blocks - prefer blocks with smallest amount of free space.
       for (size_t blockIndex = 0; blockIndex < m_Blocks.size(); ++blockIndex)
       {
-        NormalBlock* coezt pCurrBlock = m_Blocks[blockIndex];
+        NormalBlock* const pCurrBlock = m_Blocks[blockIndex];
         D3D12MA_ASSERT(pCurrBlock);
         HRESULT hr = AllocateFromBlock(
           pCurrBlock,
@@ -9063,10 +9063,10 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       if (!m_ExplicitBlockSize)
       {
         // Allocate 1/8, 1/4, 1/2 as first blocks.
-        coezt UINT64 maxExistingBlockSize = CalcMaxBlockSize();
+        const UINT64 maxExistingBlockSize = CalcMaxBlockSize();
         for (UINT i = 0; i < NEW_BLOCK_SIZE_SHIFT_MAX; ++i)
         {
-          coezt UINT64 smallerNewBlockSize = newBlockSize / 2;
+          const UINT64 smallerNewBlockSize = newBlockSize / 2;
           if (smallerNewBlockSize > maxExistingBlockSize && smallerNewBlockSize >= size * 2)
           {
             newBlockSize = smallerNewBlockSize;
@@ -9086,7 +9086,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       {
         while (FAILED(hr) && newBlockSizeShift < NEW_BLOCK_SIZE_SHIFT_MAX)
         {
-          coezt UINT64 smallerNewBlockSize = newBlockSize / 2;
+          const UINT64 smallerNewBlockSize = newBlockSize / 2;
           if (smallerNewBlockSize >= size)
           {
             newBlockSize = smallerNewBlockSize;
@@ -9102,7 +9102,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
       if (SUCCEEDED(hr))
       {
-        NormalBlock* coezt pBlock = m_Blocks[newBlockIndex];
+        NormalBlock* const pBlock = m_Blocks[newBlockIndex];
         D3D12MA_ASSERT(pBlock->m_pMetadata->GetSize() >= size);
 
         hr = AllocateFromBlock(
@@ -9180,7 +9180,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     UINT64 blockSize,
     size_t* pNewBlockIndex)
   {
-    NormalBlock* coezt pBlock = D3D12MA_NEW(m_hAllocator->GetAllocs(), NormalBlock)(
+    NormalBlock* const pBlock = D3D12MA_NEW(m_hAllocator->GetAllocs(), NormalBlock)(
       m_hAllocator,
       this,
       m_HeapProps,
@@ -9209,7 +9209,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #ifndef _D3D12MA_DEFRAGMENTATION_CONTEXT_PIMPL_FUNCTIONS
   DefragmentationContextPimpl::DefragmentationContextPimpl(
     AllocatorPimpl* hAllocator,
-    coezt DEFRAGMENTATION_DESC& desc,
+    const DEFRAGMENTATION_DESC& desc,
     BlockVector* poolVector)
     : m_MaxPassBytes(desc.MaxBytesPerPass == 0 ? UINT64_MAX : desc.MaxBytesPerPass)
     , m_MaxPassAllocatioez(desc.MaxAllocatioezPerPass == 0 ? UINT32_MAX : desc.MaxAllocatioezPerPass)
@@ -9391,7 +9391,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
           NormalBlock* newBlock = move.pSrcAllocation->GetBlock();
           bool notPresent = true;
-          for (coezt FragmentedBlock& block : immovableBlocks)
+          for (const FragmentedBlock& block : immovableBlocks)
           {
             if (block.block == newBlock)
             {
@@ -9461,7 +9461,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     if (immovableBlocks.size() > 0)
     {
       // Move to the begining
-      for (coezt FragmentedBlock& block : immovableBlocks)
+      for (const FragmentedBlock& block : immovableBlocks)
       {
         BlockVector* vector = m_pBlockVectors[block.data];
         MutexLockWrite lock(vector->GetMutex(), vector->m_hAllocator->UseMutex());
@@ -9662,7 +9662,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     if (update && vectorState.avgAllocSize == UINT64_MAX)
       UpdateVectorStatistics(vector, vectorState);
 
-    coezt size_t startMoveCount = m_Moves.size();
+    const size_t startMoveCount = m_Moves.size();
     UINT64 minimalFreeRegion = vectorState.avgFreeSize / 2;
     for (size_t i = vector.GetBlockCount() - 1; i > m_ImmovableBlockCount; --i)
     {
@@ -9691,7 +9691,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         }
 
         // Check all previous blocks for free space
-        coezt size_t prevMoveCount = m_Moves.size();
+        const size_t prevMoveCount = m_Moves.size();
         if (AllocInOtherBlock(0, i, moveData, vector))
           return true;
 
@@ -9776,7 +9776,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
         }
 
         // Check all previous blocks for free space
-        coezt size_t prevMoveCount = m_Moves.size();
+        const size_t prevMoveCount = m_Moves.size();
         if (AllocInOtherBlock(0, i, moveData, vector))
           return true;
 
@@ -9837,14 +9837,14 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #endif // _D3D12MA_DEFRAGMENTATION_CONTEXT_PIMPL_FUNCTIONS
 
 #ifndef _D3D12MA_POOL_PIMPL_FUNCTIONS
-  PoolPimpl::PoolPimpl(AllocatorPimpl* allocator, coezt POOL_DESC& desc)
+  PoolPimpl::PoolPimpl(AllocatorPimpl* allocator, const POOL_DESC& desc)
     : m_Allocator(allocator)
     , m_Desc(desc)
     , m_BlockVector(NULL)
     , m_Name(NULL)
   {
-    coezt bool explicitBlockSize = desc.BlockSize != 0;
-    coezt UINT64 preferredBlockSize = explicitBlockSize ? desc.BlockSize : D3D12MA_DEFAULT_BLOCK_SIZE;
+    const bool explicitBlockSize = desc.BlockSize != 0;
+    const UINT64 preferredBlockSize = explicitBlockSize ? desc.BlockSize : D3D12MA_DEFAULT_BLOCK_SIZE;
     UINT maxBlockCount = desc.MaxBlockCount != 0 ? desc.MaxBlockCount : UINT_MAX;
 
 #  ifndef __ID3D12Device4_INTERFACE_DEFINED__
@@ -9901,7 +9901,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     if (Name)
     {
-      coezt size_t nameCharCount = wcslen(Name) + 1;
+      const size_t nameCharCount = wcslen(Name) + 1;
       m_Name = D3D12MA_NEW_ARRAY(m_Allocator->GetAllocs(), WCHAR, nameCharCount);
       memcpy(m_Name, Name, nameCharCount * sizeof(WCHAR));
     }
@@ -9911,7 +9911,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     if (m_Name)
     {
-      coezt size_t nameCharCount = wcslen(m_Name) + 1;
+      const size_t nameCharCount = wcslen(m_Name) + 1;
       D3D12MA_DELETE_ARRAY(m_Allocator->GetAllocs(), m_Name, nameCharCount);
       m_Name = NULL;
     }
@@ -9920,7 +9920,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
 
 #ifndef _D3D12MA_PUBLIC_INTERFACE
-  HRESULT CreateAllocator(coezt ALLOCATOR_DESC* pDesc, Allocator** ppAllocator)
+  HRESULT CreateAllocator(const ALLOCATOR_DESC* pDesc, Allocator** ppAllocator)
   {
     if (!pDesc || !ppAllocator || !pDesc->pDevice || !pDesc->pAdapter ||
         !(pDesc->PreferredBlockSize == 0 || (pDesc->PreferredBlockSize >= 16 && pDesc->PreferredBlockSize < 0x10000000000ull)))
@@ -9944,7 +9944,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     return hr;
   }
 
-  HRESULT CreateVirtualBlock(coezt VIRTUAL_BLOCK_DESC* pDesc, VirtualBlock** ppVirtualBlock)
+  HRESULT CreateVirtualBlock(const VIRTUAL_BLOCK_DESC* pDesc, VirtualBlock** ppVirtualBlock)
   {
     if (!pDesc || !ppVirtualBlock)
     {
@@ -9985,7 +9985,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
 
-    coezt uint32_t newRefCount = --m_RefCount;
+    const uint32_t newRefCount = --m_RefCount;
     if (newRefCount == 0)
       ReleaseThis();
     return newRefCount;
@@ -9995,33 +9995,33 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #  ifndef _D3D12MA_ALLOCATION_FUNCTIONS
   void Allocation::PackedData::SetType(Type type)
   {
-    coezt UINT u = (UINT)type;
+    const UINT u = (UINT)type;
     D3D12MA_ASSERT(u < (1u << 2));
     m_Type = u;
   }
 
   void Allocation::PackedData::SetResourceDimeezion(D3D12_RESOURCE_DIMENSION resourceDimeezion)
   {
-    coezt UINT u = (UINT)resourceDimeezion;
+    const UINT u = (UINT)resourceDimeezion;
     D3D12MA_ASSERT(u < (1u << 3));
     m_ResourceDimeezion = u;
   }
 
   void Allocation::PackedData::SetResourceFlags(D3D12_RESOURCE_FLAGS resourceFlags)
   {
-    coezt UINT u = (UINT)resourceFlags;
+    const UINT u = (UINT)resourceFlags;
     D3D12MA_ASSERT(u < (1u << 24));
     m_ResourceFlags = u;
   }
 
   void Allocation::PackedData::SetTextureLayout(D3D12_TEXTURE_LAYOUT textureLayout)
   {
-    coezt UINT u = (UINT)textureLayout;
+    const UINT u = (UINT)textureLayout;
     D3D12MA_ASSERT(u < (1u << 9));
     m_TextureLayout = u;
   }
 
-  UINT64 Allocation::GetOffset() coezt
+  UINT64 Allocation::GetOffset() const
   {
     switch (m_PackedData.GetType())
     {
@@ -10048,7 +10048,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  ID3D12Heap* Allocation::GetHeap() coezt
+  ID3D12Heap* Allocation::GetHeap() const
   {
     switch (m_PackedData.GetType())
     {
@@ -10070,7 +10070,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     if (Name)
     {
-      coezt size_t nameCharCount = wcslen(Name) + 1;
+      const size_t nameCharCount = wcslen(Name) + 1;
       m_Name = D3D12MA_NEW_ARRAY(m_Allocator->GetAllocs(), WCHAR, nameCharCount);
       memcpy(m_Name, Name, nameCharCount * sizeof(WCHAR));
     }
@@ -10157,7 +10157,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Placed.block->m_pMetadata->SetAllocationPrivateData(m_Placed.allocHandle, this);
   }
 
-  AllocHandle Allocation::GetAllocHandle() coezt
+  AllocHandle Allocation::GetAllocHandle() const
   {
     switch (m_PackedData.GetType())
     {
@@ -10188,7 +10188,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   template <typename D3D12_RESOURCE_DESC_T>
-  void Allocation::SetResourcePointer(ID3D12Resource* resource, coezt D3D12_RESOURCE_DESC_T* pResourceDesc)
+  void Allocation::SetResourcePointer(ID3D12Resource* resource, const D3D12_RESOURCE_DESC_T* pResourceDesc)
   {
     D3D12MA_ASSERT(m_Resource == NULL && pResourceDesc);
     m_Resource = resource;
@@ -10201,7 +10201,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   {
     if (m_Name)
     {
-      coezt size_t nameCharCount = wcslen(m_Name) + 1;
+      const size_t nameCharCount = wcslen(m_Name) + 1;
       D3D12MA_DELETE_ARRAY(m_Allocator->GetAllocs(), m_Name, nameCharCount);
       m_Name = NULL;
     }
@@ -10238,7 +10238,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   }
 
   DefragmentationContext::DefragmentationContext(AllocatorPimpl* allocator,
-    coezt DEFRAGMENTATION_DESC& desc,
+    const DEFRAGMENTATION_DESC& desc,
     BlockVector* poolVector)
     : m_Pimpl(D3D12MA_NEW(allocator->GetAllocs(), DefragmentationContextPimpl)(allocator, desc, poolVector))
   {
@@ -10251,7 +10251,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #  endif // _D3D12MA_DEFRAGMENTATION_CONTEXT_FUNCTIONS
 
 #  ifndef _D3D12MA_POOL_FUNCTIONS
-  POOL_DESC Pool::GetDesc() coezt
+  POOL_DESC Pool::GetDesc() const
   {
     return m_Pimpl->GetDesc();
   }
@@ -10276,12 +10276,12 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Pimpl->SetName(Name);
   }
 
-  LPCWSTR Pool::GetName() coezt
+  LPCWSTR Pool::GetName() const
   {
     return m_Pimpl->GetName();
   }
 
-  HRESULT Pool::BeginDefragmentation(coezt DEFRAGMENTATION_DESC* pDesc, DefragmentationContext** ppContext)
+  HRESULT Pool::BeginDefragmentation(const DEFRAGMENTATION_DESC* pDesc, DefragmentationContext** ppContext)
   {
     D3D12MA_ASSERT(pDesc && ppContext);
 
@@ -10304,7 +10304,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     D3D12MA_DELETE(m_Pimpl->GetAllocator()->GetAllocs(), this);
   }
 
-  Pool::Pool(Allocator* allocator, coezt POOL_DESC& desc)
+  Pool::Pool(Allocator* allocator, const POOL_DESC& desc)
     : m_Pimpl(D3D12MA_NEW(allocator->m_Pimpl->GetAllocs(), PoolPimpl)(allocator->m_Pimpl, desc))
   {
   }
@@ -10318,31 +10318,31 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #  endif // _D3D12MA_POOL_FUNCTIONS
 
 #  ifndef _D3D12MA_ALLOCATOR_FUNCTIONS
-  coezt D3D12_FEATURE_DATA_D3D12_OPTIONS& Allocator::GetD3D12Optioez() coezt
+  const D3D12_FEATURE_DATA_D3D12_OPTIONS& Allocator::GetD3D12Optioez() const
   {
     return m_Pimpl->GetD3D12Optioez();
   }
 
-  BOOL Allocator::IsUMA() coezt
+  BOOL Allocator::IsUMA() const
   {
     return m_Pimpl->IsUMA();
   }
 
-  BOOL Allocator::IsCacheCoherentUMA() coezt
+  BOOL Allocator::IsCacheCoherentUMA() const
   {
     return m_Pimpl->IsCacheCoherentUMA();
   }
 
-  UINT64 Allocator::GetMemoryCapacity(UINT memorySegmentGroup) coezt
+  UINT64 Allocator::GetMemoryCapacity(UINT memorySegmentGroup) const
   {
     return m_Pimpl->GetMemoryCapacity(memorySegmentGroup);
   }
 
   HRESULT Allocator::CreateResource(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt D3D12_RESOURCE_DESC* pResourceDesc,
+    const ALLOCATION_DESC* pAllocDesc,
+    const D3D12_RESOURCE_DESC* pResourceDesc,
     D3D12_RESOURCE_STATES InitialResourceState,
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue,
     Allocation** ppAllocation,
     REFIID riidResource,
     void** ppvResource)
@@ -10363,10 +10363,10 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
 #    ifdef __ID3D12Device8_INTERFACE_DEFINED__
   HRESULT Allocator::CreateResource2(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt D3D12_RESOURCE_DESC1* pResourceDesc,
+    const ALLOCATION_DESC* pAllocDesc,
+    const D3D12_RESOURCE_DESC1* pResourceDesc,
     D3D12_RESOURCE_STATES InitialResourceState,
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue,
     Allocation** ppAllocation,
     REFIID riidResource,
     void** ppvResource)
@@ -10388,10 +10388,10 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
 #    ifdef __ID3D12Device10_INTERFACE_DEFINED__
   HRESULT Allocator::CreateResource3(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt D3D12_RESOURCE_DESC1* pResourceDesc,
+    const ALLOCATION_DESC* pAllocDesc,
+    const D3D12_RESOURCE_DESC1* pResourceDesc,
     D3D12_BARRIER_LAYOUT InitialLayout,
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue,
     UINT32 NumCastableFormats,
     DXGI_FORMAT* pCastableFormats,
     Allocation** ppAllocation,
@@ -10414,8 +10414,8 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #    endif // #ifdef __ID3D12Device10_INTERFACE_DEFINED__
 
   HRESULT Allocator::AllocateMemory(
-    coezt ALLOCATION_DESC* pAllocDesc,
-    coezt D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
+    const ALLOCATION_DESC* pAllocDesc,
+    const D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
     Allocation** ppAllocation)
   {
     if (!ValidateAllocateMemoryParameters(pAllocDesc, pAllocInfo, ppAllocation))
@@ -10430,9 +10430,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT Allocator::CreateAliasingResource(
     Allocation* pAllocation,
     UINT64 AllocationLocalOffset,
-    coezt D3D12_RESOURCE_DESC* pResourceDesc,
+    const D3D12_RESOURCE_DESC* pResourceDesc,
     D3D12_RESOURCE_STATES InitialResourceState,
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue,
     REFIID riidResource,
     void** ppvResource)
   {
@@ -10454,9 +10454,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT Allocator::CreateAliasingResource1(
     Allocation* pAllocation,
     UINT64 AllocationLocalOffset,
-    coezt D3D12_RESOURCE_DESC1* pResourceDesc,
+    const D3D12_RESOURCE_DESC1* pResourceDesc,
     D3D12_RESOURCE_STATES InitialResourceState,
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue,
     REFIID riidResource,
     void** ppvResource)
   {
@@ -10479,9 +10479,9 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   HRESULT Allocator::CreateAliasingResource2(
     Allocation* pAllocation,
     UINT64 AllocationLocalOffset,
-    coezt D3D12_RESOURCE_DESC1* pResourceDesc,
+    const D3D12_RESOURCE_DESC1* pResourceDesc,
     D3D12_BARRIER_LAYOUT InitialLayout,
-    coezt D3D12_CLEAR_VALUE* pOptimizedClearValue,
+    const D3D12_CLEAR_VALUE* pOptimizedClearValue,
     UINT32 NumCastableFormats,
     DXGI_FORMAT* pCastableFormats,
     REFIID riidResource,
@@ -10503,7 +10503,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #    endif // #ifdef __ID3D12Device10_INTERFACE_DEFINED__
 
   HRESULT Allocator::CreatePool(
-    coezt POOL_DESC* pPoolDesc,
+    const POOL_DESC* pPoolDesc,
     Pool** ppPool)
   {
     if (!pPoolDesc || !ppPool ||
@@ -10556,14 +10556,14 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Pimpl->CalculateStatistics(*pStats);
   }
 
-  void Allocator::BuildStatsString(WCHAR** ppStatsString, BOOL DetailedMap) coezt
+  void Allocator::BuildStatsString(WCHAR** ppStatsString, BOOL DetailedMap) const
   {
     D3D12MA_ASSERT(ppStatsString);
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     m_Pimpl->BuildStatsString(ppStatsString, DetailedMap);
   }
 
-  void Allocator::FreeStatsString(WCHAR* pStatsString) coezt
+  void Allocator::FreeStatsString(WCHAR* pStatsString) const
   {
     if (pStatsString != NULL)
     {
@@ -10572,7 +10572,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     }
   }
 
-  void Allocator::BeginDefragmentation(coezt DEFRAGMENTATION_DESC* pDesc, DefragmentationContext** ppContext)
+  void Allocator::BeginDefragmentation(const DEFRAGMENTATION_DESC* pDesc, DefragmentationContext** ppContext)
   {
     D3D12MA_ASSERT(pDesc && ppContext);
 
@@ -10582,11 +10582,11 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   void Allocator::ReleaseThis()
   {
     // Copy is needed because otherwise we would call destructor and invalidate the structure with callbacks before using it to free memory.
-    coezt ALLOCATION_CALLBACKS allocationCallbacksCopy = m_Pimpl->GetAllocs();
+    const ALLOCATION_CALLBACKS allocationCallbacksCopy = m_Pimpl->GetAllocs();
     D3D12MA_DELETE(allocationCallbacksCopy, this);
   }
 
-  Allocator::Allocator(coezt ALLOCATION_CALLBACKS& allocationCallbacks, coezt ALLOCATOR_DESC& desc)
+  Allocator::Allocator(const ALLOCATION_CALLBACKS& allocationCallbacks, const ALLOCATOR_DESC& desc)
     : m_Pimpl(D3D12MA_NEW(allocationCallbacks, AllocatorPimpl)(allocationCallbacks, desc))
   {
   }
@@ -10598,13 +10598,13 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 #  endif // _D3D12MA_ALLOCATOR_FUNCTIONS
 
 #  ifndef _D3D12MA_VIRTUAL_BLOCK_FUNCTIONS
-  BOOL VirtualBlock::IsEmpty() coezt
+  BOOL VirtualBlock::IsEmpty() const
   {
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->m_Metadata->IsEmpty() ? TRUE : FALSE;
   }
 
-  void VirtualBlock::GetAllocationInfo(VirtualAllocation allocation, VIRTUAL_ALLOCATION_INFO* pInfo) coezt
+  void VirtualBlock::GetAllocationInfo(VirtualAllocation allocation, VIRTUAL_ALLOCATION_INFO* pInfo) const
   {
     D3D12MA_ASSERT(allocation.AllocHandle != (AllocHandle)0 && pInfo);
 
@@ -10612,7 +10612,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Pimpl->m_Metadata->GetAllocationInfo(allocation.AllocHandle, *pInfo);
   }
 
-  HRESULT VirtualBlock::Allocate(coezt VIRTUAL_ALLOCATION_DESC* pDesc, VirtualAllocation* pAllocation, UINT64* pOffset)
+  HRESULT VirtualBlock::Allocate(const VIRTUAL_ALLOCATION_DESC* pDesc, VirtualAllocation* pAllocation, UINT64* pOffset)
   {
     if (!pDesc || !pAllocation || pDesc->Size == 0 || !IsPow2(pDesc->Alignment))
     {
@@ -10622,7 +10622,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
 
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
 
-    coezt UINT64 alignment = pDesc->Alignment != 0 ? pDesc->Alignment : 1;
+    const UINT64 alignment = pDesc->Alignment != 0 ? pDesc->Alignment : 1;
     AllocationRequest allocRequest = {};
     if (m_Pimpl->m_Metadata->CreateAllocationRequest(
           pDesc->Size,
@@ -10674,7 +10674,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Pimpl->m_Metadata->SetAllocationPrivateData(allocation.AllocHandle, pPrivateData);
   }
 
-  void VirtualBlock::GetStatistics(Statistics* pStats) coezt
+  void VirtualBlock::GetStatistics(Statistics* pStats) const
   {
     D3D12MA_ASSERT(pStats);
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
@@ -10683,7 +10683,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Pimpl->m_Metadata->AddStatistics(*pStats);
   }
 
-  void VirtualBlock::CalculateStatistics(DetailedStatistics* pStats) coezt
+  void VirtualBlock::CalculateStatistics(DetailedStatistics* pStats) const
   {
     D3D12MA_ASSERT(pStats);
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
@@ -10692,7 +10692,7 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
     m_Pimpl->m_Metadata->AddDetailedStatistics(*pStats);
   }
 
-  void VirtualBlock::BuildStatsString(WCHAR** ppStatsString) coezt
+  void VirtualBlock::BuildStatsString(WCHAR** ppStatsString) const
   {
     D3D12MA_ASSERT(ppStatsString);
 
@@ -10707,14 +10707,14 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
       json.EndObject();
     } // Scope for JsonWriter
 
-    coezt size_t length = sb.GetLength();
+    const size_t length = sb.GetLength();
     WCHAR* result = AllocateArray<WCHAR>(m_Pimpl->m_AllocationCallbacks, length + 1);
     memcpy(result, sb.GetData(), length * sizeof(WCHAR));
     result[length] = L'\0';
     *ppStatsString = result;
   }
 
-  void VirtualBlock::FreeStatsString(WCHAR* pStatsString) coezt
+  void VirtualBlock::FreeStatsString(WCHAR* pStatsString) const
   {
     if (pStatsString != NULL)
     {
@@ -10726,11 +10726,11 @@ void BlockMetadata_Generic::WriteAllocationInfoToJson(JsonWriter& json) coezt
   void VirtualBlock::ReleaseThis()
   {
     // Copy is needed because otherwise we would call destructor and invalidate the structure with callbacks before using it to free memory.
-    coezt ALLOCATION_CALLBACKS allocationCallbacksCopy = m_Pimpl->m_AllocationCallbacks;
+    const ALLOCATION_CALLBACKS allocationCallbacksCopy = m_Pimpl->m_AllocationCallbacks;
     D3D12MA_DELETE(allocationCallbacksCopy, this);
   }
 
-  VirtualBlock::VirtualBlock(coezt ALLOCATION_CALLBACKS& allocationCallbacks, coezt VIRTUAL_BLOCK_DESC& desc)
+  VirtualBlock::VirtualBlock(const ALLOCATION_CALLBACKS& allocationCallbacks, const VIRTUAL_BLOCK_DESC& desc)
     : m_Pimpl(D3D12MA_NEW(allocationCallbacks, VirtualBlockPimpl)(allocationCallbacks, desc))
   {
   }

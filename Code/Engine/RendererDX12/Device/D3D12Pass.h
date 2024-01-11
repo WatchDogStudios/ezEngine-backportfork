@@ -26,13 +26,13 @@ protected:
   ezGALPassDX12(ezGALDevice& device);
   virtual ~ezGALPassDX12();
 
-  virtual ezGALRenderCommandEncoder* BeginRenderingPlatform(coezt ezGALRenderingSetup& renderingSetup, coezt char* szName) override;
+  virtual ezGALRenderCommandEncoder* BeginRenderingPlatform(const ezGALRenderingSetup& renderingSetup, const char* szName) override;
   virtual void EndRenderingPlatform(ezGALRenderCommandEncoder* pCommandEncoder) override;
 
-  virtual ezGALComputeCommandEncoder* BeginComputePlatform(coezt char* szName) override;
+  virtual ezGALComputeCommandEncoder* BeginComputePlatform(const char* szName) override;
   virtual void EndComputePlatform(ezGALComputeCommandEncoder* pCommandEncoder) override;
 
-  void BeginPass(coezt char* szName);
+  void BeginPass(const char* szName);
   void EndPass();
 
 private:

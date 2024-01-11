@@ -63,7 +63,7 @@ namespace
   }
 } // namespace
 // namespace
-ezInternal::NewIeztance<ezGALDevice> CreateDX12Device(ezAllocatorBase* pAllocator, coezt ezGALDeviceCreationDescription& desc)
+ezInternal::NewInstance<ezGALDevice> CreateDX12Device(ezAllocatorBase* pAllocator, const ezGALDeviceCreationDescription& desc)
 {
   return EZ_NEW(pAllocator, ezGALDeviceDX12, desc);
 }

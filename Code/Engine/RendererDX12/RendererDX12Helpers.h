@@ -30,10 +30,10 @@ inline namespace
     {
     }
 
-    HRESULT Error() coezt { return m_hr; }
+    HRESULT Error() const { return m_hr; }
 
   private:
-    coezt HRESULT m_hr;
+    const HRESULT m_hr;
   };
 
 #define SAFE_RELEASE(p) \
@@ -44,7 +44,7 @@ inline namespace
   /// @param hr Result that is being checked
   /// @param Message Message to report to the user.
   /// @param throwexec 
-  inline void ThrowIfFailed(HRESULT hr,coezt char* Message,bool throwexec = false)
+  inline void ThrowIfFailed(HRESULT hr,const char* Message,bool throwexec = false)
   {
     if (FAILED(hr))
     {

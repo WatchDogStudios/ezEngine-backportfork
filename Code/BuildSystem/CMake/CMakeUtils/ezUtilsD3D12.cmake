@@ -1,6 +1,6 @@
 set(EZ_D3D12_AGILITY_SDK_DIR "EZ_D3D12_AGILITY_SDK_DIR-NOTFOUND" CACHE PATH "Directory of D3D12 Agility SDK")
 set(EZ_D3D12_AGILITY_SDK_INCLUDE_DIR "EZ_D3D12_AGILITY_SDK_INCLUDE_DIR-NOTFOUND" CACHE PATH "Directory of D3D12 Agliity SDK Includes")
-set(EZ_BUILD_EXPERIMENTAL_D3D12_SUPPORT ON CACHE BOOL "Add support for D3D12. PC/Xbox")
+set(EZ_BUILD_EXPERIMENTAL_D3D12_SUPPORT OFF CACHE BOOL "Add support for D3D12. PC/Xbox")
 
 mark_as_advanced(FORCE EZ_D3D12_AGILITY_SDK_DIR)
 mark_as_advanced(FORCE EZ_D3D12_AGILITY_SDK_INCLUDE_DIR)
@@ -21,7 +21,7 @@ function(ez_export_target_dx12 TARGET_NAME)
     # Install D3D12 Aglity SDK for the latest sdk.
     ez_nuget_init()
     
-    message("D3D12 SDK DLL PATH: ${CMAKE_SOURCE_DIR}/${EZ_CMAKE_RELPATH_CODE}/ThirdParty/D3D12SDK")
+    message("D3D12 SDK DLL PATH: ${EZ_D3D12_AGILITY_SDK_PACKAGE_PATH}")
     # Path where d3d12 dlls will end up on build.
     # NOTE: Should we allow the user to change this?
     set(EZ_D3D12_RESOURCES ${CMAKE_BINARY_DIR}/x64)
@@ -29,10 +29,11 @@ function(ez_export_target_dx12 TARGET_NAME)
     if(NOT EXISTS ${EZ_D3D12_RESOURCES})
         file(MAKE_DIRECTORY ${EZ_D3D12_RESOURCES})
     endif()
+    
+    target_include_directories(${TARGET_NAME} PUBLIC ${EZ_D3D12_AGILITY_SDK_PACKAGE_PATH_INCLUDE})
 
     execute_process(COMMAND ${NUGET} restore ${CMAKE_SOURCE_DIR}/${EZ_CMAKE_RELPATH}/CMakeUtils/packages.config -PackagesDirectory ${CMAKE_BINARY_DIR}/packages
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-
 
     add_custom_command(TARGET ${TARGET_NAME}
 	PRE_BUILD

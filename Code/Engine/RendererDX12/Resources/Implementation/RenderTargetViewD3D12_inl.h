@@ -14,7 +14,7 @@ EZ_ALWAYS_INLINE ID3D12Resource* ezGALRenderTargetViewD3D12::GetDepthStencilView
     return m_dsvresource;
 }
 
-EZ_ALWAYS_INLINE ID3D12Resource* ezGALRenderTargetViewD3D12::GetUnorderedAccessView const
+EZ_ALWAYS_INLINE ID3D12Resource* ezGALRenderTargetViewD3D12::GetUnorderedAccessView() const
 {
     return m_uavresource;
 }

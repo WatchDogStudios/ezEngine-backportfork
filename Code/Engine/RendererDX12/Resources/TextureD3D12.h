@@ -41,8 +41,8 @@ protected:
   ezResult CreateStagingTexture(ezGALDeviceDX12* pDevice);
 
 protected:
-  ID3D12Resource* m_finaltextureresource;
-  ID3D12Resource* m_temptextureresource;
+  ID3D12Resource* m_finaltextureresource = nullptr;
+  ID3D12Resource* m_temptextureresource = nullptr;
 };
 
 #include <RendererDX12/Resources/Implementation/TextureD3D12_inl.h>
