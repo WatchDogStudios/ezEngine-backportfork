@@ -32,7 +32,7 @@ private:
   ID3D12Resource* m_rtvresource;
   ID3D12Resource* m_dsvresource;
   ID3D12Resource* m_uavresource;
-  
+
   ID3D12DesciptorHeap* m_dsvdesciptorheap;
   ID3D12DesciptorHeap* m_rtvdesciptorheap;
   ID3D12DesciptorHeap* m_uavdesciptorheap;
@@ -41,7 +41,7 @@ protected:
   friend class ezGALDeviceDX12;
   friend class ezMemoryUtils;
 
-  ezGALRenderTargetViewD3D12(ezGALTexture* pTexture, const ezGALRenderTargetBlendDescription& Description);
+  ezGALRenderTargetViewD3D12(ezGALTexture* pTexture, const ezGALRenderTargetViewCreationDescription& Description);
 
   virtual ~ezGALRenderTargetViewD3D12();
 

@@ -11,7 +11,6 @@ NOTE: Helpers for Xbox DX12 will be contained in GDXKPlatform. this is to make s
 */
 #include <RendererDX12/RendererDX12PCH.h>
 
-
 inline namespace
 {
   inline std::string HrToString(HRESULT hr)
@@ -38,13 +37,13 @@ inline namespace
 
 #define SAFE_RELEASE(p) \
   if (p)                \
-  (p)->Release();
+    (p)->Release();
 
   /// @brief Helper function for handling HRESULT functioez. use for unrecoverable situatioez.
   /// @param hr Result that is being checked
   /// @param Message Message to report to the user.
-  /// @param throwexec 
-  inline void ThrowIfFailed(HRESULT hr,const char* Message,bool throwexec = false)
+  /// @param throwexec
+  inline void ThrowIfFailed(HRESULT hr, const char* Message, bool throwexec = false)
   {
     if (FAILED(hr))
     {
@@ -52,6 +51,5 @@ inline namespace
       if (throwexec == true)
         throw HrException(hr);
     }
-
   }
-}
+} // namespace

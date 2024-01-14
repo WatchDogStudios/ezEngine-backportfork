@@ -1,7 +1,6 @@
-#include <RendererDX12/RendererDX12PCH.h>
 #include <RendererDX12/Device/D3D12Device.h>
+#include <RendererDX12/RendererDX12PCH.h>
 #include <RendererDX12/Resources/TextureD3D12.h>
-
 
 ezGALTextureD3D12::ezGALTextureD3D12(const ezGALTextureCreationDescription& Description)
   : ezGALTexture(Description)
@@ -20,7 +19,7 @@ ezResult ezGALTextureD3D12::InitPlatform(ezGALDevice* pDevice, ezArrayPtr<ezGALS
     return InitFromNativeObject(pdxDevice);
   }
 
-   switch (m_Description.m_Type)
+  switch (m_Description.m_Type)
   {
     case ezGALTextureType::Texture2D:
     case ezGALTextureType::TextureCube:
@@ -30,9 +29,6 @@ ezResult ezGALTextureD3D12::InitPlatform(ezGALDevice* pDevice, ezArrayPtr<ezGALS
 
       ezHybridArray<D3D12_SUBRESOURCE_DATA, 16> InitialData;
       ConvertInitialData(m_Description, pInitialData, InitialData);
-
-     /// Create the committed resource.
-      if (FAILED(pdxDevice->GetDXDevice()->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES,&CD3DX12_RESOURCE_DESC(D3D12_RESOURCE_DI)))
     }
     break;
 
@@ -62,7 +58,6 @@ ezResult ezGALTextureD3D12::InitPlatform(ezGALDevice* pDevice, ezArrayPtr<ezGALS
 ezResult ezGALTextureD3D12::DeInitPlatform(ezGALDevice* pDevice)
 {
 }
-
 
 void ezGALTextureD3D12::SetDebugNamePlatform(const char* szName) const
 {

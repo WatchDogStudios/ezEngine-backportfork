@@ -4,9 +4,9 @@
  *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
  */
 
-#include <RendererDX12/Device/D3D12Pass.h>
 #include <RendererDX12/CommandEncoder/CommandEncoderImplD3D12.h>
 #include <RendererDX12/Device/D3D12Device.h>
+#include <RendererDX12/Device/D3D12Pass.h>
 
 #include <RendererFoundation/CommandEncoder/CommandEncoderState.h>
 #include <RendererFoundation/CommandEncoder/ComputeCommandEncoder.h>
@@ -53,7 +53,6 @@ void ezGALPassDX12::EndComputePlatform(ezGALComputeCommandEncoder* pCommandEncod
 
 void ezGALPassDX12::BeginPass(const char* szName)
 {
-
 }
 
 void ezGALPassDX12::EndPass()

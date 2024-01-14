@@ -1,4 +1,3 @@
-
 EZ_ALWAYS_INLINE ID3D12Device3* ezGALDeviceDX12::GetDXDevice() const
 {
   /*

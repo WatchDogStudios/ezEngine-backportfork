@@ -4,10 +4,9 @@ set(EZ_BUILD_EXPERIMENTAL_D3D12_SUPPORT OFF CACHE BOOL "Add support for D3D12. P
 
 mark_as_advanced(FORCE EZ_D3D12_AGILITY_SDK_DIR)
 mark_as_advanced(FORCE EZ_D3D12_AGILITY_SDK_INCLUDE_DIR)
-mark_as_advanced(FORCE EZ_BUILD_EXPERIMENTAL_D3D12_SUPPORT)
 
 # NOTE: This shouldnt be fixed Aglity Version. Find a way to "adjust this."
-set(EZ_D3D12_AGILITY_SDK_PACKAGE_PATH "${CMAKE_BINARY_DIR}/packages/Microsoft.Direct3D.D3D12.1.711.3/build/native")
+set(EZ_D3D12_AGILITY_SDK_PACKAGE_PATH "${CMAKE_BINARY_DIR}/packages/Microsoft.Direct3D.D3D12.1.611.2/build/native")
 set(EZ_D3D12_AGILITY_SDK_PACKAGE_PATH_INCLUDE "${EZ_D3D12_AGILITY_SDK_PACKAGE_PATH}/include")
 
 macro(ez_requires_d3d12)
@@ -30,7 +29,7 @@ function(ez_export_target_dx12 TARGET_NAME)
         file(MAKE_DIRECTORY ${EZ_D3D12_RESOURCES})
     endif()
     
-    target_include_directories(${TARGET_NAME} PUBLIC ${EZ_D3D12_AGILITY_SDK_PACKAGE_PATH_INCLUDE})
+    target_include_directories(${TARGET_NAME} PRIVATE ${EZ_D3D12_AGILITY_SDK_PACKAGE_PATH_INCLUDE})
 
     execute_process(COMMAND ${NUGET} restore ${CMAKE_SOURCE_DIR}/${EZ_CMAKE_RELPATH}/CMakeUtils/packages.config -PackagesDirectory ${CMAKE_BINARY_DIR}/packages
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -42,7 +41,6 @@ function(ez_export_target_dx12 TARGET_NAME)
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
 
-    target_include_directories(${PROJECT_NAME} PUBLIC ${EZ_D3D12_AGILITY_SDK_PACKAGE_PATH})
 endfunction()
 
 # #####################################

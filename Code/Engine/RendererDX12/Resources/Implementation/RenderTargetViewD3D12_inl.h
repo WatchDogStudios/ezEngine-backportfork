@@ -6,15 +6,15 @@
 
 EZ_ALWAYS_INLINE ID3D12Resource* ezGALRenderTargetViewD3D12::GetRenderTargetView() const
 {
-    return m_rtvresource;
+  return m_rtvresource;
 }
 
 EZ_ALWAYS_INLINE ID3D12Resource* ezGALRenderTargetViewD3D12::GetDepthStencilView() const
 {
-    return m_dsvresource;
+  return m_dsvresource;
 }
 
 EZ_ALWAYS_INLINE ID3D12Resource* ezGALRenderTargetViewD3D12::GetUnorderedAccessView() const
 {
-    return m_uavresource;
+  return m_uavresource;
 }

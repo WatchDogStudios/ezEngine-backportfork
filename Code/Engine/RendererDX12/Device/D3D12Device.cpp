@@ -1,7 +1,7 @@
 #include <RendererDX12/Device/D3D12Device.h>
-#include <RendererDX12/RendererDX12PCH.h>
-#include <RendererDX12/RendererDX12Helpers.h>
 #include <RendererDX12/Device/D3D12Pass.h>
+#include <RendererDX12/RendererDX12Helpers.h>
+#include <RendererDX12/RendererDX12PCH.h>
 
 #include <Core/System/Window.h>
 #include <Foundation/Basics/Platform/Win/IncludeWindows.h>
@@ -11,8 +11,6 @@
 #include <RendererFoundation/Profiling/Profiling.h>
 #include <dxgi1_3.h>
 #include <dxgi1_4.h>
-
-
 
 namespace
 {
@@ -84,8 +82,6 @@ ON_CORESYSTEMS_SHUTDOWN
 }
 
 EZ_END_SUBSYSTEM_DECLARATION;
-
-
 
 ezResult ezGALDeviceDX12::InitPlatform(D3D_FEATURE_LEVEL platformfeaturelevel, IDXGIAdapter1 * wantedadapterused)
 {
@@ -225,15 +221,12 @@ ezResult ezGALDeviceDX12::InitPlatform(D3D_FEATURE_LEVEL platformfeaturelevel, I
           pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
           pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
         }
-
     }
   // Create default pass
   m_pDefaultPass = EZ_NEW(&m_Allocator, ezGALPassDX12, *this);
 
   // Fill lookup table
   FillFormatLookupTable();
-
-
 }
 
 ezResult ezGALDeviceDX12::InitPlatform()

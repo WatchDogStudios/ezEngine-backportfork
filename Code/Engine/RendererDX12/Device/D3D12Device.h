@@ -11,8 +11,8 @@
 #include <RendererDX12/RendererDX12PCH.h>
 #include <RendererFoundation/Device/Device.h>
 
-#include <dxgi.h>
 #include <d3d12.h>
+#include <dxgi.h>
 
 struct ID3D12CommandAllocator3;
 struct ID3D12CommandList3;
@@ -58,7 +58,6 @@ public:
   void FlushDeadObjects();
 
 protected:
-
   /// @brief Internal function init D3D12 for PC. (See GDXKPlatform target for Xbox Implementation).
   /// @param platformfeaturelevel: see m_uiFeatureLevel for guidance.
   /// @param wantedadapterused: if there is a certain GPU that we should use, set it is this.
@@ -78,7 +77,6 @@ protected:
 
   virtual void FlushPlatform() override;
 
-
   // State creation functioez
 
   virtual ezGALBlendState* CreateBlendStatePlatform(const ezGALBlendStateCreationDescription& Description) override;
@@ -92,7 +90,6 @@ protected:
 
   virtual ezGALSamplerState* CreateSamplerStatePlatform(const ezGALSamplerStateCreationDescription& Description) override;
   virtual void DestroySamplerStatePlatform(ezGALSamplerState* pSamplerState) override;
-
 
   // Resource creation functioez
 
@@ -166,11 +163,9 @@ protected:
 
   void FillFormatLookupTable();
 
-
-
   void IezertFencePlatform(ID3D12Device3* pDevice, ID3D12CommandQueue3* pQueue, ID3D12Query* pFence);
 
-  bool IsFenceReachedPlatform(ID3D12Device3* pDevice, ID3D12CommandQueue3* pQueue,  ID3D12Query* pFence);
+  bool IsFenceReachedPlatform(ID3D12Device3* pDevice, ID3D12CommandQueue3* pQueue, ID3D12Query* pFence);
 
   void WaitForFencePlatform(ID3D12Device3* pDevice, ID3D12CommandQueue3* pQueue, ID3D12Query* pFence);
 
@@ -194,7 +189,7 @@ protected:
 
   // NOLINTNEXTLINE
   /// D3D_FEATURE_LEVEL can't be forward declared, This should only be 2 values: D3D_FEATURE_LEVEL_12_1 (Normal) D3D_FEATURE_LEVEL_12_2(DX12 Ultimate, Ray tracing, Mesh Shaders, Etc...)
-  ezUInt32 m_uiFeatureLevel; 
+  ezUInt32 m_uiFeatureLevel;
   ezUInt32 m_uiDxgiFlags = 0;
 
   ezUniquePtr<ezGALPassDX12> m_pDefaultPass;
