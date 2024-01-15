@@ -4,12 +4,12 @@
  *   You are only allowed access to this code, if given WRITTEN permission by Watch Dogs LLC.
  */
 
-EZ_ALWAYS_INLINE ID3D12Resouce* ezGALTextureD3D12::GetDXTexture() const
+EZ_ALWAYS_INLINE ID3D12Resource* ezGALTextureD3D12::GetDXTexture() const
 {
-  return m_finaltextureresource;
+  return (ID3D12Resource*)m_finaltextureresource.GetAddressOf();
 }
 
-EZ_ALWAYS_INLINE ID3D12Resouce* ezGALTextureD3D12::GetDXStagingTexture() const
+EZ_ALWAYS_INLINE ID3D12Resource* ezGALTextureD3D12::GetDXStagingTexture() const
 {
-  return m_temptextureresource;
+  return (ID3D12Resource*)m_temptextureresource.GetAddressOf();
 }

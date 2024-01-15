@@ -71,9 +71,9 @@ EZ_BEGIN_SUBSYSTEM_DECLARATION(RendererDX12, DeviceFactory)
 
 ON_CORESYSTEMS_STARTUP
 {
-  /// @brief Too much of a hassle to add DX12 Support to the DXC (Vulkan) compiler, we will just separate them.
-  /// NOTE: Regarding back porting, contact Jan or someone on the Ez team to make it cleaner.
-  ezGALDeviceFactory::RegisterCreatorFunc("DX12", &CreateDX12Device, "DX12_PC", "ezShaderCompilerDXC_PCDX12");
+  /// @brief Too much of a hassle to add DX12 Support to the DXC (Vulkan) compiler, so we seperated them on northstar. it helped alot in regards of creating code for the PC & Xbox Implementations for D3D12, but in ez's case, it should be included in DXC like vulkan.
+  /// NOTE: contact Jan or someone on the Ez team for how we ca
+  ezGALDeviceFactory::RegisterCreatorFunc("DX12", &CreateDX12Device, "DX12_SM60", "ezShaderCompilerDXC_PCDX12");
 }
 
 ON_CORESYSTEMS_SHUTDOWN
@@ -97,7 +97,7 @@ ezResult ezGALDeviceDX12::InitPlatform(D3D_FEATURE_LEVEL platformfeaturelevel, I
   /// Enable Debug Layer, this will decrease performance by a bit.
   if (createDebugDevice == true)
   {
-    ezLog::SeriousWarning("D3D12: Debug Layer is Enabled. this will degrade performance. eezure that this isn't enabled on release.");
+    ezLog::SeriousWarning("D3D12: Debug Layer is Enabled. this will degrade performance. ensure that this isn't enabled on release.");
     if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&m_pDebug))))
     {
       m_pDebug->EnableDebugLayer();
@@ -148,17 +148,17 @@ ezResult ezGALDeviceDX12::InitPlatform(D3D_FEATURE_LEVEL platformfeaturelevel, I
         m_pDX12Ultimate = true;
       case 0:
         #if EZ_ENABLED(EZ_COMPILE_FOR_DEBUG) || EZ_ENABLED(EZ_COMPILE_FOR_DEVELOPMENT)
-          ezLog::Error("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 ieztead.");
+          ezLog::Error("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 instead.");
         #else
-          ezLog::OsMessageBox("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 ieztead(-renderer DX11).");
+          ezLog::OsMessageBox("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 instead(-renderer DX11).");
         #endif
         m_uiFeatureLevel = 0;
         m_pDX12Ultimate = false;
       default:
         #if EZ_ENABLED(EZ_COMPILE_FOR_DEBUG) || EZ_ENABLED(EZ_COMPILE_FOR_DEVELOPMENT)
-          ezLog::Error("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 ieztead.");
+          ezLog::Error("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 instead.");
         #else
-        ezLog::OsMessageBox("D3D12: CheckDXGIAdapterLevel Returned a invalid feature level. This may mean: The Given Adapter does NOT Support DX12. Please Launch with DX11 or Vulkan ieztead(-renderer DX11/VULKAN).");
+        ezLog::OsMessageBox("D3D12: CheckDXGIAdapterLevel Returned a invalid feature level. This may mean: The Given Adapter does NOT Support DX12. Please Launch with DX11 or Vulkan instead(-renderer DX11/VULKAN).");
         #endif
         m_uiFeatureLevel = 0;
         m_pDX12Ultimate = false;
@@ -184,11 +184,11 @@ ezResult ezGALDeviceDX12::InitPlatform(D3D_FEATURE_LEVEL platformfeaturelevel, I
         m_uiFeatureLevel = D3D_FEATURE_LEVEL_12_2;
         m_pDX12Ultimate = true;
       case 0:
-        ezLog::OsMessageBox("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 ieztead.");
+        ezLog::OsMessageBox("D3D12: The Given Adapter does NOT Support DX12. Please Launch with DX11 instead.");
         m_uiFeatureLevel = 0;
         m_pDX12Ultimate = false;
       default:
-        ezLog::Error("D3D12: CheckDXGIAdapterLevel Returned a invalid feature level. This may mean: The Given Adapter does NOT Support DX12. Please Launch with DX11 ieztead.");
+        ezLog::Error("D3D12: CheckDXGIAdapterLevel Returned a invalid feature level. This may mean: The Given Adapter does NOT Support DX12. Please Launch with DX11 instead.");
         m_uiFeatureLevel = 0;
         m_pDX12Ultimate = false;
         break;

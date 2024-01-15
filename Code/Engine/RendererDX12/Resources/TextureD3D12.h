@@ -7,6 +7,7 @@
 #pragma once
 
 #include <RendererFoundation/Resources/Texture.h>
+#include <wrl/client.h>
 
 struct ID3D12Resource;
 struct D3D12_RESOURCE_DESC;
@@ -41,8 +42,8 @@ protected:
   ezResult CreateStagingTexture(ezGALDeviceDX12* pDevice);
 
 protected:
-  ID3D12Resource* m_finaltextureresource = nullptr;
-  ID3D12Resource* m_temptextureresource = nullptr;
+  Microsoft::WRL::ComPtr<ID3D12Resource> m_finaltextureresource = nullptr;
+  Microsoft::WRL::ComPtr<ID3D12Resource> m_temptextureresource = nullptr;
 };
 
 #include <RendererDX12/Resources/Implementation/TextureD3D12_inl.h>

@@ -30,6 +30,8 @@
 
 #ifdef BUILDSYSTEM_ENABLE_VULKAN_SUPPORT
 constexpr const char* szDefaultRenderer = "Vulkan";
+#elif BUILDSYSTEM_ENABLE_D3D12_SUPPORT
+constexpr const char* szDefaultRenderer = "DX12";
 #else
 constexpr const char* szDefaultRenderer = "DX11";
 #endif

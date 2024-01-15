@@ -8,3 +8,15 @@ ezGALRenderTargetViewD3D12::ezGALRenderTargetViewD3D12(ezGALTexture* pTexture, c
   : ezGALRenderTargetView(pTexture, Description)
 {
 }
+
+ezGALRenderTargetViewD3D12::~ezGALRenderTargetViewD3D12()
+{
+}
+
+ezResult ezGALRenderTargetViewD3D12::InitPlatform(ezGALDevice* pDevice)
+{
+}
+
+ezResult ezGALRenderTargetViewD3D12::DeInitPlatform(ezGALDevice* pDevice)
+{
+}

@@ -1,6 +1,4 @@
 ez_cmake_init()
-
-
 ez_requires_d3d12()
 
 # Get the name of this folder as the project name
@@ -19,6 +17,7 @@ target_link_libraries(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
   Foundation
+  D3D12MA
   RendererFoundation
 )
 

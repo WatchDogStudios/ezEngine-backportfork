@@ -11,7 +11,7 @@
 #    define EZ_RENDERERDX12_DLL EZ_DECL_IMPORT
 #  endif
 #else
-#  define EZ_RENDERERDX11_DLL
+#  define EZ_RENDERERDX12_DLL
 #endif
 
 #define EZ_GAL_DX12_RELEASE(d3dobj) \

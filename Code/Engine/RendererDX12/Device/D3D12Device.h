@@ -67,7 +67,7 @@ protected:
   virtual ezResult InitPlatform() override;
   virtual ezResult ShutdownPlatform() override;
 
-  // Pipeline & Pass functioez
+  // Pipeline & Pass functions
 
   virtual void BeginPipelinePlatform(const char* szName, ezGALSwapChain* pSwapChain) override;
   virtual void EndPipelinePlatform(ezGALSwapChain* pSwapChain) override;
@@ -77,7 +77,7 @@ protected:
 
   virtual void FlushPlatform() override;
 
-  // State creation functioez
+  // State creation functions
 
   virtual ezGALBlendState* CreateBlendStatePlatform(const ezGALBlendStateCreationDescription& Description) override;
   virtual void DestroyBlendStatePlatform(ezGALBlendState* pBlendState) override;
@@ -91,7 +91,7 @@ protected:
   virtual ezGALSamplerState* CreateSamplerStatePlatform(const ezGALSamplerStateCreationDescription& Description) override;
   virtual void DestroySamplerStatePlatform(ezGALSamplerState* pSamplerState) override;
 
-  // Resource creation functioez
+  // Resource creation functions
 
   virtual ezGALShader* CreateShaderPlatform(const ezGALShaderCreationDescription& Description) override;
   virtual void DestroyShaderPlatform(ezGALShader* pShader) override;
@@ -114,7 +114,7 @@ protected:
   ezGALUnorderedAccessView* CreateUnorderedAccessViewPlatform(ezGALResourceBase* pResource, const ezGALUnorderedAccessViewCreationDescription& Description) override;
   virtual void DestroyUnorderedAccessViewPlatform(ezGALUnorderedAccessView* pUnorderedAccessView) override;
 
-  // Other rendering creation functioez
+  // Other rendering creation functions
 
   virtual ezGALQuery* CreateQueryPlatform(const ezGALQueryCreationDescription& Description) override;
   virtual void DestroyQueryPlatform(ezGALQuery* pQuery) override;
@@ -122,16 +122,16 @@ protected:
   virtual ezGALVertexDeclaration* CreateVertexDeclarationPlatform(const ezGALVertexDeclarationCreationDescription& Description) override;
   virtual void DestroyVertexDeclarationPlatform(ezGALVertexDeclaration* pVertexDeclaration) override;
 
-  // Timestamp functioez
+  // Timestamp functions
 
   virtual ezGALTimestampHandle GetTimestampPlatform() override;
   virtual ezResult GetTimestampResultPlatform(ezGALTimestampHandle hTimestamp, ezTime& result) override;
 
-  // Swap chain functioez
+  // Swap chain functions
 
   void PresentPlatform(const ezGALSwapChain* pSwapChain, bool bVSync);
 
-  // Misc functioez
+  // Misc functions
 
   virtual void BeginFramePlatform(const ezUInt64 uiRenderFrame) override;
   virtual void EndFramePlatform() override;
@@ -169,7 +169,7 @@ protected:
 
   void WaitForFencePlatform(ID3D12Device3* pDevice, ID3D12CommandQueue3* pQueue, ID3D12Query* pFence);
 
-  /// @brief only use this for temp functioez, don't use as the main device. ieztead, use m_pDevice3 (ID3D12Device3)
+  /// @brief only use this for temp functions, don't use as the main device. ieztead, use m_pDevice3 (ID3D12Device3)
   ID3D12Device* m_pDevice = nullptr;
   ID3D12Device3* m_pDevice3 = nullptr;
 
