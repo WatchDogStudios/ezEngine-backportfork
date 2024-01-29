@@ -47,7 +47,7 @@ ezResult ezGALTextureD3D12::InitPlatform(ezGALDevice* pDevice, ezArrayPtr<ezGALS
       ConvertInitialData(m_Description, pInitialData, InitialData);
 
       /// Create the committed resource.
-      e
+    
     }
     break;
 
@@ -81,7 +81,7 @@ void ezGALTextureD3D12::SetDebugNamePlatform(const char* szName) const
 
 ezResult ezGALTextureD3D12::InitFromNativeObject(ezGALDeviceDX12* pDXDevice)
 {
-  if (m_finaltextureresource = static_cast<ID3D12Resource*>(m_Description.m_pExisitingNativeObject) == nullptr || m_Description.m_pExisitingNativeObject == nullptr)
+  if (m_finaltextureresource = static_cast<Microsoft::WRL::ComPtr<ID3D12Resource>>(m_Description.m_pExisitingNativeObject) == nullptr || m_Description.m_pExisitingNativeObject == nullptr)
   {
     ezLog::Error("RendererDX12: Object Type of : {0} is invalid!", m_Description.m_pExisitingNativeObject);
   }
