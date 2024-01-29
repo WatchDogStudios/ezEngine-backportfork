@@ -68,9 +68,8 @@
 #define EZ_SUPPORTS_LONG_PATHS EZ_OFF
 
 // Allocators
-#define EZ_USE_ALLOCATION_TRACKING EZ_OFF
-#define EZ_USE_ALLOCATION_STACK_TRACING EZ_OFF
-#define EZ_USE_GUARDED_ALLOCATIONS EZ_OFF
+#define EZ_ALLOC_GUARD_ALLOCATIONS EZ_OFF
+#define EZ_ALLOC_TRACKING_DEFAULT ezAllocatorTrackingMode::Nothing
 
 // Other Features
 #define EZ_USE_PROFILING EZ_OFF
@@ -95,3 +94,6 @@
 
 // Whether 'RuntimeConfigs' files should be searched in the old location
 #define EZ_MIGRATE_RUNTIMECONFIGS EZ_OFF
+
+// Interoperability with other libraries
+#define EZ_INTEROP_STL_STRINGS EZ_OFF

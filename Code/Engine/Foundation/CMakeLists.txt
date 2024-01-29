@@ -15,6 +15,10 @@ endif()
 
 ez_enable_strict_warnings(${PROJECT_NAME})
 
+if (EZ_CMAKE_COMPILER_CLANG)
+  set_source_files_properties(ThirdParty/xxHash/xxHash.c PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
+endif()
+
 if (EZ_CMAKE_PLATFORM_LINUX)
   CHECK_INCLUDE_FILE_CXX("uuid/uuid.h" UUID_HEADER)
   if (NOT UUID_HEADER)
@@ -64,6 +68,8 @@ if(EZ_3RDPARTY_GLFW_SUPPORT)
 
 endif()
 
-
+if(EZ_3RDPARTY_TRACELOGGING_LTTNG_SUPPORT)
+  target_link_libraries(${PROJECT_NAME} PRIVATE tracelogging)
+endif()
 
 

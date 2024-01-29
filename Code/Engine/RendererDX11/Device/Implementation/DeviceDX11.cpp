@@ -29,7 +29,7 @@
 #  include <d3d11_1.h>
 #endif
 
-ezInternal::NewInstance<ezGALDevice> CreateDX11Device(ezAllocatorBase* pAllocator, const ezGALDeviceCreationDescription& description)
+ezInternal::NewInstance<ezGALDevice> CreateDX11Device(ezAllocator* pAllocator, const ezGALDeviceCreationDescription& description)
 {
   return EZ_NEW(pAllocator, ezGALDeviceDX11, description);
 }
@@ -232,7 +232,7 @@ retry:
 
   m_SyncTimeDiff = ezTime::MakeZero();
 
-  ezGALWindowSwapChain::SetFactoryMethod([this](const ezGALWindowSwapChainCreationDescription& desc) -> ezGALSwapChainHandle { return CreateSwapChain([this, &desc](ezAllocatorBase* pAllocator) -> ezGALSwapChain* { return EZ_NEW(pAllocator, ezGALSwapChainDX11, desc); }); });
+  ezGALWindowSwapChain::SetFactoryMethod([this](const ezGALWindowSwapChainCreationDescription& desc) -> ezGALSwapChainHandle { return CreateSwapChain([&desc](ezAllocator* pAllocator) -> ezGALSwapChain* { return EZ_NEW(pAllocator, ezGALSwapChainDX11, desc); }); });
 
   return EZ_SUCCESS;
 }
@@ -738,10 +738,8 @@ void ezGALDeviceDX11::PresentPlatform(const ezGALSwapChain* pSwapChain, bool bVS
 
 void ezGALDeviceDX11::BeginFramePlatform(const ezUInt64 uiRenderFrame)
 {
-  auto& pCommandEncoder = m_pDefaultPass->m_pCommandEncoderImpl;
-
   ezStringBuilder sb;
-  sb.Format("Frame {}", uiRenderFrame);
+  sb.SetFormat("Frame {}", uiRenderFrame);
 
 #if EZ_ENABLED(EZ_USE_PROFILING)
   m_pFrameTimingScope = ezProfilingScopeAndMarker::Start(m_pDefaultPass->m_pRenderCommandEncoder.Borrow(), sb);
@@ -771,8 +769,6 @@ void ezGALDeviceDX11::BeginFramePlatform(const ezUInt64 uiRenderFrame)
 
 void ezGALDeviceDX11::EndFramePlatform()
 {
-  auto& pCommandEncoder = m_pDefaultPass->m_pCommandEncoderImpl;
-
 #if EZ_ENABLED(EZ_USE_PROFILING)
   ezProfilingScopeAndMarker::Stop(m_pDefaultPass->m_pRenderCommandEncoder.Borrow(), m_pFrameTimingScope);
 #endif
@@ -988,6 +984,23 @@ void ezGALDeviceDX11::FillCapabilitiesPlatform()
       {
         if (uiRenderSupport & D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_RENDER_TARGET)
           m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Render);
+      }
+
+      UINT uiMSAALevels;
+      if (SUCCEEDED(m_pDevice3->CheckMultisampleQualityLevels(entry.m_eRenderTarget, 2, &uiMSAALevels)))
+      {
+        if (uiMSAALevels > 0)
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::MSAA2x);
+      }
+      if (SUCCEEDED(m_pDevice3->CheckMultisampleQualityLevels(entry.m_eRenderTarget, 4, &uiMSAALevels)))
+      {
+        if (uiMSAALevels > 0)
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::MSAA4x);
+      }
+      if (SUCCEEDED(m_pDevice3->CheckMultisampleQualityLevels(entry.m_eRenderTarget, 8, &uiMSAALevels)))
+      {
+        if (uiMSAALevels > 0)
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::MSAA8x);
       }
     }
   }

@@ -20,7 +20,7 @@
 // larger chunks
 
 template <typename T, bool Construct>
-void ezDequeBase<T, Construct>::Constructor(ezAllocatorBase* pAllocator)
+void ezDequeBase<T, Construct>::Constructor(ezAllocator* pAllocator)
 {
   m_pAllocator = pAllocator;
   m_pChunks = nullptr;
@@ -38,13 +38,13 @@ void ezDequeBase<T, Construct>::Constructor(ezAllocatorBase* pAllocator)
 }
 
 template <typename T, bool Construct>
-ezDequeBase<T, Construct>::ezDequeBase(ezAllocatorBase* pAllocator)
+ezDequeBase<T, Construct>::ezDequeBase(ezAllocator* pAllocator)
 {
   Constructor(pAllocator);
 }
 
 template <typename T, bool Construct>
-ezDequeBase<T, Construct>::ezDequeBase(const ezDequeBase<T, Construct>& rhs, ezAllocatorBase* pAllocator)
+ezDequeBase<T, Construct>::ezDequeBase(const ezDequeBase<T, Construct>& rhs, ezAllocator* pAllocator)
 {
   EZ_CHECK_AT_COMPILETIME_MSG(Construct, "This function is not supported on Deques that do not construct their data.");
 
@@ -54,7 +54,7 @@ ezDequeBase<T, Construct>::ezDequeBase(const ezDequeBase<T, Construct>& rhs, ezA
 }
 
 template <typename T, bool Construct>
-ezDequeBase<T, Construct>::ezDequeBase(ezDequeBase<T, Construct>&& rhs, ezAllocatorBase* pAllocator)
+ezDequeBase<T, Construct>::ezDequeBase(ezDequeBase<T, Construct>&& rhs, ezAllocator* pAllocator)
 {
   EZ_CHECK_AT_COMPILETIME_MSG(Construct, "This function is not supported on Deques that do not construct their data.");
 
@@ -359,7 +359,7 @@ void ezDequeBase<T, Construct>::SetCount(ezUInt32 uiCount)
     {
       // default construct the new elements
       for (ezUInt32 i = uiOldCount; i < uiNewCount; ++i)
-        ezMemoryUtils::DefaultConstruct(&ElementAt(i), 1);
+        ezMemoryUtils::Construct<ConstructAll>(&ElementAt(i), 1);
     }
     else
     {
@@ -478,7 +478,9 @@ inline T& ezDequeBase<T, Construct>::ExpandAndGetRef()
   T* pElement = &ElementAt(m_uiCount - 1);
 
   if (Construct)
-    ezMemoryUtils::DefaultConstruct(pElement, 1);
+  {
+    ezMemoryUtils::Construct<ConstructAll>(pElement, 1);
+  }
 
   return *pElement;
 }
@@ -492,7 +494,9 @@ inline void ezDequeBase<T, Construct>::PushBack()
   T* pElement = &ElementAt(m_uiCount - 1);
 
   if (Construct)
-    ezMemoryUtils::DefaultConstruct(pElement, 1);
+  {
+    ezMemoryUtils::Construct<ConstructAll>(pElement, 1);
+  }
 }
 
 template <typename T, bool Construct>
@@ -568,7 +572,9 @@ inline void ezDequeBase<T, Construct>::PushFront()
   T* pElement = &ElementAt(0);
 
   if (Construct)
-    ezMemoryUtils::Construct(pElement, 1);
+  {
+    ezMemoryUtils::Construct<SkipTrivialTypes>(pElement, 1);
+  }
 }
 
 template <typename T, bool Construct>
@@ -579,7 +585,9 @@ inline void ezDequeBase<T, Construct>::PopFront(ezUInt32 uiElements)
   for (ezUInt32 i = 0; i < uiElements; ++i)
   {
     if (Construct)
+    {
       ezMemoryUtils::Destruct(&operator[](0), 1);
+    }
 
     --m_uiCount;
     ++m_uiFirstElement;
@@ -988,7 +996,7 @@ ezDeque<T, A, Construct>::ezDeque()
 }
 
 template <typename T, typename A, bool Construct>
-ezDeque<T, A, Construct>::ezDeque(ezAllocatorBase* pAllocator)
+ezDeque<T, A, Construct>::ezDeque(ezAllocator* pAllocator)
   : ezDequeBase<T, Construct>(pAllocator)
 {
 }

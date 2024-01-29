@@ -18,10 +18,10 @@ namespace
   {
     ezHashedString m_sName;
     ezVariant m_DefaultValue;
-    ezDynamicArray<ezShaderParser::EnumValue, ezStaticAllocatorWrapper> m_EnumValues;
+    ezDynamicArray<ezShaderParser::EnumValue, ezStaticsAllocatorWrapper> m_EnumValues;
   };
 
-  static ezDeque<PermutationVarConfig, ezStaticAllocatorWrapper> s_PermutationVarConfigsStorage;
+  static ezDeque<PermutationVarConfig, ezStaticsAllocatorWrapper> s_PermutationVarConfigsStorage;
   static ezHashTable<ezHashedString, PermutationVarConfig*> s_PermutationVarConfigs;
   static ezMutex s_PermutationVarConfigsMutex;
 
@@ -132,7 +132,7 @@ void ezShaderManager::ReloadPermutationVarConfig(const char* szName, const ezTem
   }
 
   ezStringBuilder sPath;
-  sPath.Format("{0}/{1}.ezPermVar", s_sPermVarSubDir, szName);
+  sPath.SetFormat("{0}/{1}.ezPermVar", s_sPermVarSubDir, szName);
 
   ezStringBuilder sTemp = s_sPlatform;
   sTemp.Append(" 1");

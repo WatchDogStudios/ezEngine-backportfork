@@ -63,15 +63,15 @@ public:
   static GPUTimingScope& AllocateScope() { return s_TimingScopes.ExpandAndGetRef(); }
 
 private:
-  static void OnEngineStartup() { ezGALDevice::GetDefaultDevice()->m_Events.AddEventHandler(&GPUProfilingSystem::ProcessTimestamps); }
+  static void OnEngineStartup() { ezGALDevice::GetDefaultDevice()->s_Events.AddEventHandler(&GPUProfilingSystem::ProcessTimestamps); }
 
   static void OnEngineShutdown()
   {
     s_TimingScopes.Clear();
-    ezGALDevice::GetDefaultDevice()->m_Events.RemoveEventHandler(&GPUProfilingSystem::ProcessTimestamps);
+    ezGALDevice::GetDefaultDevice()->s_Events.RemoveEventHandler(&GPUProfilingSystem::ProcessTimestamps);
   }
 
-  static ezDeque<GPUTimingScope, ezStaticAllocatorWrapper> s_TimingScopes;
+  static ezDeque<GPUTimingScope, ezStaticsAllocatorWrapper> s_TimingScopes;
 
   EZ_MAKE_SUBSYSTEM_STARTUP_FRIEND(RendererFoundation, GPUProfilingSystem);
 };
@@ -97,7 +97,7 @@ EZ_BEGIN_SUBSYSTEM_DECLARATION(RendererFoundation, GPUProfilingSystem)
 EZ_END_SUBSYSTEM_DECLARATION;
 // clang-format on
 
-ezDeque<GPUTimingScope, ezStaticAllocatorWrapper> GPUProfilingSystem::s_TimingScopes;
+ezDeque<GPUTimingScope, ezStaticsAllocatorWrapper> GPUProfilingSystem::s_TimingScopes;
 
 //////////////////////////////////////////////////////////////////////////
 

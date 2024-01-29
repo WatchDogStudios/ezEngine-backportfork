@@ -40,10 +40,9 @@ protected:
 
 private:
 #  if EZ_ENABLED(EZ_COMPILE_FOR_DEBUG)
-  ezAllocator<ezMemoryPolicies::ezHeapAllocation, ezMemoryTrackingFlags::RegisterAllocator | ezMemoryTrackingFlags::EnableAllocationTracking>
-    m_Allocator;
+  ezAllocatorWithPolicy<ezAllocPolicyHeap, ezAllocatorTrackingMode::AllocationStats> m_Allocator;
 #  else
-  ezAllocator<ezMemoryPolicies::ezHeapAllocation, ezMemoryTrackingFlags::None> m_Allocator;
+  ezAllocatorWithPolicy<ezAllocPolicyHeap, ezAllocatorTrackingMode::Nothing> m_Allocator;
 #  endif
 };
 

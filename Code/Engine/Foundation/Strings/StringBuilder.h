@@ -35,7 +35,7 @@ class EZ_FOUNDATION_DLL ezStringBuilder : public ezStringBase<ezStringBuilder>
 {
 public:
   /// \brief Initializes the string to be empty. No data is allocated, but the ezStringBuilder ALWAYS creates an array on the stack.
-  ezStringBuilder(ezAllocatorBase* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
+  ezStringBuilder(ezAllocator* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Copies the given string into this one.
   ezStringBuilder(const ezStringBuilder& rhs); // [tested]
@@ -81,13 +81,13 @@ public:
     ezStringView sData5 = {}, ezStringView sData6 = {}); // [tested]
 
   /// \brief Copies the given Utf8 string into this one.
-  /* implicit */ ezStringBuilder(const char* szUTF8, ezAllocatorBase* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
+  /* implicit */ ezStringBuilder(const char* szUTF8, ezAllocator* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Copies the given wchar_t string into this one.
-  /* implicit */ ezStringBuilder(const wchar_t* pWChar, ezAllocatorBase* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
+  /* implicit */ ezStringBuilder(const wchar_t* pWChar, ezAllocator* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Copies the given substring into this one. The ezStringView might actually be a substring of this very string.
-  /* implicit */ ezStringBuilder(ezStringView rhs, ezAllocatorBase* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
+  /* implicit */ ezStringBuilder(ezStringView rhs, ezAllocator* pAllocator = ezFoundation::GetDefaultAllocator()); // [tested]
 
   /// \brief Copies the given string into this one.
   void operator=(const ezStringBuilder& rhs); // [tested]
@@ -137,7 +137,7 @@ public:
   }
 
   /// \brief Returns the allocator that is used by this object.
-  ezAllocatorBase* GetAllocator() const;
+  ezAllocator* GetAllocator() const;
 
   /// \brief Resets this string to be empty. Does not deallocate any previously allocated data, as it might be reused later again.
   void Clear(); // [tested]
@@ -206,19 +206,19 @@ public:
     ezStringView sData5 = {}, ezStringView sData6 = {}); // [tested]
 
   /// \brief Sets this string to the formatted string, uses printf-style formatting.
-  void Printf(const char* szUtf8Format, ...); // [tested]
+  void SetPrintf(const char* szUtf8Format, ...); // [tested]
 
   /// \brief Sets this string to the formatted string, uses printf-style formatting.
-  void PrintfArgs(const char* szUtf8Format, va_list szArgs); // [tested]
+  void SetPrintfArgs(const char* szUtf8Format, va_list szArgs); // [tested]
 
   /// \brief Replaces this with a formatted string. Uses '{}' formatting placeholders, see ezFormatString for details.
-  void Format(const ezFormatString& string);
+  void SetFormat(const ezFormatString& string);
 
   /// \brief Replaces this with a formatted string. Uses '{}' formatting placeholders, see ezFormatString for details.
   template <typename... ARGS>
-  void Format(const char* szFormat, ARGS&&... args)
+  void SetFormat(const char* szFormat, ARGS&&... args)
   {
-    Format(ezFormatStringImpl<ARGS...>(szFormat, std::forward<ARGS>(args)...));
+    SetFormat(ezFormatStringImpl<ARGS...>(szFormat, std::forward<ARGS>(args)...));
   }
 
   /// \brief Appends a formatted string. Uses '{}' formatting placeholders, see ezFormatString for details.
@@ -389,6 +389,20 @@ public:
 
   /// \brief If the string ends with the given word (case insensitive), it is removed and the function returns true.
   bool TrimWordEnd(ezStringView sWord); // [tested]
+
+#if EZ_ENABLED(EZ_INTEROP_STL_STRINGS)
+  /// \brief Copies the given substring into this one. The ezStringView might actually be a substring of this very string.
+  /* implicit */ ezStringBuilder(const std::string_view& rhs, ezAllocator* pAllocator = ezFoundation::GetDefaultAllocator());
+
+  /// \brief Copies the given substring into this one. The ezStringView might actually be a substring of this very string.
+  /* implicit */ ezStringBuilder(const std::string& rhs, ezAllocator* pAllocator = ezFoundation::GetDefaultAllocator());
+
+  /// \brief Copies the given substring into this one. The ezStringView might actually be a substring of this very string.
+  void operator=(const std::string_view& rhs);
+
+  /// \brief Copies the given substring into this one. The ezStringView might actually be a substring of this very string.
+  void operator=(const std::string& rhs);
+#endif
 
 private:
   /// \brief Will remove all double path separators (slashes and backslashes) in a path, except if the path starts with two (back-)slashes,

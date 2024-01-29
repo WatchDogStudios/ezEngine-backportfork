@@ -7,8 +7,8 @@
 #include <Foundation/Time/Time.h>
 #include <Foundation/Time/Timestamp.h>
 
-#if EZ_ENABLED(EZ_PLATFORM_WINDOWS)
-#  include <Foundation/Platform/Win/ETWProvider_Win.h>
+#if EZ_ENABLED(EZ_PLATFORM_WINDOWS) || EZ_ENABLED(EZ_PLATFORM_LINUX)
+#  include <Foundation/Logging/ETWWriter.h>
 #endif
 #if EZ_ENABLED(EZ_PLATFORM_ANDROID)
 #  include <android/log.h>
@@ -238,8 +238,8 @@ void ezLog::Print(const char* szText)
 {
   printf("%s", szText);
 
-#if EZ_ENABLED(EZ_PLATFORM_WINDOWS)
-  ezETWProvider::GetInstance().LogMessge(ezLogMsgType::ErrorMsg, 0, szText);
+#if EZ_ENABLED(EZ_PLATFORM_WINDOWS) || EZ_ENABLED(EZ_PLATFORM_LINUX)
+  ezLogWriter::ETW::LogMessage(ezLogMsgType::ErrorMsg, 0, szText);
 #endif
 #if EZ_ENABLED(EZ_PLATFORM_WINDOWS)
   OutputDebugStringW(ezStringWChar(szText).GetData());
@@ -308,13 +308,13 @@ void ezLog::GenerateFormattedTimestamp(TimestampMode mode, ezStringBuilder& ref_
   switch (mode)
   {
     case TimestampMode::Numeric:
-      ref_sTimestampOut.Format("[{}] ", ezArgDateTime(dateTime, ezArgDateTime::ShowDate | ezArgDateTime::ShowMilliseconds | ezArgDateTime::ShowTimeZone));
+      ref_sTimestampOut.SetFormat("[{}] ", ezArgDateTime(dateTime, ezArgDateTime::ShowDate | ezArgDateTime::ShowMilliseconds | ezArgDateTime::ShowTimeZone));
       break;
     case TimestampMode::TimeOnly:
-      ref_sTimestampOut.Format("[{}] ", ezArgDateTime(dateTime, ezArgDateTime::ShowMilliseconds));
+      ref_sTimestampOut.SetFormat("[{}] ", ezArgDateTime(dateTime, ezArgDateTime::ShowMilliseconds));
       break;
     case TimestampMode::Textual:
-      ref_sTimestampOut.Format(
+      ref_sTimestampOut.SetFormat(
         "[{}] ", ezArgDateTime(dateTime, ezArgDateTime::TextualDate | ezArgDateTime::ShowMilliseconds | ezArgDateTime::ShowTimeZone));
       break;
     default:
@@ -440,5 +440,3 @@ bool ezLog::Flush(ezUInt32 uiNumNewMsgThreshold, ezTime timeIntervalThreshold, e
 
   return true;
 }
-
-

@@ -35,6 +35,7 @@ bool ezSystemInformation::IsDebuggerAttached()
   // Call sysctl.
   size = sizeof(info);
   junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+  EZ_IGNORE_UNUSED(junk);
   assert(junk == 0);
 
   // We're being debugged if the P_TRACED flag is set.
@@ -110,6 +111,8 @@ float ezSystemInformation::GetCPUUtilization() const
   return 0.0f;
 }
 
+#if EZ_ENABLED(EZ_PLATFORM_ARCH_X86)
+
 namespace cpu_x86
 {
 #  include <cpuid.h>
@@ -135,6 +138,8 @@ namespace cpu_x86
   }
 
 } // namespace cpu_x86
+
+#endif
 
 #endif
 

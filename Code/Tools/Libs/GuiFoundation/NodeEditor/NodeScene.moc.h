@@ -43,6 +43,7 @@ public:
     {
       BezierCurve,
       StraightLine,
+      SubwayLines,
 
       Default = BezierCurve
     };
@@ -58,6 +59,7 @@ public:
     enum Enum
     {
       DirectionArrows = EZ_BIT(0), ///< Draw an arrow to indicate the connection's direction. Only works with straight lines atm.
+      DrawDebugging = EZ_BIT(1), ///< Draw animated effect to denote debugging.
 
       Default = 0
     };
@@ -65,6 +67,7 @@ public:
     struct Bits
     {
       StorageType DirectionArrows : 1;
+      StorageType DrawDebugging : 1;
     };
   };
 
@@ -120,6 +123,7 @@ private:
   bool m_bIgnoreSelectionChange = false;
   ezQtPin* m_pStartPin = nullptr;
   ezQtConnection* m_pTempConnection = nullptr;
+  ezQtNode* m_pTempNode = nullptr;
   ezDeque<const ezDocumentObject*> m_Selection;
   ezVec2 m_vMousePos = ezVec2::MakeZero();
   QString m_sContextMenuSearchText;

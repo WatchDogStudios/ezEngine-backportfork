@@ -18,7 +18,7 @@ class ezColor;
 class EZ_RENDERERFOUNDATION_DLL ezGALDevice
 {
 public:
-  ezEvent<const ezGALDeviceEvent&> m_Events;
+  static ezEvent<const ezGALDeviceEvent&> s_Events;
 
   // Init & shutdown functions
 
@@ -91,7 +91,7 @@ public:
 
   // Other rendering creation functions
 
-  using SwapChainFactoryFunction = ezDelegate<ezGALSwapChain*(ezAllocatorBase*)>;
+  using SwapChainFactoryFunction = ezDelegate<ezGALSwapChain*(ezAllocator*)>;
   ezGALSwapChainHandle CreateSwapChain(const SwapChainFactoryFunction& func);
   ezResult UpdateSwapChain(ezGALSwapChainHandle hSwapChain, ezEnum<ezGALPresentMode> newPresentMode);
   void DestroySwapChain(ezGALSwapChainHandle hSwapChain);

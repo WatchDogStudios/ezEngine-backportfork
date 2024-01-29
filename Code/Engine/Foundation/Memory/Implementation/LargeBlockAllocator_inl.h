@@ -43,14 +43,14 @@ EZ_FORCE_INLINE T& ezDataBlock<T, SizeInBytes>::operator[](ezUInt32 uiIndex) con
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <ezUInt32 BlockSize>
-ezLargeBlockAllocator<BlockSize>::ezLargeBlockAllocator(ezStringView sName, ezAllocatorBase* pParent, ezBitflags<ezMemoryTrackingFlags> flags)
-  : m_TrackingFlags(flags)
+ezLargeBlockAllocator<BlockSize>::ezLargeBlockAllocator(ezStringView sName, ezAllocator* pParent, ezAllocatorTrackingMode mode)
+  : m_TrackingMode(mode)
   , m_SuperBlocks(pParent)
   , m_FreeBlocks(pParent)
 {
   EZ_CHECK_AT_COMPILETIME_MSG(BlockSize >= 4096, "Block size must be 4096 or bigger");
 
-  m_Id = ezMemoryTracker::RegisterAllocator(sName, flags, ezPageAllocator::GetId());
+  m_Id = ezMemoryTracker::RegisterAllocator(sName, mode, ezPageAllocator::GetId());
   m_ThreadID = ezThreadUtils::GetCurrentThreadID();
 
   const ezUInt32 uiPageSize = ezSystemInformation::Get().GetMemoryPageSize();
@@ -112,7 +112,7 @@ EZ_ALWAYS_INLINE ezAllocatorId ezLargeBlockAllocator<BlockSize>::GetId() const
 }
 
 template <ezUInt32 BlockSize>
-EZ_ALWAYS_INLINE const ezAllocatorBase::Stats& ezLargeBlockAllocator<BlockSize>::GetStats() const
+EZ_ALWAYS_INLINE const ezAllocator::Stats& ezLargeBlockAllocator<BlockSize>::GetStats() const
 {
   return ezMemoryTracker::GetAllocatorStats(m_Id);
 }
@@ -162,9 +162,9 @@ void* ezLargeBlockAllocator<BlockSize>::Allocate(size_t uiAlign)
     ptr = pMemory;
   }
 
-  if ((m_TrackingFlags & ezMemoryTrackingFlags::EnableAllocationTracking) != 0)
+  if (m_TrackingMode >= ezAllocatorTrackingMode::AllocationStats)
   {
-    ezMemoryTracker::AddAllocation(m_Id, m_TrackingFlags, ptr, BlockSize, uiAlign, ezTime::Now() - fAllocationTime);
+    ezMemoryTracker::AddAllocation(m_Id, m_TrackingMode, ptr, BlockSize, uiAlign, ezTime::Now() - fAllocationTime);
   }
 
   return ptr;
@@ -175,7 +175,7 @@ void ezLargeBlockAllocator<BlockSize>::Deallocate(void* ptr)
 {
   EZ_LOCK(m_Mutex);
 
-  if ((m_TrackingFlags & ezMemoryTrackingFlags::EnableAllocationTracking) != 0)
+  if (m_TrackingMode >= ezAllocatorTrackingMode::AllocationStats)
   {
     ezMemoryTracker::RemoveAllocation(m_Id, ptr);
   }
@@ -195,6 +195,7 @@ void ezLargeBlockAllocator<BlockSize>::Deallocate(void* ptr)
     }
   }
 
+  EZ_IGNORE_UNUSED(bFound);
   EZ_ASSERT_DEV(bFound, "'{0}' was not allocated with this allocator", ezArgP(ptr));
 
   SuperBlock& superBlock = m_SuperBlocks[uiSuperBlockIndex];

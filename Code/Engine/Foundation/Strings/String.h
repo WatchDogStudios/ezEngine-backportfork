@@ -28,28 +28,28 @@ struct ezHybridStringBase : public ezStringBase<ezHybridStringBase<Size>>
 {
 protected:
   /// \brief Creates an empty string.
-  ezHybridStringBase(ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(ezAllocator* pAllocator); // [tested]
 
   /// \brief Copies the data from \a rhs.
-  ezHybridStringBase(const ezHybridStringBase& rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(const ezHybridStringBase& rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Moves the data from \a rhs.
-  ezHybridStringBase(ezHybridStringBase&& rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(ezHybridStringBase&& rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Copies the data from \a rhs.
-  ezHybridStringBase(const char* rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(const char* rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Copies the data from \a rhs.
-  ezHybridStringBase(const wchar_t* rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(const wchar_t* rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Copies the data from \a rhs.
-  ezHybridStringBase(const ezStringView& rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(const ezStringView& rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Copies the data from \a rhs.
-  ezHybridStringBase(const ezStringBuilder& rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(const ezStringBuilder& rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Moves the data from \a rhs.
-  ezHybridStringBase(ezStringBuilder&& rhs, ezAllocatorBase* pAllocator); // [tested]
+  ezHybridStringBase(ezStringBuilder&& rhs, ezAllocator* pAllocator); // [tested]
 
   /// \brief Destructor.
   ~ezHybridStringBase(); // [tested]
@@ -75,8 +75,21 @@ protected:
   /// \brief Moves the data from \a rhs.
   void operator=(ezStringBuilder&& rhs); // [tested]
 
-public:
+#if EZ_ENABLED(EZ_INTEROP_STL_STRINGS)
+  /// \brief Copies the data from \a rhs.
+  ezHybridStringBase(const std::string_view& rhs, ezAllocator* pAllocator);
 
+  /// \brief Copies the data from \a rhs.
+  ezHybridStringBase(const std::string& rhs, ezAllocator* pAllocator);
+
+  /// \brief Copies the data from \a rhs.
+  void operator=(const std::string_view& rhs);
+
+  /// \brief Copies the data from \a rhs.
+  void operator=(const std::string& rhs);
+#endif
+
+public:
   /// \brief Resets this string to an empty string.
   ///
   /// This will not deallocate any previously allocated data, but reuse that memory.
@@ -130,7 +143,7 @@ struct ezHybridString : public ezHybridStringBase<Size>
 {
 public:
   ezHybridString();
-  ezHybridString(ezAllocatorBase* pAllocator);
+  ezHybridString(ezAllocator* pAllocator);
 
   ezHybridString(const ezHybridString<Size, AllocatorWrapper>& other);
   ezHybridString(const ezHybridStringBase<Size>& other);
@@ -139,10 +152,8 @@ public:
   ezHybridString(const ezStringView& rhs);
   ezHybridString(const ezStringBuilder& rhs);
   ezHybridString(ezStringBuilder&& rhs);
-
   ezHybridString(ezHybridString<Size, AllocatorWrapper>&& other);
   ezHybridString(ezHybridStringBase<Size>&& other);
-
 
   void operator=(const ezHybridString<Size, AllocatorWrapper>& rhs);
   void operator=(const ezHybridStringBase<Size>& rhs);
@@ -151,14 +162,21 @@ public:
   void operator=(const ezStringView& rhs);
   void operator=(const ezStringBuilder& rhs);
   void operator=(ezStringBuilder&& rhs);
-
   void operator=(ezHybridString<Size, AllocatorWrapper>&& rhs);
   void operator=(ezHybridStringBase<Size>&& rhs);
+
+#if EZ_ENABLED(EZ_INTEROP_STL_STRINGS)
+  ezHybridString(const std::string_view& rhs);
+  ezHybridString(const std::string& rhs);
+  void operator=(const std::string_view& rhs);
+  void operator=(const std::string& rhs);
+#endif
 };
 
-using ezDynamicString = ezHybridString<1>;
 /// \brief String that uses the static allocator to prevent leak reports in RTTI attributes.
-using ezUntrackedString = ezHybridString<32, ezStaticAllocatorWrapper>;
+using ezUntrackedString = ezHybridString<32, ezStaticsAllocatorWrapper>;
+
+using ezDynamicString = ezHybridString<1>;
 using ezString = ezHybridString<32>;
 using ezString16 = ezHybridString<16>;
 using ezString24 = ezHybridString<24>;

@@ -60,17 +60,12 @@ namespace
     return ezSimdBBox(bmin, bmax);
   }
 
-  EZ_ALWAYS_INLINE bool FilterByCategory(ezUInt32 uiCategoryBitmask, ezUInt32 uiQueryBitmask)
+  EZ_ALWAYS_INLINE bool FilterByTags(const ezTagSet& tags, const ezTagSet* pIncludeTags, const ezTagSet* pExcludeTags)
   {
-    return (uiCategoryBitmask & uiQueryBitmask) == 0;
-  }
-
-  EZ_ALWAYS_INLINE bool FilterByTags(const ezTagSet& tags, const ezTagSet& includeTags, const ezTagSet& excludeTags)
-  {
-    if (!excludeTags.IsEmpty() && excludeTags.IsAnySet(tags))
+    if (pExcludeTags && !pExcludeTags->IsEmpty() && pExcludeTags->IsAnySet(tags))
       return true;
 
-    if (!includeTags.IsEmpty() && !includeTags.IsAnySet(tags))
+    if (pIncludeTags && !pIncludeTags->IsEmpty() && !pIncludeTags->IsAnySet(tags))
       return true;
 
     return false;
@@ -81,6 +76,8 @@ namespace
     return ezSpatialData::GetCategoryFlags(category).IsSet(ezSpatialData::Flags::FrequentChanges) == false;
   }
 
+
+#if EZ_ENABLED(EZ_COMPILE_FOR_DEVELOPMENT)
   void TagsToString(const ezTagSet& tags, ezStringBuilder& out_sSb)
   {
     out_sSb.Append("{ ");
@@ -98,6 +95,7 @@ namespace
 
     out_sSb.Append(" }");
   }
+#endif
 
   EZ_FORCE_INLINE bool SphereFrustumIntersect(const ezSimdBSphere& sphere, const PlaneData& planeData)
   {
@@ -179,7 +177,7 @@ struct CellDataMapping
 
 struct ezSpatialSystem_RegularGrid::Cell
 {
-  Cell(ezAllocatorBase* pAlignedAlloctor, ezAllocatorBase* pAllocator)
+  Cell(ezAllocator* pAlignedAlloctor, ezAllocator* pAllocator)
     : m_BoundingSpheres(pAlignedAlloctor)
     , m_BoundingBoxHalfExtents(pAlignedAlloctor)
     , m_TagSets(pAllocator)
@@ -331,7 +329,7 @@ struct ezSpatialSystem_RegularGrid::Grid
     auto& pOtherCell = other.m_Cells[mapping.m_uiCellIndex];
 
     const ezTagSet& tags = pOtherCell->m_TagSets[mapping.m_uiCellDataIndex];
-    if (FilterByTags(tags, m_IncludeTags, m_ExcludeTags))
+    if (FilterByTags(tags, &m_IncludeTags, &m_ExcludeTags))
       return false;
 
     ezSimdBBoxSphere bounds;
@@ -457,7 +455,7 @@ namespace ezInternal
 
         if constexpr (UseTagsFilter)
         {
-          if (FilterByTags(tagSets[i], queryParams.m_IncludeTags, queryParams.m_ExcludeTags))
+          if (FilterByTags(tagSets[i], queryParams.m_pIncludeTags, queryParams.m_pExcludeTags))
           {
             ref_stats.m_uiNumObjectsFiltered++;
             continue;
@@ -532,7 +530,7 @@ namespace ezInternal
 
             if constexpr (UseTagsFilter)
             {
-              if (FilterByTags(tagSets[i], queryParams.m_IncludeTags, queryParams.m_ExcludeTags))
+              if (FilterByTags(tagSets[i], queryParams.m_pIncludeTags, queryParams.m_pExcludeTags))
               {
                 ref_stats.m_uiNumObjectsFiltered++;
                 continue;
@@ -566,7 +564,7 @@ namespace ezInternal
 
           if constexpr (UseTagsFilter)
           {
-            if (FilterByTags(tagSets[i], queryParams.m_IncludeTags, queryParams.m_ExcludeTags))
+            if (FilterByTags(tagSets[i], queryParams.m_pIncludeTags, queryParams.m_pExcludeTags))
             {
               ref_stats.m_uiNumObjectsFiltered++;
               continue;
@@ -602,11 +600,11 @@ EZ_END_DYNAMIC_REFLECTED_TYPE;
 
 ezSpatialSystem_RegularGrid::ezSpatialSystem_RegularGrid(ezUInt32 uiCellSize /*= 128*/)
   : m_AlignedAllocator("Spatial System Aligned", ezFoundation::GetAlignedAllocator())
-  , m_Grids(&m_Allocator)
-  , m_DataTable(&m_Allocator)
   , m_vCellSize(uiCellSize)
   , m_vOverlapSize(uiCellSize / 4.0f)
   , m_fInvCellSize(1.0f / uiCellSize)
+  , m_Grids(&m_Allocator)
+  , m_DataTable(&m_Allocator)
 {
   EZ_CHECK_AT_COMPILETIME(sizeof(Data) == 8);
 
@@ -837,7 +835,7 @@ void ezSpatialSystem_RegularGrid::FindVisibleObjects(const ezFrustum& frustum, c
 #endif
 
   ezVec3 cornerPoints[8];
-  frustum.ComputeCornerPoints(cornerPoints);
+  frustum.ComputeCornerPoints(cornerPoints).AssertSuccess();
 
   ezSimdVec4f simdCornerPoints[8];
   for (ezUInt32 i = 0; i < 8; ++i)
@@ -980,7 +978,7 @@ ezSpatialDataHandle ezSpatialSystem_RegularGrid::AddSpatialDataToGrids(const ezS
       continue;
 
     if ((pGrid->m_Category.GetBitmask() & uiCategoryBitmask) == 0 ||
-        FilterByTags(tags, pGrid->m_IncludeTags, pGrid->m_ExcludeTags))
+        FilterByTags(tags, &pGrid->m_IncludeTags, &pGrid->m_ExcludeTags))
       continue;
 
     data.m_uiGridBitmask |= EZ_BIT(uiCachedGridIndex);
@@ -1044,8 +1042,8 @@ void ezSpatialSystem_RegularGrid::ForEachCellInBoxInMatchingGrids(const ezSimdBB
       continue;
 
     if ((pGrid->m_Category.GetBitmask() & uiGridBitmask) == 0 ||
-        pGrid->m_IncludeTags != queryParams.m_IncludeTags ||
-        pGrid->m_ExcludeTags != queryParams.m_ExcludeTags)
+        ((queryParams.m_pIncludeTags && pGrid->m_IncludeTags != *queryParams.m_pIncludeTags) || (!queryParams.m_pIncludeTags && !pGrid->m_IncludeTags.IsEmpty())) ||
+        ((queryParams.m_pExcludeTags && pGrid->m_ExcludeTags != *queryParams.m_pExcludeTags) || (!queryParams.m_pExcludeTags && !pGrid->m_ExcludeTags.IsEmpty())))
       continue;
 
     uiGridBitmask &= ~pGrid->m_Category.GetBitmask();
@@ -1056,7 +1054,7 @@ void ezSpatialSystem_RegularGrid::ForEachCellInBoxInMatchingGrids(const ezSimdBB
         return noFilterCallback(cell, queryParams, stats, pUserData, visType);
       });
 
-    UpdateCacheCandidate(queryParams.m_IncludeTags, queryParams.m_ExcludeTags, pGrid->m_Category, 0.0f);
+    UpdateCacheCandidate(queryParams.m_pIncludeTags, queryParams.m_pExcludeTags, pGrid->m_Category, 0.0f);
 
 #if EZ_ENABLED(EZ_COMPILE_FOR_DEVELOPMENT)
     if (queryParams.m_pStats != nullptr)
@@ -1068,7 +1066,7 @@ void ezSpatialSystem_RegularGrid::ForEachCellInBoxInMatchingGrids(const ezSimdBB
   }
 
   // then search for the rest
-  const bool useTagsFilter = queryParams.m_IncludeTags.IsEmpty() == false || queryParams.m_ExcludeTags.IsEmpty() == false;
+  const bool useTagsFilter = (queryParams.m_pIncludeTags && queryParams.m_pIncludeTags->IsEmpty() == false) || (queryParams.m_pExcludeTags && queryParams.m_pExcludeTags->IsEmpty() == false);
   CellCallback cellCallback = useTagsFilter ? filterByTagsCallback : noFilterCallback;
 
   while (uiGridBitmask > 0)
@@ -1097,7 +1095,7 @@ void ezSpatialSystem_RegularGrid::ForEachCellInBoxInMatchingGrids(const ezSimdBB
       // Doesn't make sense to cache if there are only few objects in total or only few objects have been filtered
       if (totalNumObjectsAfterSpatialTest > cacheThreshold && filteredRatio > 0.1f)
       {
-        UpdateCacheCandidate(queryParams.m_IncludeTags, queryParams.m_ExcludeTags, pGrid->m_Category, filteredRatio);
+        UpdateCacheCandidate(queryParams.m_pIncludeTags, queryParams.m_pExcludeTags, pGrid->m_Category, filteredRatio);
       }
     }
 
@@ -1205,7 +1203,7 @@ void ezSpatialSystem_RegularGrid::RemoveAllCachedGrids()
   }
 }
 
-void ezSpatialSystem_RegularGrid::UpdateCacheCandidate(const ezTagSet& includeTags, const ezTagSet& excludeTags, ezSpatialData::Category category, float filteredRatio) const
+void ezSpatialSystem_RegularGrid::UpdateCacheCandidate(const ezTagSet* pIncludeTags, const ezTagSet* pExcludeTags, ezSpatialData::Category category, float filteredRatio) const
 {
   EZ_LOCK(m_CacheCandidatesMutex);
 
@@ -1213,8 +1211,8 @@ void ezSpatialSystem_RegularGrid::UpdateCacheCandidate(const ezTagSet& includeTa
   for (auto& cacheCandidate : m_CacheCandidates)
   {
     if (cacheCandidate.m_Category == category &&
-        cacheCandidate.m_IncludeTags == includeTags &&
-        cacheCandidate.m_ExcludeTags == excludeTags)
+        ((pIncludeTags && cacheCandidate.m_IncludeTags == *pIncludeTags) || (!pIncludeTags && cacheCandidate.m_IncludeTags.IsEmpty())) &&
+        ((pExcludeTags && cacheCandidate.m_ExcludeTags == *pExcludeTags) || (!pExcludeTags && cacheCandidate.m_ExcludeTags.IsEmpty())))
     {
       pCacheCandiate = &cacheCandidate;
       break;
@@ -1228,7 +1226,7 @@ void ezSpatialSystem_RegularGrid::UpdateCacheCandidate(const ezTagSet& includeTa
   }
   else
   {
-    m_CacheCandidates.PushBack({includeTags, excludeTags, category, 1, filteredRatio});
+    m_CacheCandidates.PushBack({pIncludeTags ? *pIncludeTags : ezTagSet(), pExcludeTags ? *pIncludeTags : ezTagSet(), category, 1, filteredRatio});
   }
 }
 

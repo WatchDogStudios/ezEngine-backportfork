@@ -10,6 +10,10 @@ EZ_ALWAYS_INLINE ezVariant::ezVariant()
 
 EZ_WARNING_POP()
 
+EZ_WARNING_PUSH()
+EZ_WARNING_DISABLE_CLANG("-Wunused-local-typedef")
+EZ_WARNING_DISABLE_GCC("-Wunused-local-typedef")
+
 EZ_ALWAYS_INLINE ezVariant::ezVariant(const ezVariant& other)
 {
   CopyFrom(other);
@@ -522,6 +526,7 @@ T ezVariant::Cast() const
   const ezTypedPointer& ptr = *reinterpret_cast<const ezTypedPointer*>(&m_Data);
 
   const ezRTTI* pType = GetReflectedType();
+  EZ_IGNORE_UNUSED(pType);
   using NonRefPtrT = typename ezTypeTraits<T>::NonConstReferencePointerType;
   if constexpr (!std::is_same<T, void*>::value && !std::is_same<T, const void*>::value)
   {
@@ -543,6 +548,7 @@ template <typename T, typename std::enable_if_t<ezVariantTypeDeduction<T>::class
 const T& ezVariant::Cast() const
 {
   const ezRTTI* pType = GetReflectedType();
+  EZ_IGNORE_UNUSED(pType);
   using NonRefT = typename ezTypeTraits<T>::NonConstReferenceType;
   EZ_ASSERT_DEV(IsDerivedFrom(pType, ezGetStaticRTTI<NonRefT>()), "Object of type '{0}' does not derive from '{}'", GetTypeName(pType), GetTypeName(ezGetStaticRTTI<NonRefT>()));
 
@@ -631,3 +637,5 @@ struct ezHashHelper<ezVariant>
     return a.GetType() == b.GetType() && a == b;
   }
 };
+
+EZ_WARNING_POP()

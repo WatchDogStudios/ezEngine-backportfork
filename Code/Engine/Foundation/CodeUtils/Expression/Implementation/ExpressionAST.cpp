@@ -148,6 +148,8 @@ namespace
     "Clamp",
     "Select",
     "Lerp",
+    "SmoothStep",
+    "SmootherStep",
     "",
 
     "Constant",
@@ -262,6 +264,8 @@ namespace
     {SIG3(Float, Float, Float, Float), SIG3(Int, Int, Int, Int)},                               // Clamp,
     {SIG3(Float, Bool, Float, Float), SIG3(Int, Bool, Int, Int), SIG3(Bool, Bool, Bool, Bool)}, // Select,
     {SIG3(Float, Float, Float, Float)},                                                         // Lerp,
+    {SIG3(Float, Float, Float, Float)},                                                         // SmoothStep,
+    {SIG3(Float, Float, Float, Float)},                                                         // SmootherStep,
     {},                                                                                         // LastTernary,
 
     {}, // Constant,
@@ -505,6 +509,7 @@ ezExpressionAST::TernaryOperator* ezExpressionAST::CreateTernaryOperator(NodeTyp
 ezExpressionAST::Constant* ezExpressionAST::CreateConstant(const ezVariant& value, DataType::Enum dataType /*= DataType::Float*/)
 {
   ezVariantType::Enum variantType = DataType::GetVariantType(dataType);
+  EZ_IGNORE_UNUSED(variantType);
   EZ_ASSERT_DEV(variantType != ezVariantType::Invalid, "Invalid constant type '{}'", DataType::GetName(dataType));
 
   auto pConstant = EZ_NEW(&m_Allocator, Constant);
@@ -564,6 +569,7 @@ ezExpressionAST::Input* ezExpressionAST::CreateInput(const ezExpression::StreamD
   auto pInput = EZ_NEW(&m_Allocator, Input);
   pInput->m_Type = NodeType::Input;
   pInput->m_ReturnType = DataType::FromStreamType(desc.m_DataType);
+  pInput->m_uiNumInputElements = static_cast<ezUInt8>(DataType::GetElementCount(pInput->m_ReturnType));
   pInput->m_Desc = desc;
 
   return pInput;
@@ -914,7 +920,8 @@ void ezExpressionAST::ResolveOverloads(Node* pNode)
     return;
   }
 
-  auto CalculateMatchDistance = [](ezArrayPtr<Node*> children, ezArrayPtr<const ezEnum<ezExpression::RegisterType>> expectedTypes, ezUInt32 uiNumRequiredArgs, ezUInt32& ref_uiMaxNumElements) {
+  auto CalculateMatchDistance = [](ezArrayPtr<Node*> children, ezArrayPtr<const ezEnum<ezExpression::RegisterType>> expectedTypes, ezUInt32 uiNumRequiredArgs, ezUInt32& ref_uiMaxNumElements)
+  {
     if (children.GetCount() < uiNumRequiredArgs)
     {
       return ezInvalidIndex;
@@ -1260,5 +1267,3 @@ bool ezExpressionAST::IsEqual(const Node* pNodeA, const Node* pNodeB)
   EZ_ASSERT_NOT_IMPLEMENTED;
   return false;
 }
-
-

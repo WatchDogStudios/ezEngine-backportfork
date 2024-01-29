@@ -26,6 +26,7 @@
 #include <GuiFoundation/Action/DocumentActions.h>
 #include <GuiFoundation/Action/EditActions.h>
 #include <GuiFoundation/Action/StandardMenus.h>
+#include <GuiFoundation/PropertyGrid/Implementation/PropertyWidget.moc.h>
 #include <GuiFoundation/PropertyGrid/PropertyMetaState.h>
 #include <GuiFoundation/UIServices/DynamicStringEnum.h>
 #include <RendererCore/Lights/BoxReflectionProbeComponent.h>
@@ -88,8 +89,25 @@ void AssetCuratorEventHandler(const ezAssetCuratorEvent& e)
 void ezCameraComponent_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& e);
 void ezSkyLightComponent_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& e);
 void ezGreyBoxComponent_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& e);
-
+void ezLightComponent_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& e);
 void ezSceneDocument_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& e);
+
+QImage SliderImageGenerator_LightTemperature(ezUInt32 uiWidth, ezUInt32 uiHeight, double fMinValue, double fMaxValue)
+{
+  // can use a 1D image, height doesn't need to be all used
+  QImage image = QImage(uiWidth, 1, QImage::Format::Format_RGB32);
+
+  for (int x = 0; x < uiWidth; ++x)
+  {
+    const double pos = (double)x / (uiWidth - 1.0);
+    ezColor c = ezColor::MakeFromKelvin(static_cast<ezUInt32>((pos * (fMaxValue - fMinValue)) + fMinValue));
+
+    ezColorGammaUB cg = c;
+    image.setPixel(x, 0, qRgb(cg.r, cg.g, cg.b));
+  }
+
+  return image;
+}
 
 void OnLoadPlugin()
 {
@@ -112,6 +130,9 @@ void OnLoadPlugin()
   ezSceneGizmoActions::RegisterActions();
   ezSceneActions::RegisterActions();
   ezLayerActions::RegisterActions();
+
+  // misc
+  ezQtImageSliderWidget::s_ImageGenerators["LightTemperature"] = SliderImageGenerator_LightTemperature;
 
   // Menu Bar
   const char* MenuBars[] = {"EditorPluginScene_DocumentMenuBar", "EditorPluginScene_Scene2MenuBar"};
@@ -188,6 +209,7 @@ void OnLoadPlugin()
   ezPropertyMetaState::GetSingleton()->m_Events.AddEventHandler(ezCameraComponent_PropertyMetaStateEventHandler);
   ezPropertyMetaState::GetSingleton()->m_Events.AddEventHandler(ezSkyLightComponent_PropertyMetaStateEventHandler);
   ezPropertyMetaState::GetSingleton()->m_Events.AddEventHandler(ezGreyBoxComponent_PropertyMetaStateEventHandler);
+  ezPropertyMetaState::GetSingleton()->m_Events.AddEventHandler(ezLightComponent_PropertyMetaStateEventHandler);
 }
 
 void OnUnloadPlugin()
@@ -200,6 +222,7 @@ void OnUnloadPlugin()
   ezPropertyMetaState::GetSingleton()->m_Events.RemoveEventHandler(ezGreyBoxComponent_PropertyMetaStateEventHandler);
   ezPropertyMetaState::GetSingleton()->m_Events.RemoveEventHandler(ezSkyLightComponent_PropertyMetaStateEventHandler);
   ezPropertyMetaState::GetSingleton()->m_Events.RemoveEventHandler(ezCameraComponent_PropertyMetaStateEventHandler);
+  ezPropertyMetaState::GetSingleton()->m_Events.RemoveEventHandler(ezLightComponent_PropertyMetaStateEventHandler);
 
 
   ezSelectionActions::UnregisterActions();
@@ -304,5 +327,29 @@ void ezGreyBoxComponent_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& 
       props["SlopedBottom"].m_Visibility = ezPropertyUiState::Default;
       props["Detail"].m_sNewLabelText = "Steps";
       break;
+  }
+}
+
+void ezLightComponent_PropertyMetaStateEventHandler(ezPropertyMetaStateEvent& e)
+{
+  static const ezRTTI* pRtti = ezRTTI::FindTypeByName("ezLightComponent");
+  EZ_ASSERT_DEBUG(pRtti != nullptr, "Did the typename change?");
+
+  if (!e.m_pObject->GetTypeAccessor().GetType()->IsDerivedFrom(pRtti))
+    return;
+
+  auto& props = *e.m_pPropertyStates;
+
+  const bool bUseColorTemperature = e.m_pObject->GetTypeAccessor().GetValue("UseColorTemperature").ConvertTo<bool>();
+
+  if (bUseColorTemperature)
+  {
+    props["Temperature"].m_Visibility = ezPropertyUiState::Default;
+    props["LightColor"].m_Visibility = ezPropertyUiState::Invisible;
+  }
+  else
+  {
+    props["Temperature"].m_Visibility = ezPropertyUiState::Invisible;
+    props["LightColor"].m_Visibility = ezPropertyUiState::Default;
   }
 }

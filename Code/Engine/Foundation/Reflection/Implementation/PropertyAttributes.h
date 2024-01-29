@@ -210,7 +210,7 @@ public:
   const ezVariant& GetMinValue() const { return m_MinValue; }
   const ezVariant& GetMaxValue() const { return m_MaxValue; }
 
-private:
+protected:
   ezVariant m_MinValue;
   ezVariant m_MaxValue;
 };
@@ -1037,4 +1037,28 @@ class EZ_FOUNDATION_DLL ezGameObjectReferenceAttribute : public ezTypeWidgetAttr
 
 public:
   ezGameObjectReferenceAttribute() = default;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+/// \brief Displays the value range as an image, allowing users to pick a value like on a slider.
+///
+/// This attribute always has to be combined with an ezClampValueAttribute to define the min and max value range.
+/// The constructor takes the name of an image generator. The generator is used to build the QImage used for the slider background.
+///
+/// Image generators are registered through ezQtImageSliderWidget::s_ImageGenerators. Search the codebase for that variable
+/// to determine which types of image generators are available.
+/// You can register custom generators as well.
+class EZ_FOUNDATION_DLL ezImageSliderUiAttribute : public ezTypeWidgetAttribute
+{
+  EZ_ADD_DYNAMIC_REFLECTION(ezImageSliderUiAttribute, ezTypeWidgetAttribute);
+
+public:
+  ezImageSliderUiAttribute() = default;
+  ezImageSliderUiAttribute(const char* szImageGenerator)
+  {
+    m_sImageGenerator = szImageGenerator;
+  }
+
+  ezUntrackedString m_sImageGenerator;
 };

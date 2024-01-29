@@ -144,7 +144,7 @@ void ezStringBuilder::Prepend(ezStringView sData1, ezStringView sData2, ezString
   }
 }
 
-void ezStringBuilder::PrintfArgs(const char* szUtf8Format, va_list szArgs0)
+void ezStringBuilder::SetPrintfArgs(const char* szUtf8Format, va_list szArgs0)
 {
   va_list args;
   va_copy(args, szArgs0);
@@ -1115,7 +1115,7 @@ bool ezStringBuilder::TrimWordEnd(ezStringView sWord)
   return trimmed;
 }
 
-void ezStringBuilder::Format(const ezFormatString& string)
+void ezStringBuilder::SetFormat(const ezFormatString& string)
 {
   Clear();
   ezStringView sText = string.GetText(*this);
@@ -1140,14 +1140,56 @@ void ezStringBuilder::PrependFormat(const ezFormatString& string)
   Prepend(string.GetText(tmp));
 }
 
-void ezStringBuilder::Printf(const char* szUtf8Format, ...)
+void ezStringBuilder::SetPrintf(const char* szUtf8Format, ...)
 {
   va_list args;
   va_start(args, szUtf8Format);
 
-  PrintfArgs(szUtf8Format, args);
+  SetPrintfArgs(szUtf8Format, args);
 
   va_end(args);
 }
 
+#if EZ_ENABLED(EZ_INTEROP_STL_STRINGS)
+ezStringBuilder::ezStringBuilder(const std::string_view& rhs, ezAllocator* pAllocator)
+  : m_Data(pAllocator)
+{
+  m_uiCharacterCount = 0;
+  AppendTerminator();
 
+  *this = rhs;
+}
+
+ezStringBuilder::ezStringBuilder(const std::string& rhs, ezAllocator* pAllocator)
+  : m_Data(pAllocator)
+{
+  m_uiCharacterCount = 0;
+  AppendTerminator();
+
+  *this = rhs;
+}
+
+void ezStringBuilder::operator=(const std::string_view& rhs)
+{
+  if (rhs.empty())
+  {
+    Clear();
+  }
+  else
+  {
+    *this = ezStringView(rhs.data(), rhs.data() + rhs.size());
+  }
+}
+
+void ezStringBuilder::operator=(const std::string& rhs)
+{
+  if (rhs.empty())
+  {
+    Clear();
+  }
+  else
+  {
+    *this = ezStringView(rhs.data(), rhs.data() + rhs.size());
+  }
+}
+#endif

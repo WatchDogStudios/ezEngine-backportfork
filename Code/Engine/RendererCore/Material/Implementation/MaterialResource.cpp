@@ -662,7 +662,7 @@ ezResourceLoadDesc ezMaterialResource::UpdateContent(ezStreamReader* pOuterStrea
         m_mDesc.m_RenderDataCategory = ezRenderData::FindCategory(sCategoryNameHashed);
         if (m_mDesc.m_RenderDataCategory == ezInvalidRenderDataCategory)
         {
-          ezLog::Error("Material '{}' uses an invalid render data category '{}'", GetResourceDescription(), sRenderDataCategoryName);
+          ezLog::Error("Material '{}' uses an invalid render data category '{}'", GetResourceIdOrDescription(), sRenderDataCategoryName);
         }
       }
     }
@@ -892,10 +892,10 @@ void ezMaterialResource::UpdateConstantBuffer(ezShaderPermutationResource* pShad
     return;
 
   ezTempHashedString sConstantBufferName("ezMaterialConstants");
-  const ezShaderResourceBinding* pBinding = pShaderPermutation->GetShaderStageBinary(ezGALShaderStage::PixelShader)->GetShaderResourceBinding(sConstantBufferName);
+  const ezShaderResourceBinding* pBinding = pShaderPermutation->GetShaderByteCode(ezGALShaderStage::PixelShader)->GetShaderResourceBinding(sConstantBufferName);
   if (pBinding == nullptr)
   {
-    pBinding = pShaderPermutation->GetShaderStageBinary(ezGALShaderStage::VertexShader)->GetShaderResourceBinding(sConstantBufferName);
+    pBinding = pShaderPermutation->GetShaderByteCode(ezGALShaderStage::VertexShader)->GetShaderResourceBinding(sConstantBufferName);
   }
 
   const ezShaderConstantBufferLayout* pLayout = pBinding != nullptr ? pBinding->m_pLayout : nullptr;
@@ -925,7 +925,7 @@ void ezMaterialResource::UpdateConstantBuffer(ezShaderPermutationResource* pShad
 
     for (auto& constant : pLayout->m_Constants)
     {
-      if (constant.m_uiOffset + ezShaderConstantBufferLayout::Constant::s_TypeSize[constant.m_Type.GetValue()] <= data.GetCount())
+      if (constant.m_uiOffset + ezShaderConstant::s_TypeSize[constant.m_Type.GetValue()] <= data.GetCount())
       {
         ezUInt8* pDest = &data[constant.m_uiOffset];
 
@@ -1054,7 +1054,7 @@ namespace
     ezUInt64 m_uiFrame;
   };
 
-  static ezDynamicArray<FreeCacheEntry, ezStaticAllocatorWrapper> s_FreeMaterialCacheEntries;
+  static ezDynamicArray<FreeCacheEntry, ezStaticsAllocatorWrapper> s_FreeMaterialCacheEntries;
 } // namespace
 
 void ezMaterialResource::CachedValues::Reset()

@@ -51,7 +51,7 @@ namespace
 } // namespace
 
 ezGALDevice* ezGALDevice::s_pDefaultDevice = nullptr;
-
+ezEvent<const ezGALDeviceEvent&> ezGALDevice::s_Events;
 
 ezGALDevice::ezGALDevice(const ezGALDeviceCreationDescription& desc)
   : m_Allocator("GALDevice", ezFoundation::GetDefaultAllocator())
@@ -115,7 +115,7 @@ ezResult ezGALDevice::Init()
     return EZ_FAILURE;
   }
 
-  ezGALSharedTextureSwapChain::SetFactoryMethod([this](const ezGALSharedTextureSwapChainCreationDescription& desc) -> ezGALSwapChainHandle { return CreateSwapChain([this, &desc](ezAllocatorBase* pAllocator) -> ezGALSwapChain* { return EZ_NEW(pAllocator, ezGALSharedTextureSwapChain, desc); }); });
+  ezGALSharedTextureSwapChain::SetFactoryMethod([this](const ezGALSharedTextureSwapChainCreationDescription& desc) -> ezGALSwapChainHandle { return CreateSwapChain([&desc](ezAllocator* pAllocator) -> ezGALSwapChain* { return EZ_NEW(pAllocator, ezGALSharedTextureSwapChain, desc); }); });
 
   // Fill the capabilities
   FillCapabilitiesPlatform();
@@ -132,11 +132,13 @@ ezResult ezGALDevice::Init()
 
   ezProfilingSystem::InitializeGPUData();
 
+
+
   {
     ezGALDeviceEvent e;
     e.m_pDevice = this;
     e.m_Type = ezGALDeviceEvent::AfterInit;
-    m_Events.Broadcast(e);
+    s_Events.Broadcast(e);
   }
 
   return EZ_SUCCESS;
@@ -152,7 +154,7 @@ ezResult ezGALDevice::Shutdown()
     ezGALDeviceEvent e;
     e.m_pDevice = this;
     e.m_Type = ezGALDeviceEvent::BeforeShutdown;
-    m_Events.Broadcast(e);
+    s_Events.Broadcast(e);
   }
 
   DestroyDeadObjects();
@@ -700,6 +702,7 @@ ezGALTextureHandle ezGALDevice::CreateProxyTexture(ezGALTextureHandle hParentTex
   }
 
   const auto& parentDesc = pParentTexture->GetDescription();
+  EZ_IGNORE_UNUSED(parentDesc);
   EZ_ASSERT_DEV(parentDesc.m_Type != ezGALTextureType::Texture2DProxy, "Can't create a proxy texture of a proxy texture.");
   EZ_ASSERT_DEV(parentDesc.m_Type == ezGALTextureType::TextureCube || parentDesc.m_uiArraySize > 1,
     "Proxy textures can only be created for cubemaps or array textures.");
@@ -1246,7 +1249,7 @@ void ezGALDevice::BeginFrame(const ezUInt64 uiRenderFrame)
     ezGALDeviceEvent e;
     e.m_pDevice = this;
     e.m_Type = ezGALDeviceEvent::BeforeBeginFrame;
-    m_Events.Broadcast(e);
+    s_Events.Broadcast(e);
   }
 
   {
@@ -1264,7 +1267,7 @@ void ezGALDevice::BeginFrame(const ezUInt64 uiRenderFrame)
     ezGALDeviceEvent e;
     e.m_pDevice = this;
     e.m_Type = ezGALDeviceEvent::AfterBeginFrame;
-    m_Events.Broadcast(e);
+    s_Events.Broadcast(e);
   }
 }
 
@@ -1274,7 +1277,7 @@ void ezGALDevice::EndFrame()
     ezGALDeviceEvent e;
     e.m_pDevice = this;
     e.m_Type = ezGALDeviceEvent::BeforeEndFrame;
-    m_Events.Broadcast(e);
+    s_Events.Broadcast(e);
   }
 
   {
@@ -1292,7 +1295,7 @@ void ezGALDevice::EndFrame()
     ezGALDeviceEvent e;
     e.m_pDevice = this;
     e.m_Type = ezGALDeviceEvent::AfterEndFrame;
-    m_Events.Broadcast(e);
+    s_Events.Broadcast(e);
   }
 }
 

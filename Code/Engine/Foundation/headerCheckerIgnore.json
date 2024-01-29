@@ -39,7 +39,8 @@
 			"jni.h",
 			"float.h",
 			"arm_neon.h",
-            "signal.h"
+			"signal.h",
+			"string_view"
 		]
 	},
 	"includeSource" : 
@@ -49,7 +50,7 @@
 			"UWPUtils.h",
 			"ThreadingDeclarations_posix.h",
 			"xxhash.h",
-			"cpp11.h",
+			"core.h",
 			"WinRTUtils.h"
 		]
 	}
