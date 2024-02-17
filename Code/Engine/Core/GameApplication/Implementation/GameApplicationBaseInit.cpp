@@ -14,12 +14,13 @@
 #include <Foundation/IO/OpenDdlReader.h>
 #include <Foundation/Logging/ConsoleWriter.h>
 #include <Foundation/Logging/VisualStudioWriter.h>
+#include <Foundation/Platform/PlatformDesc.h>
 #include <Foundation/Types/TagRegistry.h>
 #include <Foundation/Utilities/CommandLineOptions.h>
 
 ezCommandLineOptionBool opt_DisableConsoleOutput("app", "-disableConsoleOutput", "Disables logging to the standard console window.", false);
 ezCommandLineOptionInt opt_TelemetryPort("app", "-TelemetryPort", "The network port over which telemetry is sent.", ezTelemetry::s_uiPort);
-ezCommandLineOptionString opt_Profile("app", "-profile", "The platform profile to use.", "PC");
+ezCommandLineOptionString opt_Profile("app", "-profile", "The platform profile to use.", "Default");
 
 ezString ezGameApplicationBase::GetBaseDataDirectoryPath() const
 {
@@ -51,7 +52,24 @@ void ezGameApplicationBase::ExecuteInitFunctions()
 
 void ezGameApplicationBase::Init_PlatformProfile_SetPreferred()
 {
-  m_PlatformProfile.m_sName = opt_Profile.GetOptionValue(ezCommandLineOption::LogMode::AlwaysIfSpecified);
+  if (opt_Profile.IsOptionSpecified())
+  {
+    m_PlatformProfile.SetConfigName(opt_Profile.GetOptionValue(ezCommandLineOption::LogMode::AlwaysIfSpecified));
+  }
+  else
+  {
+    m_PlatformProfile.SetConfigName(ezPlatformDesc::GetThisPlatformDesc().GetName());
+
+    const ezStringBuilder sRuntimeProfileFile(":project/RuntimeConfigs/", m_PlatformProfile.GetConfigName(), ".ezProfile");
+
+    if (!ezFileSystem::ExistsFile(sRuntimeProfileFile))
+    {
+      ezLog::Info("Platform profile '{}' doesn't exist, switching to 'Default'", m_PlatformProfile.GetConfigName());
+
+      m_PlatformProfile.SetConfigName("Default");
+    }
+  }
+
   m_PlatformProfile.AddMissingConfigs();
 }
 
@@ -176,8 +194,9 @@ void ezGameApplicationBase::Init_LoadProjectPlugins()
 
 void ezGameApplicationBase::Init_PlatformProfile_LoadForRuntime()
 {
-  const ezStringBuilder sRuntimeProfileFile(":project/RuntimeConfigs/", m_PlatformProfile.m_sName, ".ezProfile");
+  const ezStringBuilder sRuntimeProfileFile(":project/RuntimeConfigs/", m_PlatformProfile.GetConfigName(), ".ezProfile");
   m_PlatformProfile.AddMissingConfigs();
+
   m_PlatformProfile.LoadForRuntime(sRuntimeProfileFile).IgnoreResult();
 }
 
@@ -260,5 +279,3 @@ void ezGameApplicationBase::Deinit_ShutdownLogging()
   ezGlobalLog::RemoveLogWriter(m_LogToVsID);
 #endif
 }
-
-

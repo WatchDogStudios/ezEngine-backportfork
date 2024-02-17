@@ -388,8 +388,6 @@ ezTransformStatus ezTextureAssetDocument::InternalTransformAsset(const char* szT
     return ezTransformStatus();
   }
 
-  // EZ_ASSERT_DEV(ezStringUtils::IsEqual(szPlatform, "PC"), "Platform '{0}' is not supported", szPlatform);
-
   const auto* pAssetConfig = pAssetProfile->GetTypeConfig<ezTextureAssetProfileConfig>();
 
   const auto props = GetProperties();
@@ -762,7 +760,7 @@ void ezTextureAssetDocumentGenerator::GetImportModes(ezStringView sAbsInputFile,
   }
 }
 
-ezStatus ezTextureAssetDocumentGenerator::Generate(ezStringView sInputFileAbs, ezStringView sMode, ezDocument*& out_pGeneratedDocument)
+ezStatus ezTextureAssetDocumentGenerator::Generate(ezStringView sInputFileAbs, ezStringView sMode, ezDynamicArray<ezDocument*>& out_generatedDocuments)
 {
   if (sMode == "TextureImport.Auto")
   {
@@ -809,11 +807,13 @@ ezStatus ezTextureAssetDocumentGenerator::Generate(ezStringView sInputFileAbs, e
   ezStringBuilder sInputFileRel = sInputFileAbs;
   pApp->MakePathDataDirectoryRelative(sInputFileRel);
 
-  out_pGeneratedDocument = pApp->CreateDocument(sOutFile, ezDocumentFlags::None);
-  if (out_pGeneratedDocument == nullptr)
+  ezDocument* pDoc = pApp->CreateDocument(sOutFile, ezDocumentFlags::None);
+  if (pDoc == nullptr)
     return ezStatus("Could not create target document");
 
-  ezTextureAssetDocument* pAssetDoc = ezDynamicCast<ezTextureAssetDocument*>(out_pGeneratedDocument);
+  out_generatedDocuments.PushBack(pDoc);
+
+  ezTextureAssetDocument* pAssetDoc = ezDynamicCast<ezTextureAssetDocument*>(pDoc);
   if (pAssetDoc == nullptr)
     return ezStatus("Target document is not a valid ezTextureAssetDocument");
 

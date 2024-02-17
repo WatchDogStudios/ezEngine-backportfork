@@ -228,6 +228,13 @@ ezTransformStatus ezMeshAssetDocument::CreateMeshFromFile(ezMeshAssetProperties*
   opt.m_MeshTexCoordsPrecision = pProp->m_TexCoordPrecision;
   opt.m_RootTransform = CalculateTransformationMatrix(pProp);
 
+  if (pProp->m_bSimplifyMesh)
+  {
+    opt.m_uiMeshSimplification = pProp->m_uiMeshSimplification;
+    opt.m_uiMaxSimplificationError = pProp->m_uiMaxSimplificationError;
+    opt.m_bAggressiveSimplification = pProp->m_bAggressiveSimplification;
+  }
+
   if (pImporter->Import(opt).Failed())
     return ezStatus("Model importer was unable to read this asset.");
 
@@ -314,7 +321,7 @@ void ezMeshAssetDocumentGenerator::GetImportModes(ezStringView sAbsInputFile, ez
   }
 }
 
-ezStatus ezMeshAssetDocumentGenerator::Generate(ezStringView sInputFileAbs, ezStringView sMode, ezDocument*& out_pGeneratedDocument)
+ezStatus ezMeshAssetDocumentGenerator::Generate(ezStringView sInputFileAbs, ezStringView sMode, ezDynamicArray<ezDocument*>& out_generatedDocuments)
 {
   ezStringBuilder sOutFile = sInputFileAbs;
   sOutFile.ChangeFileExtension(GetDocumentExtension());
@@ -325,11 +332,13 @@ ezStatus ezMeshAssetDocumentGenerator::Generate(ezStringView sInputFileAbs, ezSt
   ezStringBuilder sInputFileRel = sInputFileAbs;
   pApp->MakePathDataDirectoryRelative(sInputFileRel);
 
-  out_pGeneratedDocument = pApp->CreateDocument(sOutFile, ezDocumentFlags::None);
-  if (out_pGeneratedDocument == nullptr)
+  ezDocument* pDoc = pApp->CreateDocument(sOutFile, ezDocumentFlags::None);
+  if (pDoc == nullptr)
     return ezStatus("Could not create target document");
 
-  ezMeshAssetDocument* pAssetDoc = ezDynamicCast<ezMeshAssetDocument*>(out_pGeneratedDocument);
+  out_generatedDocuments.PushBack(pDoc);
+
+  ezMeshAssetDocument* pAssetDoc = ezDynamicCast<ezMeshAssetDocument*>(pDoc);
 
   auto& accessor = pAssetDoc->GetPropertyObject()->GetTypeAccessor();
   accessor.SetValue("MeshFile", sInputFileRel.GetView());

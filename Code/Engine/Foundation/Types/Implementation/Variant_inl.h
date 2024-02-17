@@ -12,7 +12,7 @@ EZ_WARNING_POP()
 
 EZ_WARNING_PUSH()
 EZ_WARNING_DISABLE_CLANG("-Wunused-local-typedef")
-EZ_WARNING_DISABLE_GCC("-Wunused-local-typedef")
+EZ_WARNING_DISABLE_GCC("-Wunused-local-typedefs")
 
 EZ_ALWAYS_INLINE ezVariant::ezVariant(const ezVariant& other)
 {
@@ -249,6 +249,20 @@ EZ_FORCE_INLINE bool ezVariant::operator==(const T& other) const
     if (m_uiType == Type::HashedString)
     {
       return Cast<ezHashedString>() == other;
+    }
+  }
+  else if constexpr (std::is_same_v<T, ezStringView>)
+  {
+    if (m_uiType == Type::String)
+    {
+      return Cast<ezString>().GetView() == other;
+    }
+  }
+  else if constexpr (std::is_same_v<T, ezString>)
+  {
+    if (m_uiType == Type::StringView)
+    {
+      return Cast<ezStringView>() == other.GetView();
     }
   }
 
