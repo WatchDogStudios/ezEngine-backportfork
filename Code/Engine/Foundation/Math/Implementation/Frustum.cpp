@@ -370,17 +370,9 @@ ezFrustum ezFrustum::MakeFromCorners(const ezVec3 pCorners[FrustumCorner::CORNER
 
   res.m_Planes[PlaneType::NearPlane] = ezPlane::MakeFromPoints(pCorners[FrustumCorner::NearTopLeft], pCorners[FrustumCorner::NearBottomRight], pCorners[FrustumCorner::NearTopRight]);
 
-  if (true)
-  {
-    for (int i = 0; i < 6; ++i)
-    {
-      res.m_Planes[i].Flip();
-    }
-  }
-
   EZ_ASSERT_DEV(res.IsValid(), "Frustum is not valid after construction.");
 
   return res;
 }
 
-EZ_STATICLINK_FILE(Foundation, Foundation_Math_Implementation_Frustum);
+
