@@ -328,6 +328,18 @@ ezResult ezOSFile::DeleteFile(ezStringView sFile)
   return Res;
 }
 
+ezStringView ezOSFile::GetApplicationDirectory()
+{
+  if (s_sApplicationPath.IsEmpty())
+  {
+    // s_sApplicationPath is filled out and cached by GetApplicationPath(), so call that first, if necessary
+    GetApplicationPath();
+  }
+
+  EZ_ASSERT_ALWAYS(!s_sApplicationPath.IsEmpty(), "Invalid application directory");
+  return s_sApplicationPath.GetFileDirectory();
+}
+
 ezResult ezOSFile::CreateDirectoryStructure(ezStringView sDirectory)
 {
   const ezTime t0 = ezTime::Now();
@@ -534,7 +546,7 @@ ezResult ezOSFile::GetFileCasing(ezStringView sFileOrFolder, ezStringBuilder& ou
 
 #  endif // EZ_SUPPORTS_CASE_INSENSITIVE_PATHS && EZ_SUPPORTS_UNRESTRICTED_FILE_ACCESS
 
-#endif // EZ_SUPPORTS_FILE_STATS
+#endif   // EZ_SUPPORTS_FILE_STATS
 
 #if EZ_ENABLED(EZ_SUPPORTS_FILE_ITERATORS) && EZ_ENABLED(EZ_SUPPORTS_FILE_STATS)
 
@@ -717,5 +729,3 @@ void ezFileSystemIterator::SkipFolder()
 }
 
 #endif
-
-

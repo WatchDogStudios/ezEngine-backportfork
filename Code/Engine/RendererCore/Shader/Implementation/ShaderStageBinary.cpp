@@ -7,8 +7,6 @@
 
 
 
-
-
 //////////////////////////////////////////////////////////////////////////
 
 ezMap<ezUInt32, ezShaderStageBinary> ezShaderStageBinary::s_ShaderStageBinaries[ezGALShaderStage::ENUM_COUNT];
@@ -29,6 +27,7 @@ ezResult ezShaderStageBinary::Write(ezStreamWriter& inout_stream) const
   inout_stream << m_uiSourceHash;
 
   // ezGALShaderByteCode
+  inout_stream << m_pGALByteCode->m_uiTessellationPatchControlPoints;
   inout_stream << m_pGALByteCode->m_Stage;
   inout_stream << m_pGALByteCode->m_bWasCompiledWithDebug;
 
@@ -111,6 +110,10 @@ ezResult ezShaderStageBinary::Read(ezStreamReader& inout_stream)
   inout_stream >> m_uiSourceHash;
 
   // ezGALShaderByteCode
+  if (uiVersion >= ezShaderStageBinary::Version::Version7)
+  {
+    inout_stream >> m_pGALByteCode->m_uiTessellationPatchControlPoints;
+  }
   inout_stream >> m_pGALByteCode->m_Stage;
   inout_stream >> m_pGALByteCode->m_bWasCompiledWithDebug;
 
@@ -262,5 +265,3 @@ void ezShaderStageBinary::OnEngineShutdown()
     s_ShaderStageBinaries[stage].Clear();
   }
 }
-
-

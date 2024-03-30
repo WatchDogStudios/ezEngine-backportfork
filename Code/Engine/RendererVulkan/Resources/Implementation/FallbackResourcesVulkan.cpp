@@ -3,13 +3,13 @@
 #include <RendererVulkan/Resources/FallbackResourcesVulkan.h>
 
 #include <Foundation/Algorithm/HashStream.h>
+#include <Foundation/Configuration/Startup.h>
 #include <RendererFoundation/Resources/Buffer.h>
 #include <RendererVulkan/Device/DeviceVulkan.h>
 #include <RendererVulkan/Resources/ResourceViewVulkan.h>
 #include <RendererVulkan/Resources/TextureVulkan.h>
 #include <RendererVulkan/Resources/UnorderedAccessViewVulkan.h>
 #include <RendererVulkan/Utils/ConversionUtilsVulkan.h>
-#include <Foundation/Configuration/Startup.h>
 
 // clang-format off
 EZ_BEGIN_SUBSYSTEM_DECLARATION(RendererVulkan, FallbackResourcesVulkan)
@@ -56,7 +56,8 @@ void ezFallbackResourcesVulkan::GALDeviceEventHandler(const ezGALDeviceEvent& e)
     case ezGALDeviceEvent::AfterInit:
     {
       s_pDevice = e.m_pDevice;
-      auto CreateTexture = [](ezGALTextureType::Enum type, ezGALMSAASampleCount::Enum samples, bool bDepth) -> ezGALResourceViewHandle {
+      auto CreateTexture = [](ezGALTextureType::Enum type, ezGALMSAASampleCount::Enum samples, bool bDepth) -> ezGALResourceViewHandle
+      {
         ezGALTextureCreationDescription desc;
         desc.m_uiWidth = 4;
         desc.m_uiHeight = 4;
@@ -91,7 +92,7 @@ void ezFallbackResourcesVulkan::GALDeviceEventHandler(const ezGALDeviceEvent& e)
       }
 
       // Swift shader can only do 4x MSAA. Add a check anyways.
-      const bool bSupported = s_pDevice->GetCapabilities().m_FormatSupport[ezGALResourceFormat::BGRAUByteNormalizedsRGB].AreAllSet(ezGALResourceFormatSupport::Sample | ezGALResourceFormatSupport::MSAA4x);
+      const bool bSupported = s_pDevice->GetCapabilities().m_FormatSupport[ezGALResourceFormat::BGRAUByteNormalizedsRGB].AreAllSet(ezGALResourceFormatSupport::Texture | ezGALResourceFormatSupport::MSAA4x);
 
       if (bSupported)
       {
@@ -261,3 +262,6 @@ bool ezFallbackResourcesVulkan::KeyHash::Equal(const Key& a, const Key& b)
 {
   return a.m_ResourceType == b.m_ResourceType && a.m_ezType == b.m_ezType && a.m_bDepth == b.m_bDepth;
 }
+
+
+EZ_STATICLINK_FILE(RendererVulkan, RendererVulkan_Resources_Implementation_FallbackResourcesVulkan);

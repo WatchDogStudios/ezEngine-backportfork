@@ -115,7 +115,7 @@ void ezSampleAnimClipSequenceAnimNode::Clips_Insert(ezUInt32 uiIndex, const char
 {
   ezHashedString s;
   s.Assign(szValue);
-  m_Clips.Insert(s, uiIndex);
+  m_Clips.InsertAt(uiIndex, s);
 }
 
 void ezSampleAnimClipSequenceAnimNode::Clips_Remove(ezUInt32 uiIndex)
@@ -217,9 +217,16 @@ void ezSampleAnimClipSequenceAnimNode::Step(ezAnimController& ref_controller, ez
 
     if (pState->m_uiState == 2)
     {
+      if (m_Clips.IsEmpty())
+      {
+        pState->m_uiState = 3;
+        m_OutOnEndStarted.SetTriggered(ref_graph);
+        continue;
+      }
+
       const auto& clipInfo = ref_controller.GetAnimationClipInfo(m_Clips[pState->m_uiMiddleClipIdx]);
 
-      if (m_Clips.IsEmpty() || !clipInfo.m_hClip.IsValid())
+      if (!clipInfo.m_hClip.IsValid())
       {
         pState->m_uiState = 3;
         m_OutOnEndStarted.SetTriggered(ref_graph);
@@ -355,4 +362,3 @@ bool ezSampleAnimClipSequenceAnimNode::GetInstanceDataDesc(ezInstanceDataDesc& o
 
 
 EZ_STATICLINK_FILE(RendererCore, RendererCore_AnimationSystem_AnimGraph_AnimNodes2_SampleAnimClipSequenceAnimNode);
-

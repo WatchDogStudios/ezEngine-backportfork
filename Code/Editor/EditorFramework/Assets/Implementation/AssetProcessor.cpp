@@ -236,9 +236,9 @@ ezResult ezProcessTask::StartProcess()
   args << ezGameApplication::GetActiveRenderer().GetData(tmp);
 
 #if EZ_ENABLED(EZ_PLATFORM_WINDOWS)
-  const char* EditorProcessorExecutable = "EditorProcessor.exe";
+  const char* EditorProcessorExecutable = "ezEditorProcessor.exe";
 #else
-  const char* EditorProcessorExecutable = "EditorProcessor";
+  const char* EditorProcessorExecutable = "ezEditorProcessor";
 #endif
 
   if (m_pIPC->StartClientProcess(EditorProcessorExecutable, args, false, pFirstAllowedMessageType).Failed())
@@ -277,7 +277,8 @@ bool ezProcessTask::GetNextAssetToProcess(ezAssetInfo* pInfo, ezUuid& out_guid, 
       return false;
   }
 
-  auto TestFunc = [this, &bComplete](const ezSet<ezString>& files) -> ezAssetInfo* {
+  auto TestFunc = [this, &bComplete](const ezSet<ezString>& files) -> ezAssetInfo*
+  {
     for (const auto& sFile : files)
     {
       if (ezAssetInfo* pFileInfo = ezAssetCurator::GetSingleton()->GetAssetInfo(sFile))
@@ -371,7 +372,8 @@ void ezProcessTask::OnProcessCrashed(ezStringView message)
 {
   ShutdownProcess();
   m_Status = ezStatus(message);
-  ezLogEntryDelegate logger([this](ezLogEntry& ref_entry) { m_LogEntries.PushBack(std::move(ref_entry)); });
+  ezLogEntryDelegate logger([this](ezLogEntry& ref_entry)
+    { m_LogEntries.PushBack(std::move(ref_entry)); });
   ezLog::Error(&logger, message);
   ezLog::Error(&ezAssetProcessor::GetSingleton()->m_CuratorLog, message);
 }

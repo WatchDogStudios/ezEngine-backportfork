@@ -368,8 +368,6 @@ void ezFileSystemIterator::StartSearch(ezStringView sSearchStart, ezBitflags<ezF
 
   m_sCurPath = sSearch.GetFileDirectory();
 
-  EZ_ASSERT_DEV(sSearch.IsAbsolutePath(), "The path '{0}' is not absolute.", m_sCurPath);
-
   m_Flags = flags;
 
   WIN32_FIND_DATAW data;
@@ -521,7 +519,7 @@ ezInt32 ezFileSystemIterator::InternalNext()
 
 #  endif
 
-ezStringView ezOSFile::GetApplicationDirectory()
+ezStringView ezOSFile::GetApplicationPath()
 {
   if (s_sApplicationPath.IsEmpty())
   {
@@ -553,7 +551,7 @@ ezStringView ezOSFile::GetApplicationDirectory()
       EZ_REPORT_FAILURE("GetModuleFileNameW failed: {0}", ezArgErrorCode(error));
     }
 
-    s_sApplicationPath = ezPathUtils::GetFileDirectory(ezStringUtf8(tmp.GetData()));
+    s_sApplicationPath = ezStringUtf8(tmp.GetData()).GetData();
   }
 
   return s_sApplicationPath;
@@ -704,5 +702,3 @@ const ezString ezOSFile::GetCurrentWorkingDirectory()
 }
 
 #endif
-
-

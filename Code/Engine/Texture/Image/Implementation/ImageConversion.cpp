@@ -99,8 +99,14 @@ namespace
   ezHashTable<ezUInt32, TableEntry> s_conversionTable;
   bool s_conversionTableValid = false;
 
-  constexpr ezUInt32 MakeKey(ezImageFormat::Enum a, ezImageFormat::Enum b) { return a * ezImageFormat::NUM_FORMATS + b; }
-  constexpr ezUInt32 MakeTypeKey(ezImageFormatType::Enum a, ezImageFormatType::Enum b) { return (a << 16) + b; }
+  constexpr ezUInt32 MakeKey(ezImageFormat::Enum a, ezImageFormat::Enum b)
+  {
+    return a * ezImageFormat::NUM_FORMATS + b;
+  }
+  constexpr ezUInt32 MakeTypeKey(ezImageFormatType::Enum a, ezImageFormatType::Enum b)
+  {
+    return (a << 16) + b;
+  }
 
   struct IntermediateBuffer
   {
@@ -246,7 +252,7 @@ ezResult ezImageConversion::BuildPath(ezImageFormat::Enum sourceFormat, ezImageF
           allocateScratchBufferIndex(scratchBuffers, ezImageFormat::GetBitsPerBlock(ref_path_out[0].m_sourceFormat), ref_path_out[0].m_sourceBufferIndex);
         ref_path_out[0].m_sourceBufferIndex = copy.m_targetBufferIndex;
         copy.m_step = nullptr;
-        ref_path_out.Insert(copy, 0);
+        ref_path_out.InsertAt(0, copy);
       }
       else
       {
@@ -796,5 +802,3 @@ ezImageFormat::Enum ezImageConversion::FindClosestCompatibleFormat(
 
   return bestFormat;
 }
-
-

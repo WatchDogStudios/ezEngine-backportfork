@@ -23,6 +23,7 @@ public:
     Version4, // Constant buffer layouts
     Version5, // Debug flag
     Version6, // Rewrite, no backwards compatibility. Moves all data into ezGALShaderByteCode.
+    Version7, // Added tessellation support (m_uiTessellationPatchControlPoints)
 
     ENUM_COUNT,
     VersionCurrent = ENUM_COUNT - 1
@@ -38,7 +39,7 @@ private:
   friend class ezShaderCompiler;
   friend class ezShaderPermutationResource;
   friend class ezShaderPermutationResourceLoader;
-   
+
   ezResult WriteStageBinary(ezLogInterface* pLog) const;
   ezResult Write(ezStreamWriter& inout_stream) const;
   ezResult Read(ezStreamReader& inout_stream);

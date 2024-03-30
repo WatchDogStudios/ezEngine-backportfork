@@ -12,6 +12,18 @@ ezArrayPtr<const ezShaderResourceBinding> ezGALShader::GetBindingMapping() const
   return m_BindingMapping;
 }
 
+const ezShaderResourceBinding* ezGALShader::GetShaderResourceBinding(const ezTempHashedString& sName) const
+{
+  for (auto& binding : m_BindingMapping)
+  {
+    if (binding.m_sName == sName)
+    {
+      return &binding;
+    }
+  }
+  return nullptr;
+}
+
 ezArrayPtr<const ezShaderVertexInputAttribute> ezGALShader::GetVertexInputAttributes() const
 {
   if (m_Description.HasByteCodeForStage(ezGALShaderStage::VertexShader))
@@ -43,5 +55,3 @@ void ezGALShader::DestroyBindingMapping()
 ezGALShader::~ezGALShader() = default;
 
 ezDelegate<void(ezShaderUtils::ezBuiltinShaderType type, ezShaderUtils::ezBuiltinShader& out_shader)> ezShaderUtils::g_RequestBuiltinShaderCallback;
-
-

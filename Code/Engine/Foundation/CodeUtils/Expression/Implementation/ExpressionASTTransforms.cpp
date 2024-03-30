@@ -463,7 +463,7 @@ ezExpressionAST::Node* ezExpressionAST::ReplaceUnsupportedInstructions(Node* pNo
     auto pXX = CreateBinaryOperator(NodeType::Multiply, pX, pX);
 
     if (nodeType == NodeType::SmoothStep)
-    {      
+    {
       auto p2X = CreateBinaryOperator(NodeType::Multiply, pX, CreateConstant(2));
       auto p3Minus2X = CreateBinaryOperator(NodeType::Subtract, CreateConstant(3), p2X);
       return CreateBinaryOperator(NodeType::Multiply, pXX, p3Minus2X);
@@ -1038,7 +1038,7 @@ ezResult ezExpressionAST::ScalarizeInputs()
       {
         ezEnum<VectorComponent> component = static_cast<VectorComponent::Enum>(i);
         auto pNewInput = CreateInput(CreateScalarizedStreamDesc(pInput->m_Desc, component));
-        m_InputNodes.Insert(pNewInput, uiInputIndex + i);
+        m_InputNodes.InsertAt(uiInputIndex + i, pNewInput);
       }
     }
   }
@@ -1064,12 +1064,10 @@ ezResult ezExpressionAST::ScalarizeOutputs()
         ezEnum<VectorComponent> component = static_cast<VectorComponent::Enum>(i);
         auto pSwizzle = CreateSwizzle(component, pOutput->m_pExpression);
         auto pNewOutput = CreateOutput(CreateScalarizedStreamDesc(pOutput->m_Desc, component), pSwizzle);
-        m_OutputNodes.Insert(pNewOutput, uiOutputIndex + i);
+        m_OutputNodes.InsertAt(uiOutputIndex + i, pNewOutput);
       }
     }
   }
 
   return EZ_SUCCESS;
 }
-
-

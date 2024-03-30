@@ -415,7 +415,8 @@ void ezDecalComponent::OnMsgExtractRenderData(ezMsgExtractRenderData& msg) const
       const auto& item = atlas.m_Items.GetValue(decalIdx);
       uiDecalFlags = item.m_uiFlags;
 
-      auto layerRectToScaleOffset = [](ezRectU32 layerRect, ezVec2U32 vTextureSize) {
+      auto layerRectToScaleOffset = [](ezRectU32 layerRect, ezVec2U32 vTextureSize)
+      {
         ezVec4 result;
         result.x = (float)layerRect.width / vTextureSize.x * 0.5f;
         result.y = (float)layerRect.height / vTextureSize.y * 0.5f;
@@ -619,7 +620,7 @@ void ezDecalComponent::DecalFile_Set(ezUInt32 uiIndex, const char* szFile)
 
 void ezDecalComponent::DecalFile_Insert(ezUInt32 uiIndex, const char* szFile)
 {
-  m_Decals.Insert(ezDecalResourceHandle(), uiIndex);
+  m_Decals.InsertAt(uiIndex, ezDecalResourceHandle());
   DecalFile_Set(uiIndex, szFile);
 }
 

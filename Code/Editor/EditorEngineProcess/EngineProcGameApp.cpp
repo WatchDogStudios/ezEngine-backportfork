@@ -2,6 +2,7 @@
 
 #include <Foundation/Basics/Platform/Win/IncludeWindows.h>
 #include <Foundation/Logging/ETWWriter.h>
+#include <Foundation/System/CrashHandler.h>
 #include <Foundation/System/SystemInformation.h>
 
 #include <Core/Console/QuakeConsole.h>
@@ -73,6 +74,8 @@ void ezEngineProcessGameApplication::AfterCoreSystemsStartup()
 #endif
 
   WaitForDebugger();
+
+  ezCrashHandler::SetCrashHandler(&ezCrashHandler_WriteMiniDump::g_Instance);
 
   DisableErrorReport();
 
@@ -599,7 +602,7 @@ void ezEngineProcessGameApplication::Init_FileSystem_ConfigureDataDirs()
 
   ezFileSystem::AddDataDirectory("", "EngineProcess", ":", ezFileSystem::AllowWrites).IgnoreResult();                   // for absolute paths
   ezFileSystem::AddDataDirectory(">appdir/", "EngineProcess", "bin", ezFileSystem::ReadOnly).IgnoreResult();            // writing to the binary directory
-  ezFileSystem::AddDataDirectory(">appdir/", "EngineProcess", "shadercache", ezFileSystem::AllowWrites).IgnoreResult(); // for shader files
+  ezFileSystem::AddDataDirectory(">sdk/Output/", "EngineProcess", "shadercache", ezFileSystem::AllowWrites).IgnoreResult(); // for shader files
   ezFileSystem::AddDataDirectory(sAppDir.GetData(), "EngineProcess", "app").IgnoreResult();                             // app specific data
   ezFileSystem::AddDataDirectory(sUserData, "EngineProcess", "appdata", ezFileSystem::AllowWrites).IgnoreResult();      // for writing app user data
 

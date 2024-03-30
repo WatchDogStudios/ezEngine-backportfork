@@ -306,5 +306,3 @@ void ezGameApplication::Deinit_ShutdownGraphicsDevice()
   EZ_DEFAULT_DELETE(pDevice);
   ezGALDevice::SetDefaultDevice(nullptr);
 }
-
-

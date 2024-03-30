@@ -104,7 +104,7 @@ void ezJoltStaticActorComponent::OnSimulationStarted()
     pMaterial = ezJoltCore::GetDefaultMaterial();
 
   bodyCfg.mPosition = ezJoltConversionUtils::ToVec3(trans.m_Position);
-  bodyCfg.mRotation = ezJoltConversionUtils::ToQuat(trans.m_Rotation);
+  bodyCfg.mRotation = ezJoltConversionUtils::ToQuat(trans.m_Rotation).Normalized();
   bodyCfg.mMotionType = JPH::EMotionType::Static;
   bodyCfg.mObjectLayer = ezJoltCollisionFiltering::ConstructObjectLayer(m_uiCollisionLayer, ezJoltBroadphaseLayer::Static);
   bodyCfg.mRestitution = pMaterial->m_fRestitution;
@@ -293,4 +293,3 @@ const char* ezJoltStaticActorComponent::GetSurfaceFile() const
 
 
 EZ_STATICLINK_FILE(JoltPlugin, JoltPlugin_Actors_Implementation_JoltStaticActorComponent);
-

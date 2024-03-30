@@ -232,7 +232,9 @@ retry:
 
   m_SyncTimeDiff = ezTime::MakeZero();
 
-  ezGALWindowSwapChain::SetFactoryMethod([this](const ezGALWindowSwapChainCreationDescription& desc) -> ezGALSwapChainHandle { return CreateSwapChain([&desc](ezAllocator* pAllocator) -> ezGALSwapChain* { return EZ_NEW(pAllocator, ezGALSwapChainDX11, desc); }); });
+  ezGALWindowSwapChain::SetFactoryMethod([this](const ezGALWindowSwapChainCreationDescription& desc) -> ezGALSwapChainHandle
+    { return CreateSwapChain([&desc](ezAllocator* pAllocator) -> ezGALSwapChain*
+        { return EZ_NEW(pAllocator, ezGALSwapChainDX11, desc); }); });
 
   return EZ_SUCCESS;
 }
@@ -952,14 +954,14 @@ void ezGALDeviceDX11::FillCapabilitiesPlatform()
       if (SUCCEEDED(m_pDevice3->CheckFormatSupport(entry.m_eDepthOnlyType, &uiSampleSupport)))
       {
         if (uiSampleSupport & D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_SHADER_SAMPLE)
-          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Sample);
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Texture);
       }
 
       UINT uiRenderSupport;
       if (SUCCEEDED(m_pDevice3->CheckFormatSupport(entry.m_eDepthStencilType, &uiRenderSupport)))
       {
         if (uiRenderSupport & D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_DEPTH_STENCIL)
-          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Render);
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::RenderTarget);
       }
     }
     else
@@ -969,7 +971,10 @@ void ezGALDeviceDX11::FillCapabilitiesPlatform()
       {
         UINT uiSampleFlag = ezGALResourceFormat::IsIntegerFormat(format) ? D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_SHADER_LOAD : D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
         if (uiSampleSupport & uiSampleFlag)
-          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Sample);
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Texture);
+
+        if (uiSampleSupport & D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_TYPED_UNORDERED_ACCESS_VIEW)
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::TextureRW);
       }
 
       UINT uiVertexSupport;
@@ -983,7 +988,7 @@ void ezGALDeviceDX11::FillCapabilitiesPlatform()
       if (SUCCEEDED(m_pDevice3->CheckFormatSupport(entry.m_eRenderTarget, &uiRenderSupport)))
       {
         if (uiRenderSupport & D3D11_FORMAT_SUPPORT::D3D11_FORMAT_SUPPORT_RENDER_TARGET)
-          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::Render);
+          m_Capabilities.m_FormatSupport[i].Add(ezGALResourceFormatSupport::RenderTarget);
       }
 
       UINT uiMSAALevels;

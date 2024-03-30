@@ -53,9 +53,6 @@ public:
   ezJoltDynamicActorComponent();
   ~ezJoltDynamicActorComponent();
 
-  /// \brief Returns the internal ID used by Jolt to identify this actor/body.
-  ezUInt32 GetJoltBodyID() const { return m_uiJoltBodyID; }
-
   /// \brief Adds a physics impulse to this body at the given location.
   ///
   /// An impulse is a force that is applied only once, e.g. a sudden push.
@@ -85,8 +82,8 @@ public:
   void SetGravityFactor(float fFactor);                       // [ property ]
   float GetGravityFactor() const { return m_fGravityFactor; } // [ property ]
 
-  void SetSurfaceFile(const char* szFile); // [ property ]
-  const char* GetSurfaceFile() const;      // [ property ]
+  void SetSurfaceFile(const char* szFile);                    // [ property ]
+  const char* GetSurfaceFile() const;                         // [ property ]
 
   /// \brief If enabled, a more precise simulation method is used, preventing fast moving actors from tunneling through walls.
   /// This comes at an extra performance cost.

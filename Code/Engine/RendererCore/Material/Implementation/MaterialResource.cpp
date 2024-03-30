@@ -1,10 +1,10 @@
 #include <RendererCore/RendererCorePCH.h>
 
-#include <Foundation/Utilities/AssetFileHeader.h>
 #include <Foundation/Configuration/Startup.h>
 #include <Foundation/IO/OpenDdlReader.h>
 #include <Foundation/IO/OpenDdlUtils.h>
 #include <Foundation/Types/ScopeExit.h>
+#include <Foundation/Utilities/AssetFileHeader.h>
 #include <RendererCore/Material/MaterialResource.h>
 #include <RendererCore/RenderContext/RenderContext.h>
 #include <RendererCore/RenderWorld/RenderWorld.h>
@@ -891,13 +891,13 @@ void ezMaterialResource::UpdateConstantBuffer(ezShaderPermutationResource* pShad
   if (pShaderPermutation == nullptr)
     return;
 
-  ezTempHashedString sConstantBufferName("ezMaterialConstants");
-  const ezShaderResourceBinding* pBinding = pShaderPermutation->GetShaderByteCode(ezGALShaderStage::PixelShader)->GetShaderResourceBinding(sConstantBufferName);
-  if (pBinding == nullptr)
-  {
-    pBinding = pShaderPermutation->GetShaderByteCode(ezGALShaderStage::VertexShader)->GetShaderResourceBinding(sConstantBufferName);
-  }
+  const ezGALShader* pShader = ezGALDevice::GetDefaultDevice()->GetShader(pShaderPermutation->GetGALShader());
+  if (pShader == nullptr)
+    return;
 
+  ezTempHashedString sConstantBufferName("ezMaterialConstants");
+
+  const ezShaderResourceBinding* pBinding = pShader->GetShaderResourceBinding(sConstantBufferName);
   const ezShaderConstantBufferLayout* pLayout = pBinding != nullptr ? pBinding->m_pLayout : nullptr;
   if (pLayout == nullptr)
     return;

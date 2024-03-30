@@ -61,10 +61,14 @@ void ezHashSetBase<K, H>::ConstIterator::Next()
     return;
   }
 
-  do
+  for (++m_uiCurrentIndex; m_uiCurrentIndex < m_pHashSet->m_uiCapacity; ++m_uiCurrentIndex)
   {
-    ++m_uiCurrentIndex;
-  } while (!m_pHashSet->IsValidEntry(m_uiCurrentIndex));
+    if (m_pHashSet->IsValidEntry(m_uiCurrentIndex))
+    {
+      return;
+    }
+  }
+  SetToEnd();
 }
 
 template <typename K, typename H>
@@ -202,7 +206,7 @@ template <typename K, typename H>
 void ezHashSetBase<K, H>::Reserve(ezUInt32 uiCapacity)
 {
   const ezUInt64 uiCap64 = static_cast<ezUInt64>(uiCapacity);
-  ezUInt64 uiNewCapacity64 = uiCap64 + (uiCap64 * 2 / 3); // ensure a maximum load of 60%
+  ezUInt64 uiNewCapacity64 = uiCap64 + (uiCap64 * 2 / 3);                  // ensure a maximum load of 60%
 
   uiNewCapacity64 = ezMath::Min<ezUInt64>(uiNewCapacity64, 0x80000000llu); // the largest power-of-two in 32 bit
 
@@ -566,6 +570,7 @@ EZ_FORCE_INLINE bool ezHashSetBase<K, H>::IsFreeEntry(ezUInt32 uiEntryIndex) con
 template <typename K, typename H>
 EZ_FORCE_INLINE bool ezHashSetBase<K, H>::IsValidEntry(ezUInt32 uiEntryIndex) const
 {
+  EZ_ASSERT_DEBUG(uiEntryIndex < m_uiCapacity, "Out of bounds access");
   return GetFlags(m_pEntryFlags, uiEntryIndex) == VALID_ENTRY;
 }
 

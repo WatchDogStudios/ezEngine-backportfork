@@ -505,7 +505,7 @@ void ezMaterialAssetDocument::SetBaseMaterial(const char* szBaseMaterial)
   auto pAssetInfo = ezAssetCurator::GetSingleton()->FindSubAsset(szBaseMaterial);
   if (pAssetInfo == nullptr)
   {
-    ezDeque<const ezDocumentObject*> sel;
+    ezHybridArray<const ezDocumentObject*, 2> sel;
     sel.PushBack(pObject);
     UnlinkPrefabs(sel);
   }
@@ -650,7 +650,7 @@ void ezMaterialAssetDocument::UpdatePrefabObject(ezDocumentObject* pObject, cons
     {
       ezAbstractGraphDiffOperation op = newInstanceToCurrentInstance[i];
       newInstanceToCurrentInstance.RemoveAtAndCopy(i);
-      newInstanceToCurrentInstance.Insert(op, 0);
+      newInstanceToCurrentInstance.InsertAt(0, op);
       break;
     }
   }
@@ -785,7 +785,7 @@ ezTransformStatus ezMaterialAssetDocument::InternalTransformAsset(const char* sz
 
           ezVisualShaderErrorLog log;
 
-          ret = ezQtEditorApp::GetSingleton()->ExecuteTool("ShaderCompiler", arguments, 60, &log);
+          ret = ezQtEditorApp::GetSingleton()->ExecuteTool("ezShaderCompiler", arguments, 60, &log);
           if (ret.Failed())
           {
             e.m_Type = ezMaterialVisualShaderEvent::TransformFailed;

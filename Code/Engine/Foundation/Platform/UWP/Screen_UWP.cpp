@@ -6,7 +6,7 @@
 #  include <Foundation/System/Screen.h>
 #  include <windows.graphics.display.h>
 
-ezResult ezScreen::EnumerateScreens(ezHybridArray<ezScreenInfo, 2>& out_Screens)
+ezResult ezScreen::EnumerateScreens(ezDynamicArray<ezScreenInfo>& out_Screens)
 {
   out_Screens.Clear();
 
@@ -38,5 +38,3 @@ ezResult ezScreen::EnumerateScreens(ezHybridArray<ezScreenInfo, 2>& out_Screens)
 }
 
 #endif
-
-

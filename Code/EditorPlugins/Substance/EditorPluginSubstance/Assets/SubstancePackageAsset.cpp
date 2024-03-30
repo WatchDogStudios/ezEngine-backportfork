@@ -1,11 +1,11 @@
 #include <EditorPluginSubstance/EditorPluginSubstancePCH.h>
 
-#include <Foundation/Utilities/AssetFileHeader.h>
 #include <EditorFramework/Assets/AssetCurator.h>
 #include <EditorPluginAssets/TextureAsset/TextureAssetManager.h>
 #include <EditorPluginSubstance/Assets/SubstancePackageAsset.h>
 #include <EditorPluginSubstance/Assets/SubstancePackageAssetManager.h>
 #include <Foundation/IO/FileSystem/FileReader.h>
+#include <Foundation/Utilities/AssetFileHeader.h>
 
 #include <qsettings.h>
 #include <qxmlstream.h>
@@ -65,7 +65,7 @@ namespace
   }
 
   static const char* s_szSubstanceUsageMapping[] = {
-    "", // Unknown,
+    "",                 // Unknown,
 
     "baseColor",        // BaseColor,
     "emissive",         // Emissive,
@@ -733,7 +733,7 @@ ezTransformStatus ezSubstancePackageAssetDocument::UpdateGraphOutputs(ezStringVi
 }
 
 static const char* s_szTexConvUsageMapping[] = {
-  "Auto", // Unknown,
+  "Auto",      // Unknown,
 
   "Color",     // BaseColor,
   "Color",     // Emissive,
@@ -839,7 +839,7 @@ ezStatus ezSubstancePackageAssetDocument::RunTexConv(const char* szInputFile, co
     arguments << "0.5";
   }
 
-  EZ_SUCCEED_OR_RETURN(ezQtEditorApp::GetSingleton()->ExecuteTool("TexConv", arguments, 180, ezLog::GetThreadLocalLogSystem()));
+  EZ_SUCCEED_OR_RETURN(ezQtEditorApp::GetSingleton()->ExecuteTool("ezTexConv", arguments, 180, ezLog::GetThreadLocalLogSystem()));
 
   if (sThumbnailFile.IsEmpty() == false)
   {

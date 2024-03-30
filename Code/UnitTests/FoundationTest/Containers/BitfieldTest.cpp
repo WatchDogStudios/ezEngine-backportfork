@@ -2,8 +2,8 @@
 
 #include <Foundation/Containers/Bitfield.h>
 #include <Foundation/Containers/Deque.h>
-#include <Foundation/Strings/String.h>
 #include <Foundation/Math/Random.h>
+#include <Foundation/Strings/String.h>
 
 EZ_CREATE_SIMPLE_TEST(Containers, Bitfield)
 {
@@ -170,10 +170,10 @@ EZ_CREATE_SIMPLE_TEST(Containers, Bitfield)
 
   EZ_TEST_BLOCK(ezTestBlock::Enabled, "IsAnyBitSet / IsNoBitSet / AreAllBitsSet")
   {
-    ezHybridBitfield<512> bf; // using a hybrid array
+    ezHybridBitfield<512> bf;                  // using a hybrid array
 
     EZ_TEST_BOOL(bf.IsEmpty() == true);
-    EZ_TEST_BOOL(bf.IsAnyBitSet() == false); // empty
+    EZ_TEST_BOOL(bf.IsAnyBitSet() == false);   // empty
     EZ_TEST_BOOL(bf.IsNoBitSet() == true);
     EZ_TEST_BOOL(bf.AreAllBitsSet() == false); // empty
 
@@ -198,6 +198,50 @@ EZ_CREATE_SIMPLE_TEST(Containers, Bitfield)
     EZ_TEST_BOOL(bf.IsAnyBitSet() == true);
     EZ_TEST_BOOL(bf.IsNoBitSet() == false);
     EZ_TEST_BOOL(bf.AreAllBitsSet() == true);
+  }
+
+  EZ_TEST_BLOCK(ezTestBlock::Enabled, "Swap")
+  {
+    ezHybridBitfield<512> bf0; // using a hybrid array
+    ezHybridBitfield<512> bf1; // using a hybrid array
+
+    ezUInt32 bitFieldCount0 = 100;
+    ezUInt32 bitFieldCount1 = 999;
+    ezUInt32 bitIndexSet0 = 2;
+    ezUInt32 bitIndexSet1 = 555;
+
+    bf0.SetCount(bitFieldCount0, false);
+    bf1.SetCount(bitFieldCount1, false);
+    bf0.SetBit(bitIndexSet0);
+    bf1.SetBit(bitIndexSet1);
+
+    EZ_TEST_BOOL(bitFieldCount0 == bf0.GetCount());
+    for (ezUInt32 i = 0; i < bf0.GetCount(); ++i)
+    {
+      EZ_TEST_BOOL(bf0.IsBitSet(i) == (bitIndexSet0 == i));
+    }
+
+    EZ_TEST_BOOL(bitFieldCount1 == bf1.GetCount());
+    for (ezUInt32 i = 0; i < bf1.GetCount(); ++i)
+    {
+      EZ_TEST_BOOL(bf1.IsBitSet(i) == (bitIndexSet1 == i));
+    }
+
+    bf0.Swap(bf1);
+    ezMath::Swap(bitIndexSet0, bitIndexSet1);
+    ezMath::Swap(bitFieldCount0, bitFieldCount1);
+
+    EZ_TEST_BOOL(bitFieldCount0 == bf0.GetCount());
+    for (ezUInt32 i = 0; i < bf0.GetCount(); ++i)
+    {
+      EZ_TEST_BOOL(bf0.IsBitSet(i) == (bitIndexSet0 == i));
+    }
+
+    EZ_TEST_BOOL(bitFieldCount1 == bf1.GetCount());
+    for (ezUInt32 i = 0; i < bf1.GetCount(); ++i)
+    {
+      EZ_TEST_BOOL(bf1.IsBitSet(i) == (bitIndexSet1 == i));
+    }
   }
 
   EZ_TEST_BLOCK(ezTestBlock::Enabled, "Iterator")
@@ -257,7 +301,7 @@ EZ_CREATE_SIMPLE_TEST(Containers, Bitfield)
       // Partial bits set.
       ezRandom rnd;
       rnd.Initialize(42);
-      
+
       for (ezUInt32 uiNumBits = 2; uiNumBits <= 65; ++uiNumBits)
       {
         ezHybridBitfield<128> bitfield;
@@ -396,7 +440,7 @@ EZ_CREATE_SIMPLE_TEST(Containers, StaticBitfield)
   {
     ezStaticBitfield8 bf;
 
-    EZ_TEST_BOOL(bf.IsAnyBitSet() == false); // empty
+    EZ_TEST_BOOL(bf.IsAnyBitSet() == false);   // empty
     EZ_TEST_BOOL(bf.IsNoBitSet() == true);
     EZ_TEST_BOOL(bf.AreAllBitsSet() == false); // empty
 

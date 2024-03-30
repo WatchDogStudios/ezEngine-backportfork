@@ -5,6 +5,7 @@
 #include <Foundation/Types/UniquePtr.h>
 #include <RendererFoundation/Device/Device.h>
 #include <RendererVulkan/Device/DispatchContext.h>
+#include <RendererVulkan/MemoryAllocator/MemoryAllocatorVulkan.h>
 #include <RendererVulkan/RendererVulkanDLL.h>
 
 #include <vulkan/vulkan.hpp>
@@ -105,6 +106,8 @@ public:
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     bool m_bWin32Surface = false;
 #elif EZ_ENABLED(EZ_SUPPORTS_GLFW)
+#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
+    bool m_bAndroidSurface = false;
 #else
 #  error "Vulkan Platform not supported"
 #endif
@@ -167,7 +170,7 @@ public:
 
   ezInt32 GetMemoryIndex(vk::MemoryPropertyFlags properties, const vk::MemoryRequirements& requirements) const;
 
-  vk::Fence Submit();
+  vk::Fence Submit(bool bAddSignalSemaphore = true);
 
   void DeleteLaterImpl(const PendingDeletion& deletion);
 
@@ -367,7 +370,7 @@ private:
     ezHybridArray<vk::Fence, 2> m_CommandBufferFences;
 
     vk::CommandBuffer m_currentCommandBuffer;
-    //ID3D11Query* m_pDisjointTimerQuery = nullptr;
+    // ID3D11Query* m_pDisjointTimerQuery = nullptr;
     double m_fInvTicksPerSecond = -1.0;
     ezUInt64 m_uiFrame = -1;
 

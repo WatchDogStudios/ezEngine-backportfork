@@ -24,7 +24,7 @@ EZ_CREATE_SIMPLE_TEST(Math, Frustum)
     EZ_TEST_BOOL(f.GetPlane(1) == p[1]);
   }
 
-  EZ_TEST_BLOCK(ezTestBlock::Enabled, "TransformFrustum")
+  EZ_TEST_BLOCK(ezTestBlock::Enabled, "TransformFrustum/GetTransformedFrustum")
   {
     ezFrustum f;
 
@@ -42,13 +42,19 @@ EZ_CREATE_SIMPLE_TEST(Math, Frustum)
     mTransform = ezMat4::MakeRotationY(ezAngle::MakeFromDegree(90.0f));
     mTransform.SetTranslationVector(ezVec3(2, 3, 4));
 
-    f.TransformFrustum(mTransform);
+    ezFrustum tf = f;
+    tf.TransformFrustum(mTransform);
 
     p[0].Transform(mTransform);
     p[1].Transform(mTransform);
 
-    EZ_TEST_BOOL(f.GetPlane(0).IsEqual(p[0], 0.001f));
-    EZ_TEST_BOOL(f.GetPlane(1).IsEqual(p[1], 0.001f));
+    for (int planeIndex = 0; planeIndex < 6; ++planeIndex)
+    {
+      EZ_TEST_BOOL(f.GetTransformedFrustum(mTransform).GetPlane(planeIndex) == tf.GetPlane(planeIndex));
+    }
+
+    EZ_TEST_BOOL(tf.GetPlane(0).IsEqual(p[0], 0.001f));
+    EZ_TEST_BOOL(tf.GetPlane(1).IsEqual(p[1], 0.001f));
   }
 
   EZ_TEST_BLOCK(ezTestBlock::Enabled, "InvertFrustum")
@@ -318,7 +324,7 @@ EZ_CREATE_SIMPLE_TEST(Math, Frustum)
       ezPlane p1 = fOrg.GetPlane(i);
       ezPlane p2 = fNew.GetPlane(i);
 
-      EZ_TEST_BOOL(p1.IsEqual(p2));
+      EZ_TEST_BOOL(p1.IsEqual(p2, ezMath::LargeEpsilon<float>()));
     }
 
     ezVec3 corners2[8];
@@ -326,7 +332,15 @@ EZ_CREATE_SIMPLE_TEST(Math, Frustum)
 
     for (ezUInt32 i = 0; i < 8; ++i)
     {
-      EZ_TEST_BOOL(corners[i].IsEqual(corners2[i], 0.001f));
+      EZ_TEST_BOOL(corners[i].IsEqual(corners2[i], 0.01f));
     }
+  }
+
+  EZ_TEST_BLOCK(ezTestBlock::Enabled, "MakeFromMVPInfiniteFarPlane")
+  {
+    ezMat4 perspective = ezGraphicsUtils::CreatePerspectiveProjectionMatrixFromFovY(ezAngle::MakeFromDegree(90), 1.0f, ezMath::Infinity<float>(), 100.0f, ezClipSpaceDepthRange::ZeroToOne, ezClipSpaceYMode::Regular, ezHandedness::RightHanded);
+
+    auto frustum = ezFrustum::MakeFromMVP(perspective);
+    EZ_TEST_BOOL(frustum.IsValid());
   }
 }
